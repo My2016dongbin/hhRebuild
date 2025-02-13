@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.haohai.platform.fireforestplatform.ui.viewmodel.NewsInfoViewModel" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:binding="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".NewsViewModel">
+        <include
+            android:id="@+id/top_bar"
+            layout="@layout/view_top_bar"
+            binding:onLeftClick ="@{viewModel.barLeftClick}"/>
+        <com.tencent.smtt.sdk.WebView
+            android:id="@+id/web"
+            android:padding="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+</layout>

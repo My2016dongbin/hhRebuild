@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.kk.taurus.playerbase:playerbase:3.3.5@aar">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/f19905ad95a1b1d226445e86037b1c0c/jetified-playerbase-3.3.5/jars/classes.jar!/" />
+      <root url="file://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/f19905ad95a1b1d226445e86037b1c0c/jetified-playerbase-3.3.5/res" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches/////AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.kk.taurus.playerbase/playerbase/3.3.5/411d48dacfd5080505a5ba5cc0e2d17eeec4cfdc/playerbase-3.3.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.kk.taurus.playerbase/playerbase/3.3.5/90721d0f00c909ddfce95033845fa8f6dd7d79ca/playerbase-3.3.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

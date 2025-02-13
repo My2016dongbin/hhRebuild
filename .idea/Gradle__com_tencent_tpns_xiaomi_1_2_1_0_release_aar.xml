@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="Gradle: com.tencent.tpns:xiaomi:1.2.1.0-release@aar">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/13a1979e0c1d7a2df3a377af6db8e6c2/jetified-xiaomi-1.2.1.0-release/jars/classes.jar!/" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches///13a1979e0c1d7a2df3a377af6db8e6c2//res" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches///13a1979e0c1d7a2df3a377af6db8e6c2//AndroidManifest.xml" />
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/13a1979e0c1d7a2df3a377af6db8e6c2/jetified-xiaomi-1.2.1.0-release/jars/libs/xm4tpns1.2.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.tencent.tpns/xiaomi/1.2.1.0-release/2ac334f16a459e9de9c0f373d144f003d49f54a2/xiaomi-1.2.1.0-release-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.tencent.tpns/xiaomi/1.2.1.0-release/2ac334f16a459e9de9c0f373d144f003d49f54a2/xiaomi-1.2.1.0-release-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

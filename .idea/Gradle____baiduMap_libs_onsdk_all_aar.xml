@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: ./baiduMap/libs/onsdk_all.aar">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/22603313ebfd55979058c4f221688375/jetified-onsdk_all/jars/classes.jar!/" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches////jetified-onsdk_all/res" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches////jetified-onsdk_all/AndroidManifest.xml" />
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/22603313ebfd55979058c4f221688375/jetified-onsdk_all/jars/libs/r-classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

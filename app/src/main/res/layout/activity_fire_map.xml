@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <ImageView
+            android:id="@+id/left_icon"
+            android:src="@drawable/ic_back"
+            android:layout_marginStart="10dp"
+            android:scaleType="fitXY"
+            android:padding="5dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="30dp"
+            android:layout_height="30dp"/>
+        <TextView
+            android:id="@+id/left"
+            android:text="返回"
+            android:textStyle="bold"
+            android:textColor="@color/text_color3"
+            android:textSize="14sp"
+            android:padding="5dp"
+            android:layout_marginStart="32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/title"
+            android:textStyle="bold"
+            android:textColor="@color/text_color3"
+            android:text="选择位置"
+            android:textSize="16sp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_gravity="center_vertical|end"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/right"
+                android:text=""
+                android:textColor="@color/text_color6"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <ImageView
+                android:id="@+id/right_icon"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/ic_red_fire"
+                android:visibility="gone"
+                android:layout_marginEnd="6dp"
+                android:layout_width="6dp"
+                android:layout_height="6dp"/>
+        </LinearLayout>
+        <View
+            android:background="@color/c2"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_gravity="bottom"/>
+    </FrameLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/bmapView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_above="@+id/ll_map_bottom"
+            android:clickable="true" />
+
+        <LinearLayout
+            android:id="@+id/ll_map_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/c12"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/state"
+                android:layout_marginTop="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:lines="1"
+                android:textSize="14sp"
+                android:textColor="@color/c7"
+                android:layout_marginLeft="15dp"
+                android:text="点击、长按、双击地图以获取经纬度和地图状态" />
+
+            <TextView
+                android:id="@+id/state2"
+                android:layout_width="fill_parent"
+                android:layout_height="20dp"
+                android:layout_marginLeft="15dp"
+                android:gravity="left|top"
+                android:lines="2"
+                android:text="点击、长按、双击地图以获取经纬度和地图状态"
+                android:textColor="@color/c6"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_map"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_button_little"
+                android:gravity="center"
+                android:onClick="mapclick"
+                android:clickable="true"
+                android:text="确认选择"
+                android:textColor="#ffffff"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0@aar">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/472272fe549fac044c4b811b65759bdf/jetified-subsampling-scale-image-view-androidx-3.10.0/jars/classes.jar!/" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches/////res" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches/////AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.davemorrissey.labs/subsampling-scale-image-view-androidx/3.10.0/e90320d71bc0ba0b5a7e7974f8f7896572ce59f4/subsampling-scale-image-view-androidx-3.10.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.davemorrissey.labs/subsampling-scale-image-view-androidx/3.10.0/97c1f1131ffd9d54b5ad9a125c42e415b924d0fb/subsampling-scale-image-view-androidx-3.10.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

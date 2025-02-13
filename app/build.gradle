@@ -1,0 +1,401 @@
+plugins {
+    id 'com.android.application'
+}
+
+def VERSION_CODE = 206
+def VERSION_NAME = "2.0.6"
+def keyfile = file('s.keystore.temp')
+ext{
+    routerApiVersion = '1.5.0'
+    routerCompilerVersion = '1.2.2'
+    smackVersion='4.4.0'
+}
+android {
+    compileSdkVersion 33
+    buildToolsVersion '30.0.3'
+
+    defaultConfig {
+        applicationId "com.haohai.platform.fireforestplatform"
+        minSdkVersion 21
+        //noinspection OldTargetApi
+        targetSdkVersion 30
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // 使用multiDex库
+        multiDexEnabled true
+
+
+        ndk {
+            //设置支持的SO库架构
+            abiFilters 'armeabi-v7a'//, 'arm64-v8a', 'x86', 'x86_64' //32
+//            abiFilters 'arm64-v8a'//, 'arm64-v8a', 'x86', 'x86_64'  //64
+        }
+        manifestPlaceholders = [
+                XG_ACCESS_ID : "1500015815",
+                XG_ACCESS_KEY : "AO3YNOCJ0AK2",
+                HW_APPID: "103450845"
+        ]
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    packagingOptions {
+        doNotStrip '*/mips/*.so'
+        doNotStrip '*/mips64/*.so'
+    }
+
+    //配置keystore签名
+    signingConfigs {
+        release {
+            storeFile file("../app/sign.jks")
+            storePassword "haohaiadmin"
+            keyAlias "haohai"
+            keyPassword "haohaiadmin"
+        }
+        debugConfig {
+            storeFile file("../app/sign.jks")
+            storePassword "haohaiadmin"
+            keyAlias "haohai"
+            keyPassword "haohaiadmin"
+        }
+    }
+
+
+    flavorDimensions "app"
+    productFlavors {
+        haohaiVersion {
+            dimension 'app'
+            applicationId "com.haohai.platform.fireforestplatform"//包名
+            //resValue "string", "app_name", "浩海森林防火2.0"   // 设置默认的app_name
+            manifestPlaceholders = [
+                    APP_ICON: "@drawable/ic_icon",//app图标
+                    CHANNEL_NAME: "haohaiVersion",
+                    APP_NAME: "森林防灭火一体化智慧管理平台",//城阳应急
+//                    APP_NAME: "浩海森林防火预警平台软件",//上架
+                    AUTHORITIES: "com.haohai.platform.fireforestplatform.fileprovider",
+            ]
+            //buildConfigField("String", "NET_TYPE", "ONLINE")//网络
+        }
+        onceVersion {
+            dimension 'app'
+            applicationId "com.haohai.platform.fireforestplatform"//包名
+            manifestPlaceholders = [
+                    APP_ICON: "@drawable/ic_icon",//app图标
+                    CHANNEL_NAME: "onceVersion",
+                    APP_NAME: "森林防灭火一体化智慧管理平台临时测试版${defaultConfig.versionName}",
+                    AUTHORITIES: "com.haohai.platform.fireforestplatform.fileprovider",
+            ]
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debugConfig
+            minifyEnabled false
+            shrinkResources false
+            ndk {
+                //这里配置开发调试时的，根据个人需要增减少，x86建议加上不然部分模拟器回报错
+                abiFilters  "armeabi-v7a","arm64-v8a", "x86"
+            }
+        }
+        release {
+            shrinkResources false
+            minifyEnabled false//暂关闭混淆
+
+            ndk{
+                //QQ微信等大佬都只用"armeabi"
+                abiFilters "armeabi-v7a" //32
+//                abiFilters "arm64-v8a" //64
+            }
+            //混淆配置
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //签名文件存在，则签名
+            if (keyfile.exists()) {
+                println("WITH -> buildTypes -> release: using jks key")
+                signingConfig signingConfigs.config
+            } else {
+                println("WITH -> buildTypes -> release: using default key")
+            }
+            android.applicationVariants.all {
+                variant ->
+                    variant.outputs.all {
+                        //在这里修改apk文件名
+                        outputFileName = "fireRebuild-${variant.versionName}.apk"
+                    }
+            }
+            signingConfig signingConfigs.release
+        }
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    //文件冲突
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+        pickFirst 'assets/cfg/a/DVDirectory.cfg'
+
+        pickFirst 'lib/x86/libijkffmpeg.so'
+        pickFirst 'lib/armeabi/libijkffmpeg.so'
+        pickFirst 'lib/x86/libijkplayer.so'
+        pickFirst 'lib/armeabi/libijkplayer.so'
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/armeabi/libijksdl.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/x86/libijksdl.so'
+
+        pickFirst 'lib/armeabi-v7a/libijkplayer.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        pickFirst 'lib/arm64-v8a/libijkffmpeg.so'
+        pickFirst 'lib/arm64-v8a/libijkplayer.so'
+        pickFirst 'lib/armeabi-v7a/libijksdl.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libijkffmpeg.so'
+        pickFirst 'lib/arm64-v8a/libijksdl.so'
+    }
+
+    lintOptions{
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    api(fileTree("libs"))
+//    implementation(name: 'NuSDK_4.4.6',s ext: 'aar', {
+//        exclude group: 'com.android.support'
+//    })
+//    implementation(name: 'NuSDK_4.4.6', ext: 'aar')
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    testImplementation 'junit:junit:4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    //网络请求
+    implementation 'com.zhy:okhttputils:2.6.2'
+    implementation 'com.squareup.okio:okio:2.0.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.4.2'
+    implementation 'com.squareup.okhttp3:mockwebserver:3.11.0'
+    //json解析
+    implementation 'com.rover12421:fastjson:1.2.47'
+
+    implementation 'com.hjq:toast:8.6'
+    implementation 'com.hjq:xtoast:5.5'
+    implementation 'androidx.lifecycle:lifecycle-common:2.2.0-alpha02'
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.0.0"
+    //底部导航栏
+    implementation 'com.ashokvarma.android:bottom-navigation-bar:2.0.4'
+    //列表
+    implementation 'me.drakeet.multitype:multitype:2.2.2'
+    //图片加载框架
+    //  implementation 'com.github.bumptech.glide:glide:4.11.0'
+    //刷新框架  上拉加载下拉刷新
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-14'
+    implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-14'
+    implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
+    //GSON解析
+    implementation 'com.google.code.gson:gson:2.2.4'
+//    implementation 'io.reactivex.rxjava2:rxjava:2.0.5'  NUSDK
+    implementation 'io.reactivex:rxandroid:1.2.0'
+    implementation 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+    //多图片选择框架
+    implementation('com.zhihu.android:matisse:0.5.3-beta3', {
+        exclude group: 'com.android.support'
+    })
+    implementation('ch.ielse:imagewatcher:1.0.3', {
+        exclude group: 'com.android.support'
+    })
+    //图片加载框架
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    //权限
+    implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.1@aar'
+    //tabLayout
+    implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
+    //阿里云图片上传
+    implementation 'com.aliyun.dpa:oss-android-sdk:+'
+
+    //多图片选择器PhotoPicker库
+    implementation 'com.github.HuanTanSheng:EasyPhotos:3.1.3'
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+
+    implementation 'com.tencent.tbs:tbssdk:44153'
+
+//    def dialogx_version = "0.0.46.beta8"
+    def dialogx_version = "0.0.46"
+    implementation "com.github.kongzue.DialogX:DialogX:${dialogx_version}"
+    implementation "com.github.kongzue.DialogX:DialogXIOSStyle:${dialogx_version}"
+
+    //banner
+    implementation 'io.github.youth5201314:banner:2.2.2'
+    //chart
+    implementation 'com.github.lecho:hellocharts-library:1.5.8@aar'
+
+    //libvlc
+    implementation 'org.videolan.android:libvlc-all:3.1.12'
+
+    //GSYVideoPlayer完整版引入
+    implementation 'com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.3.5-release-jitpack'
+
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
+    //图片查看
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+
+
+    implementation 'org.xutils:xutils:3.3.36'
+
+    implementation 'com.tencent.jg:jg:1.1'     //腾讯推送
+    implementation 'com.tencent.tpns:tpns:1.2.0.3-release' //腾讯推送
+
+    implementation 'com.tencent.tpns:xiaomi:1.2.1.0-release'//小米推送
+    implementation 'com.tencent.tpns:huawei:1.2.1.0-release'  //华为推送
+    implementation 'com.tencent.tpns:meizu:1.2.2.0-release'//meizu 推送
+    implementation 'com.tencent.tpns:oppo:1.2.2.0-release'//oppo 推送
+
+    implementation 'com.haibin:calendarview:3.6.8'//日历
+    implementation 'com.hyman:flowlayout-lib:1.1.2'//流式布局插件
+
+    implementation 'com.github.warkiz.widget:indicatorseekbar:2.1.2'//轨迹bar
+
+//    implementation 'com.alibaba:arouter-api:1.3.1'
+//    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+
+
+    implementation ('com.github.MZCretin:AutoUpdateProject:2.0.5'){//版本升级
+        exclude group: 'com.alibaba', module: 'fastjson'
+    }
+
+    implementation 'com.github.piasy:BigImageViewer:1.8.1'//大图预览
+
+    //NuSDK start
+
+    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.exifinterface:exifinterface:1.2.0'
+
+    implementation('com.blankj:utilcode:1.29.0') {
+        exclude group: 'com.google.code.gson'
+        exclude module: 'annotations'
+    }
+    implementation 'com.github.SheHuan:NiceImageView:1.0.5'
+    implementation 'com.github.AurelionX:WaterMarkView:1.1.2'
+
+    // 加载动画
+    implementation 'com.wang.avi:library:2.1.3'
+
+    // 2021/10/29 sdk打包时去除大部分三方引用
+    api project(':baiduMap')
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'com.segment.backo:backo:1.0.0'
+    implementation ('com.googlecode.mp4parser:isoparser:1.0-RC-27')
+    implementation ( 'org.aspectj:aspectjrt:1.9.6')//原1.9.+ 坑爹
+//        api ('com.github.liweijie:WeChatGroupAvatar:1.0.2')
+    implementation ('io.reactivex.rxjava2:rxjava:2.1.13')
+    implementation ('io.reactivex.rxjava2:rxandroid:2.0.2')
+    implementation ('com.trello.rxlifecycle3:rxlifecycle:3.1.0')
+    implementation ('com.trello.rxlifecycle3:rxlifecycle-components:3.1.0')
+    implementation ('com.jakewharton.rxbinding2:rxbinding:2.1.1')
+    implementation ('org.simpleframework:simple-xml:2.3.4')
+    implementation ('com.github.piasy:GlideImageViewFactory:1.8.0')
+            {
+                exclude(group:'com.facebook.fresco')
+            }
+    implementation ('org.slf4j:slf4j-api:1.7.26')
+    implementation ('com.github.tony19:logback-android:1.3.0-3')
+    implementation ('com.koushikdutta.async:androidasync:2.2.1')//原2.+ 坑爹
+    implementation ('com.koushikdutta.ion:ion:2.2.1')//原2.+ 坑爹
+    implementation ('com.github.piasy:GlideImageLoader:1.8.0')
+            {
+                exclude(group:'com.facebook.fresco')
+            }
+    implementation ('com.github.piasy:ProgressPieIndicator:1.8.0')
+    implementation ('com.github.piasy:FrescoImageViewFactory:1.8.0')
+            {
+                exclude(group:'com.facebook.fresco')
+            }
+    implementation ('pl.droidsonroids.gif:android-gif-drawable:1.2.23')
+    implementation ('com.github.piasy:BigImageViewer:1.8.0')
+    implementation ('com.orhanobut:logger:2.2.0')
+    implementation ('com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.50')
+    implementation ('com.github.bumptech.glide:glide:4.12.0')
+    annotationProcessor('com.github.bumptech.glide:compiler:4.12.0')
+    implementation('com.google.android.exoplayer:exoplayer-core:2.11.1')
+    implementation('com.google.android.exoplayer:exoplayer-dash:2.11.1')
+    implementation('com.google.android.exoplayer:exoplayer-hls:2.11.1')
+    implementation('com.google.android.exoplayer:exoplayer-smoothstreaming:2.11.1')
+    implementation('com.kk.taurus.playerbase:playerbase:3.3.5')
+    implementation('com.jiajunhui.xapp.medialoader:medialoader:1.2.1')
+    implementation("com.alibaba:arouter-api:${routerApiVersion}")
+    implementation 'org.jboss.netty:netty:3.2.10.Final'
+    implementation 'com.google.zxing:core:3.4.1'
+    implementation 'com.contrarywind:Android-PickerView:4.1.9'
+    implementation 'top.zibin:Luban:1.1.8'
+    //4.4版本打开xmpp依赖
+    implementation ("org.igniterealtime.smack:smack-android-extensions:${smackVersion}") {
+        exclude group: 'xpp3', module: 'xpp3'
+    }
+    implementation ("org.igniterealtime.smack:smack-android:${smackVersion}") {
+        exclude group: 'xpp3', module: 'xpp3'
+    }
+    // Optional for XMPPTCPConnection
+    implementation ("org.igniterealtime.smack:smack-tcp:${smackVersion}") {
+        exclude group: 'xpp3', module: 'xpp3'
+    }
+    // Optional for XMPP-IM (RFC 6121) support (Roster, Threaded Chats, …)
+    implementation ("org.igniterealtime.smack:smack-im:${smackVersion}") {
+        exclude group: 'xpp3', module: 'xpp3'
+    }
+
+    implementation ("org.igniterealtime.smack:smack-experimental:${smackVersion}"){
+        exclude group: 'xpp3', module: 'xpp3'
+    }
+    //启用GMeet时需打开以下依赖
+//        api ('com.facebook.fresco:fresco:2.4.0')
+//        {
+//            exclude(group:'com.facebook.soloader')
+//            exclude(group:'com.facebook.infer.annotation')
+//        }
+//        api 'com.facebook.fresco:fbcore:2.4.0'
+//        api ('com.facebook.fresco:drawee:2.4.0')
+//                {
+//                    exclude(group:'com.facebook.soloader')
+//                    exclude(group:'com.facebook.infer.annotation')
+//                }
+    implementation('com.squareup.okhttp3:okhttp-urlconnection:3.12.1')
+//        api('com.facebook.fresco:imagepipeline-okhttp3:2.0.0')
+//                {
+//                    exclude(group:'com.facebook.soloader')
+//                    exclude(group:'com.facebook.infer.annotation')
+//                }
+//        api('com.facebook.soloader:nativeloader:0.9.0')
+
+
+    //依赖包冲突
+    configurations {
+        all*.exclude(group: 'androidx.startup' ,module: 'startup-runtime')
+        all*.exclude(group: 'androidx.tracing' ,module: 'tracing')
+        all*.exclude(group: 'org.jetbrains' ,module: 'annotations')
+        all*.exclude(group: 'com.github.CarGuo' ,module: 'GSYIjkJava')
+    }
+    //NuSDK end
+}

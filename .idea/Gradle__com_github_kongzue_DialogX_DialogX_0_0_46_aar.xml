@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.kongzue.DialogX:DialogX:0.0.46@aar">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/81271fc46edefaab904d55745ecaba4a/jetified-DialogX-0.0.46/jars/classes.jar!/" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches///81271fc46edefaab904d55745ecaba4a//res" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches///81271fc46edefaab904d55745ecaba4a//AndroidManifest.xml" />
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/81271fc46edefaab904d55745ecaba4a/jetified-DialogX-0.0.46/jars/libs/DialogXInterface.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.github.kongzue.DialogX/DialogX/0.0.46/7248a08e8a99428bb84d4de82304885a71c8033a/DialogX-0.0.46-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

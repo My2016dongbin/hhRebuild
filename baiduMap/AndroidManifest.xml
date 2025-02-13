@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.baidu.map">
+
+    <application>
+        <!--注册相关组件（Activity, Service..）-->
+
+        <!-- START:百度地图开发密钥和服务 -->
+
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.4" />
+
+        <meta-data
+            android:name="${baidu_api_meta_name}"
+            android:value="${baidu_api_key}" />
+
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" />
+        <!-- END:百度地图开发密钥和服务 -->
+    </application>
+</manifest>

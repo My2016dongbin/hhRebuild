@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.haohai.platform.fireforestplatform.ui.viewmodel.VideoViewModel" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:binding="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".SignViewModel">
+        <include
+            android:id="@+id/top_bar"
+            layout="@layout/view_top_bar"
+            binding:onLeftClick ="@{viewModel.barLeftClick}"/>
+
+        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+            android:id="@+id/gsy_player"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</layout>

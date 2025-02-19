@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="adapter"
+            type="com.haohai.platform.fireforestplatform.ui.multitype.ExamineViewBinder" />
+
+        <variable
+            name="item"
+            type="com.haohai.platform.fireforestplatform.ui.multitype.Examine" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:orientation="vertical"
+        android:background="@drawable/white_coner_6">
+
+        <LinearLayout
+            android:id="@+id/click"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:onClick="@{()->adapter.onItemClick(item)}"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_margin="15dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp">
+                <ImageView
+                    android:id="@+id/type"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/warn_1"
+                    android:scaleType="fitXY" />
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/text_type1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="气象"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/text_type2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="灾害"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/text_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="60dp"
+                    android:layout_marginTop="15dp"
+                    android:text="山东省青岛市市北区台东街道台东路142号142号142号"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color3"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/text_time"
+                    android:layout_gravity="bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2024-01-30 08:00:00"
+                    android:layout_marginBottom="15dp"
+                    android:textColor="@color/text_color6"
+                    android:textSize="12sp" />
+                <FrameLayout
+                    android:layout_gravity="top|end"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp">
+
+                    <ImageView
+                        android:id="@+id/status"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/warn_state1" />
+                    <TextView
+                        android:id="@+id/text_status"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="未开始"
+                        android:textColor="@color/status_start"
+                        android:textSize="12sp" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/text_examine"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginEnd="15dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:text="审核"
+                    android:textColor="@color/colorPrimary"
+                    android:background="@drawable/bg_examine"
+                    android:textSize="12sp" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/address"
+            android:layout_gravity="bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginBottom="15dp"
+            android:text="山东省青岛市市北区台东街道台东路142号"
+            android:textColor="@color/text_color6"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+</layout>

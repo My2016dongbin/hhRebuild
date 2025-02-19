@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/file_image"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/file_doc"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"/>
+
+        <TextView
+            android:id="@+id/file_title"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="油票.pdf"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/c7"/>
+        <TextView
+            android:id="@+id/file_review"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:background="@drawable/theme_stock_conner"
+            android:text="查看"
+            android:textSize="12sp"
+            android:textColor="@color/theme_color_blue"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/c"/>
+
+</LinearLayout>

@@ -1,0 +1,63 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 23
+        versionCode 1
+        versionName "2.5"
+
+        ndk {
+            abiFilters "armeabi-v7a", "x86"
+        }
+
+        manifestPlaceholders = [
+                                baidu_api_meta_name: "com.baidu.lbsapi.API_KEY_sdk_deprecated",
+                                baidu_api_key: "deprecated"
+
+        ]
+
+        consumerProguardFiles 'consumer-rules.pro'
+
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+
+    //文件冲突
+    packagingOptions {
+//        exclude 'META-INF/rxjava.properties'
+//        exclude 'assets/cfg/a/DVDirectory.cfg'
+//        exclude 'lib/armeabi-v7a/libijkplayer.so'
+//        exclude 'lib/arm64-v8a/libc++_shared.so'
+//        exclude 'lib/arm64-v8a/libijkffmpeg.so'
+//        exclude 'lib/arm64-v8a/libijkplayer.so'
+//        exclude 'lib/armeabi-v7a/libijksdl.so'
+//        exclude 'lib/armeabi-v7a/libc++_shared.so'
+//        exclude 'lib/armeabi-v7a/libijkffmpeg.so'
+//        exclude 'lib/arm64-v8a/libijksdl.so'
+    }
+
+}
+
+dependencies {
+    api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+}

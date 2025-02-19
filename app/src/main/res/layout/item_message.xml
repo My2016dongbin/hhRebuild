@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="adapter"
+            type="com.haohai.platform.fireforestplatform.ui.multitype.MessageViewBinder" />
+
+        <variable
+            name="item"
+            type="com.haohai.platform.fireforestplatform.ui.multitype.Message" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="85dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="6dp"
+        android:paddingBottom="10dp"
+        android:background="@drawable/white_coner_8">
+
+        <ImageView
+            android:id="@+id/read"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/msg_read"
+            android:scaleType="fitXY" />
+
+        <LinearLayout
+            android:id="@+id/click"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:onClick="@{()->adapter.onItemClick(item)}"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/icon"
+                    android:layout_width="23dp"
+                    android:layout_height="23dp"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitXY" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginEnd="15dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textStyle="bold"
+                        android:textColor="@color/c7"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/time"
+                        android:layout_gravity="end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_color6"
+                        android:textSize="12sp" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="15dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/c6"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+    </FrameLayout>
+</layout>

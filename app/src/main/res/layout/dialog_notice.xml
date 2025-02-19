@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data class="DialogNoticeBinding">
+
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ll_back"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/center_sheet_background_white"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/c7"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/close"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="5dp"
+                android:padding="18dp"
+                android:src="@drawable/ic_cha" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_gravity="start"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="通知信息:"
+            android:textColor="@color/c6"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:letterSpacing="0.3"
+            android:text="山东省应急管理厅"
+            android:textColor="@color/text_red"
+            android:textSize="23sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@color/text_red" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="20dp"
+            android:background="@color/text_red" />
+
+        <com.tencent.smtt.sdk.WebView
+            android:id="@+id/web"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp" />
+    </LinearLayout>
+</layout>

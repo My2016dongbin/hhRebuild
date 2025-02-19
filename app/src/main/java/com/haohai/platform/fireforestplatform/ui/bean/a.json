@@ -1,0 +1,34 @@
+{
+  "data": [
+    {
+      "gridName": "xxx街道",
+      "gridNo": 370203,
+      "list": [
+        {
+          "remark": null,
+          "gridNo": "370203",
+          "groupNo": null,
+          "deptNo": null,
+          "delFlag": "0",
+          "createBy": "haohai",
+          "createTime": "2024-02-01 10:05:14",
+          "updateBy": "haohai",
+          "updateTime": "2024-02-01 10:05:14",
+          "params": null,
+          "id": "1752875723770691584",
+          "dutyDate": "20240201",
+          "dutyDateFormat": null,
+          "postId": "1721342615082893312",
+          "classManagentId": "1",
+          "arrangeName": "林亦琪",
+          "arrangePhone": "15872352899",
+          "staffId": "1717380823758508034",
+          "holiday": null,
+          "month": null,
+          "holidayName": null,
+          "holidayOrWorkday": "工作日上班"
+        }
+      ]
+    }
+  ]
+}

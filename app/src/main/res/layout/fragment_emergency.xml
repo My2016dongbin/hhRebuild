@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data class="FgEmergency">
+        <variable
+            name="fragmentModel"
+            type="com.haohai.platform.fireforestplatform.ui.viewmodel.EmergencyViewModel" />
+    </data>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/c"
+            android:orientation="vertical">
+
+            <com.scwang.smartrefresh.layout.SmartRefreshLayout
+                android:id="@+id/message_smart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+        </LinearLayout>
+
+
+       <!-- <com.haohai.platform.fireforestplatform.utils.MoveFrameLayout
+            android:id="@+id/move"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            app:IsAttach="true"
+            app:IsDrag="true"
+            android:layout_marginBottom="200dp"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/filter"
+                android:src="@drawable/filter1"
+                android:layout_width="45dp"
+                android:layout_height="45dp"/>
+        </com.haohai.platform.fireforestplatform.utils.MoveFrameLayout>-->
+
+        <ImageView
+            android:id="@+id/move"
+            android:visibility="gone"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="200dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/filter1"
+            android:layout_width="45dp"
+            android:layout_height="45dp"/>
+    </FrameLayout>
+</layout>

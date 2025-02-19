@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="adapter"
+            type="com.haohai.platform.fireforestplatform.ui.multitype.AlarmViewBinder" />
+
+        <variable
+            name="item"
+            type="com.haohai.platform.fireforestplatform.ui.multitype.Alarm" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="85dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/white_coner_8">
+
+        <LinearLayout
+            android:id="@+id/click"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:onClick="@{()->adapter.onItemClick(item)}"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/img_warn"
+                android:layout_marginStart="15dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/warn_2"
+                    android:scaleType="fitXY" />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="预警"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="预报"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/img_notice"
+                android:visibility="gone"
+                android:layout_marginStart="15dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/warn_1"
+                    android:scaleType="fitXY" />
+                <TextView
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="通知"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="80dp"
+                    android:layout_marginTop="20dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textColor="@color/text_color3"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_gravity="bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:textColor="@color/text_color6"
+                    android:textSize="10sp" />
+
+              <!--  <TextView
+                    android:id="@+id/status"
+                    android:layout_gravity="end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginTop="15dp"
+                    android:textColor="@color/text_color6"
+                    android:textSize="12sp" />-->
+
+                <FrameLayout
+                    android:layout_gravity="top|end"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp">
+
+                    <ImageView
+                        android:id="@+id/status"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/warn_state1" />
+                    <TextView
+                        android:id="@+id/text_status"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/status_start"
+                        android:textSize="12sp" />
+                </FrameLayout>
+            </FrameLayout>
+        </LinearLayout>
+
+
+    </FrameLayout>
+</layout>

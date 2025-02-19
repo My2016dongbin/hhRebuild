@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data class="DialogMainDeviceListBinding">
+
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bottom_sheet_background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="设备列表"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/c6"
+            android:textSize="15sp" />
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <TextView
+                android:id="@+id/index"
+                android:text="序号"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/c56"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/name"
+                android:text="名称"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:layout_marginStart="0dp"
+                android:textAlignment="center"
+                android:textColor="@color/c56"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/area"
+                android:text="区域"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:layout_marginStart="0dp"
+                android:textAlignment="center"
+                android:textColor="@color/c56"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/state"
+                android:text="状态"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:layout_marginStart="0dp"
+                android:textAlignment="center"
+                android:textColor="@color/c56"
+                android:textSize="14sp" />
+        </LinearLayout>
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/smart"
+            android:background="@drawable/bottom_sheet_background"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rlv"
+                android:background="@drawable/bottom_sheet_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+    </LinearLayout>
+</layout>

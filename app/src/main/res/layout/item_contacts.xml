@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="adapter"
+            type="com.haohai.platform.fireforestplatform.ui.multitype.ContactsViewBinder" />
+        <variable
+            name="item"
+            type="com.haohai.platform.fireforestplatform.ui.multitype.Contacts" />
+    </data>
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/white_border_conner">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/text_color3"/>
+            <TextView
+                android:id="@+id/phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_marginEnd="80dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/text_color3"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:textSize="12sp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/text_color6"/>
+        <ImageView
+            android:id="@+id/call"
+            android:layout_marginEnd="30dp"
+            android:layout_gravity="center_vertical|end"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_call"
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
+        <View
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:background="@color/back_color_line"
+            android:layout_height="0.5dp"/>
+
+    </FrameLayout>
+</layout>

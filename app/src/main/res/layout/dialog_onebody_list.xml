@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data class="DialogOneBodyListBinding">
+
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bottom_sheet_background">
+        <FrameLayout
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="报警列表"
+                android:layout_marginStart="10dp"
+                android:gravity="center|start"
+                android:textColor="@color/c7"
+                android:textSize="16sp" />
+            <LinearLayout
+                android:id="@+id/filter_linear"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_gravity="end"
+                android:gravity="center">
+                <TextView
+                    android:id="@+id/filter_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="未处置"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    android:textColor="@color/c7"
+                    android:textSize="14sp" />
+                <ImageView
+                    android:id="@+id/filter_image"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_down"
+                    android:layout_marginEnd="20dp"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"/>
+            </LinearLayout>
+        </FrameLayout>
+
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/one_body_smart"
+            android:background="@drawable/bottom_sheet_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/one_body_rlv"
+                android:background="@drawable/bottom_sheet_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+    </LinearLayout>
+</layout>

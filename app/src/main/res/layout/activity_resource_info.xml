@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_back"
+    android:orientation="vertical">
+    <FrameLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <ImageView
+            android:id="@+id/left_icon"
+            android:src="@drawable/ic_back"
+            android:layout_marginStart="10dp"
+            android:scaleType="fitXY"
+            android:padding="5dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="30dp"
+            android:layout_height="30dp"/>
+        <TextView
+            android:id="@+id/left"
+            android:text="返回"
+            android:onClick="@{onLeftClick}"
+            android:textStyle="bold"
+            android:textColor="@color/text_color3"
+            android:textSize="14sp"
+            android:padding="5dp"
+            android:layout_marginStart="32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/title"
+            android:textStyle="bold"
+            android:textColor="@color/text_color3"
+            android:textSize="16sp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_gravity="center_vertical|end"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/right"
+                android:text=""
+                android:textColor="@color/text_color6"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <ImageView
+                android:id="@+id/right_icon"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/ic_red_fire"
+                android:visibility="gone"
+                android:layout_marginEnd="6dp"
+                android:layout_width="6dp"
+                android:layout_height="6dp"/>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/right_image"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/ic_red_fire"
+            android:visibility="gone"
+            android:layout_width="20dp"
+            android:layout_height="20dp"/>
+        <View
+            android:background="@color/c2"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_gravity="bottom"/>
+    </FrameLayout>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/sr_resourceinfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!--灰色Header-->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:background="@color/gray1.5"
+                    android:visibility="gone"
+                    android:layout_height="40dp">
+                    <TextView
+                        android:id="@+id/tv_header"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:text="2021-11-15第三次检查"
+                        android:textSize="14sp"
+                        android:textColor="@color/blackdark"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <ImageView
+                        android:src="@drawable/ic_open_down"
+                        android:layout_marginEnd="15dp"
+                        android:layout_gravity="center_vertical|right"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </FrameLayout>
+
+                <!--检查名称 && 所属网格 && 隐患位置 & 检查时间 & 整治人 & 整治时间-->
+                <LinearLayout
+                    style="@style/resourceInfoLinearLayout">
+                    <TextView
+                        android:text="检查名称"
+                        style="@style/resourceInfoLinearLayout_left" />
+                    <TextView
+                        android:id="@+id/tv_name"
+                        android:text=""
+                        style="@style/resourceInfoLinearLayout_right" />
+                </LinearLayout>
+                <View
+                    android:background="@color/gray1.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+
+                <LinearLayout
+                    style="@style/resourceInfoLinearLayout">
+                    <TextView
+                        android:text="所属网格"
+                        style="@style/resourceInfoLinearLayout_left" />
+                    <TextView
+                        android:id="@+id/tv_grid"
+                        android:text=""
+                        style="@style/resourceInfoLinearLayout_right" />
+                </LinearLayout>
+                <View
+                    android:background="@color/gray1.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+
+                <LinearLayout
+                    style="@style/resourceInfoLinearLayout">
+                    <TextView
+                        android:text="隐患位置"
+                        style="@style/resourceInfoLinearLayout_left" />
+                    <TextView
+                        android:id="@+id/tv_location"
+                        android:text=""
+                        style="@style/resourceInfoLinearLayout_right" />
+                </LinearLayout>
+                <View
+                    android:background="@color/gray1.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+
+                <LinearLayout
+                    style="@style/resourceInfoLinearLayout">
+                    <TextView
+                        android:text="检查时间"
+                        style="@style/resourceInfoLinearLayout_left" />
+                    <TextView
+                        android:id="@+id/tv_checkdate"
+                        android:text=""
+                        style="@style/resourceInfoLinearLayout_right" />
+                </LinearLayout>
+                <View
+                    android:background="@color/gray1.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+
+                <LinearLayout
+                    style="@style/resourceInfoLinearLayout">
+                    <TextView
+                        android:text="整治人"
+                        style="@style/resourceInfoLinearLayout_left" />
+                    <TextView
+                        android:id="@+id/tv_worker"
+                        android:text=""
+                        style="@style/resourceInfoLinearLayout_right" />
+                </LinearLayout>
+                <View
+                    android:background="@color/gray1.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+
+                <LinearLayout
+                    style="@style/resourceInfoLinearLayout">
+                    <TextView
+                        android:text="整治时间"
+                        style="@style/resourceInfoLinearLayout_left" />
+                    <TextView
+                        android:id="@+id/tv_playdate"
+                        android:text=""
+                        style="@style/resourceInfoLinearLayout_right" />
+                </LinearLayout>
+                <View
+                    android:background="@color/gray1.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+
+                <!--隐患情况-->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="问题描述"
+                        style="@style/resourceInfoLinearLayout_title"
+                        android:layout_marginTop="20dp"/>
+                    <TextView
+                        android:id="@+id/tv_desc"
+                        android:text=""
+                        style="@style/resourceInfoLinearLayout_title"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="20dp"/>
+                </LinearLayout>
+
+                <View
+                    android:background="@color/gray1.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="6dp"/>
+
+                <!--检查人签名（1）&& 检查人签名（2）-->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:paddingBottom="20dp"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:text="检查人签名(1)"
+                            style="@style/resourceInfoLinearLayout_title"
+                            android:layout_marginTop="20dp"/>
+                        <FrameLayout
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/gray_border"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:id="@+id/iv_sign1"
+                                android:scaleType="fitXY"
+                                android:layout_width="match_parent"
+                                android:layout_height="140dp"/>
+                        </FrameLayout>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:text="检查人签名(2)"
+                            style="@style/resourceInfoLinearLayout_title"
+                            android:layout_marginTop="20dp"/>
+                        <FrameLayout
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/gray_border"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:id="@+id/iv_sign2"
+                                android:scaleType="fitXY"
+                                android:layout_width="match_parent"
+                                android:layout_height="140dp"/>
+                        </FrameLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:background="@color/gray1.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="6dp"/>
+
+                <!--隐患图片-->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="隐患图片"
+                        style="@style/resourceInfoLinearLayout_title"
+                        android:layout_marginTop="20dp"/>
+                    <HorizontalScrollView
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginBottom="20dp"
+                        android:scrollbars="none"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:id="@+id/ll_hidden"
+                            android:layout_gravity="center_vertical|start"
+                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </HorizontalScrollView>
+                </LinearLayout>
+
+                <View
+                    android:background="@color/gray1.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="6dp"/>
+
+                <!--整改图片-->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="整改图片"
+                        style="@style/resourceInfoLinearLayout_title"
+                        android:layout_marginTop="20dp"/>
+                    <HorizontalScrollView
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:scrollbars="none"
+                        android:layout_marginBottom="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:id="@+id/ll_play"
+                            android:layout_gravity="center_vertical|start"
+                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </HorizontalScrollView>
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+</LinearLayout>

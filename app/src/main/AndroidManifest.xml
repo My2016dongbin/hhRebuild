@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.haohai.platform.fireforestplatform">
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.READ_LOGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- //读取设备硬件信息，统计数据 -->
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" /> <!-- 这个权限用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- //允许sd卡写权限，需写入地图数据，禁用后无法显示地图 -->
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 控制呼吸灯，振动器等，用于新消息提醒 -->
+    <!-- <uses-permission android:name="android.permission.FLASHLIGHT" /> -->
+    <!-- <uses-permission android:name="android.permission.VIBRATE" /> -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" /> <!-- 8.0+系统需要 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- 网易云信 uses-permission 一起加入到你的 AndroidManifest 文件中。 -->
+    <!-- 诱导悬浮窗 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <permission
+        android:name="com.haohai.platform.fireforestplatform.permission.RECEIVE_MSG"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.haohai.platform.fireforestplatform.permission.RECEIVE_MSG" />
+
+    <application
+        android:name=".HhApplication"
+        android:allowBackup="true"
+        android:hardwareAccelerated="false"
+        android:icon="${APP_ICON}"
+        android:label="${APP_NAME}"
+        android:largeHeap="true"
+        android:roundIcon="@drawable/ic_icon"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        tools:replace="android:label,android:icon,android:name">
+
+        <!--targetVersion30-Failed resolution of: Lorg/apache/http/impl/client/DefaultHttpClient;-->
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+
+        <activity android:name=".ui.activity.PhotoViewerActivity"/>
+
+        <service
+            android:name="com.baidu.trace.LBSTraceService"
+            android:enabled="true"
+            android:process=":remote"></service>
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" /> <!-- 百度地图key ZtMu7Uh8tZuY3dNYdE8G99BlRe531Tbl   LlazIrOBf5f36FjHRGGzZeWHa2XNGM6q -->
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="ZtMu7Uh8tZuY3dNYdE8G99BlRe531Tbl" />
+
+        <activity
+            android:name=".ui.activity.LoginActivity"
+            android:launchMode="singleInstance" />
+        <activity android:name=".ui.activity.FireUploadActivity" />
+        <activity android:name=".ui.activity.HiddenDangerActivity" />
+        <activity android:name=".ui.activity.TaskActivity" />
+        <activity android:name=".ui.activity.TaskListInfoActivity" />
+        <activity android:name=".ui.activity.NewsActivity" />
+        <activity android:name=".ui.activity.ModelActivity" />
+        <activity android:name=".ui.activity.SatelliteSettingActivity" />
+        <activity android:name=".ui.activity.ChangePassWordActivity" />
+        <activity android:name=".ui.activity.MonitorFireMessageListActivity" />
+        <activity android:name=".ui.activity.MonitorFireMessageInfoActivity" />
+        <activity android:name=".ui.activity.SatelliteFireMessageListActivity" />
+        <activity android:name=".ui.activity.KKFireMessageListActivity" />
+        <activity android:name=".ui.activity.SatelliteFireMessageInfoActivity" />
+        <activity android:name=".ui.activity.KKFireMessageInfoActivity" />
+        <activity android:name=".ui.activity.LevelFireMessageListActivity" />
+        <activity android:name=".ui.activity.VideoActivity" />
+        <activity android:name=".ui.activity.NewsInfoActivity" />
+        <activity android:name=".ui.activity.SignStatisticsActivity" />
+        <activity android:name=".ui.activity.SignActivity" />
+        <activity android:name=".ui.activity.WeatherActivity" />
+        <activity android:name=".old.FireMapActivity" />
+        <activity android:name=".old.SignMonthActivity" />
+        <activity android:name=".old.WeatherActivity" />
+        <activity android:name=".old.AutoStartActivity" />
+        <activity android:name=".old.HistoryLineActivity" />
+        <activity android:name=".old.ResourceAddActivity" />
+        <activity android:name=".ui.activity.LiveUploadActivity" />
+        <activity android:name=".ui.activity.RangerActivity" />
+        <activity android:name=".ui.activity.MapSnapActivity" />
+        <activity android:name=".ui.activity.VideoStreamActivity" />
+        <activity android:name=".ui.activity.DailyCheckActivity" />
+        <activity android:name=".ui.activity.ComprehensiveCheckActivity" />
+        <activity android:name=".ui.activity.ComprehensiveAddCheckActivity" />
+        <activity android:name=".ui.activity.ComprehensiveListActivity" />
+        <activity android:name=".ui.activity.ComprehensiveZZActivity" />
+        <activity android:name=".ui.activity.ComprehensiveCKActivity" />
+        <activity android:name=".ui.activity.ResourceSearchActivity" />
+        <activity android:name=".ui.activity.ComprehensiveDetailActivity" />
+        <activity android:name=".old.linyi.AddResourceCheckingActivity" />
+        <activity android:name=".old.linyi.HiddenDangerListActivity" />
+        <activity android:name=".old.linyi.ResourceInfoActivity" />
+        <activity android:name=".old.linyi.ResourceCheckActivity" />
+        <activity android:name=".old.linyi.ResourcezhengzhiActivity" />
+        <activity android:name=".old.linyi.ResourceshenheActivity" />
+        <activity android:name=".old.linyi.ResourcesearchListActivity" />
+        <activity android:name=".old.linyi.ResourceSearchActivity" />
+        <activity android:name=".old.linyi.PicActivity" />
+        <activity android:name=".old.linyi.AroundActivity" />
+        <activity android:name=".old.linyi.FlamePlanActivity" />
+        <activity android:name=".old.linyi.FlameAreaActivity" />
+        <activity android:name=".old.linyi.FlameAddActivity" />
+
+        <service
+            android:name=".old.TrackService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".old.BackgroundMp3Service"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver android:name=".ui.receiver.TengxunReceiver">
+            <intent-filter>
+
+                <!-- 接收消息透传 -->
+                <action android:name="com.tencent.android.xg.vip.action.PUSH_MESSAGE" />
+                <!-- 监听注册、反注册、设置/删除标签、通知被点击等处理结果 -->
+                <action android:name="com.tencent.android.xg.vip.action.FEEDBACK" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".ui.activity.LaunchActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"
+                tools:replace="android:resource" />
+        </provider>
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="true"
+            android:launchMode="singleTask"/> <!-- 高德地图的key 跟服务 -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="b5bdf64c41f0b28bfa36286e1fb46972" />
+
+        <service android:name="com.amap.api.location.APSService" />
+
+        <activity
+            android:name="com.amap.api.navi.AmapRouteActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|navigation"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.NoTitleBar" />
+    </application>
+
+</manifest>

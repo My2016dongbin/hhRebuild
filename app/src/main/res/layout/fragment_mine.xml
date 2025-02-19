@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:binding="http://schemas.android.com/apk/res-auto">
+    <data class="FgMine">
+        <variable
+            name="fragmentModel"
+            type="com.haohai.platform.fireforestplatform.ui.viewmodel.FgMineViewModel" />
+    </data>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/back_color_design"
+        android:orientation="vertical">
+        <!--头像&&名称&&职位-->
+        <LinearLayout
+            android:padding="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/head_image"
+                android:scaleType="centerCrop"
+                android:layout_marginEnd="10dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"/>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_margin="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:text="@={fragmentModel.userName}"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:text="@={fragmentModel.userRole}"
+                    android:textSize="14sp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/text_color3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+        <!--其它菜单-->
+        <LinearLayout
+            android:layout_margin="10dp"
+            android:background="@drawable/f8_conner"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <include
+                android:id="@+id/version"
+                layout="@layout/view_mine_menu"
+                binding:onImgClick ="@{fragmentModel.onVersionClick}"
+                binding:model="@{fragmentModel.mineMenuListListener.get(0)}"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@color/back_color_f8"/>
+            <FrameLayout
+                android:id="@+id/view_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <include
+                    android:id="@+id/password"
+                    layout="@layout/view_mine_menu"
+                    binding:onImgClick ="@{fragmentModel.onPasswordClick}"
+                    binding:model="@{fragmentModel.mineMenuListListener.get(1)}" />
+            </FrameLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@color/back_color_f8"/>
+            <include
+                android:id="@+id/root"
+                layout="@layout/view_mine_menu"
+                binding:onImgClick ="@{fragmentModel.onRootClick}"
+                binding:model="@{fragmentModel.mineMenuListListener.get(2)}" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/view_bottom"
+            android:layout_margin="10dp"
+            android:background="@drawable/f8_conner"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <FrameLayout
+                android:id="@+id/view_position"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <include
+                    android:id="@+id/position"
+                    layout="@layout/view_mine_menu"
+                    binding:onImgClick ="@{fragmentModel.onPositionClick}"
+                    binding:model="@{fragmentModel.mineMenuListListener.get(3)}" />
+            </FrameLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@color/back_color_f8"/>
+            <FrameLayout
+                android:id="@+id/view_voice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <include
+                    android:id="@+id/voice"
+                    layout="@layout/view_mine_menu"
+                    binding:onImgClick ="@{fragmentModel.onVoiceClick}"
+                    binding:model="@{fragmentModel.mineMenuListListener.get(4)}" />
+            </FrameLayout>
+        </LinearLayout>
+        <!--退出登录-->
+        <FrameLayout
+            android:layout_marginBottom="60dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/out_login"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_gravity="bottom"
+                android:text="退出登录"
+                android:textColor="@color/text_color_red"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                android:background="@drawable/f8_conner"
+                />
+        </FrameLayout>
+    </LinearLayout>
+</layout>

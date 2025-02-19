@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--导航栏-->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:background="@color/theme_primary"
+        android:paddingTop="26dp"
+        android:layout_height="76dp">
+        <ImageView
+            android:id="@+id/iv_back"
+            android:src="@drawable/video_back"
+            android:padding="16dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:text="选择区域"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </FrameLayout>
+
+    <!--内容-->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/baidu_mapview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true" />
+        <TextView
+            android:id="@+id/tv_go_to"
+            android:text="确定"
+            android:textSize="16sp"
+            android:paddingStart="80dp"
+            android:paddingEnd="80dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/login_button_5"
+            android:textColor="@color/white"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tv_clear"
+            android:text="清除"
+            android:textSize="14sp"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/bg_1dp_cone_themer"
+            android:textColor="@color/black"
+            android:layout_gravity="bottom|right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <!--加载动画-->
+    </FrameLayout>
+
+</LinearLayout>

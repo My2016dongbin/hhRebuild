@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class="DialogGridChooseBinding">
+
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bottom_sheet_background">
+
+        <FrameLayout
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+            <TextView
+                android:id="@+id/reset"
+                android:visibility="gone"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="重置"
+                android:padding="5dp"
+                android:textSize="12sp"
+                android:textColor="@color/c6"/>
+            <TextView
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="选择类型"
+                android:textStyle="bold"
+                android:padding="5dp"
+                android:textSize="14sp"
+                android:textColor="@color/c7"/>
+            <TextView
+                android:id="@+id/confirm"
+                android:layout_gravity="center_vertical|right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="确定"
+                android:padding="5dp"
+                android:textSize="12sp"
+                android:textColor="@color/theme_color_blue"/>
+        </FrameLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="180dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:orientation="horizontal">
+            <com.haohai.platform.fireforestplatform.ui.cell.WheelView
+                android:id="@+id/wheel"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:textColorCenter="@color/theme_primary"
+                app:lineSpaceingDimens="10dp"
+                app:itemVisibleNum="5"
+                app:lineColor="@color/theme_primary"
+                app:textSizeCenter="14dp"
+                app:textSizeOuter="10dp"
+                app:isLoop="false"
+                app:textColorOuter="@android:color/darker_gray"
+                />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

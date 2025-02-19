@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data class="DialogSatelliteBinding">
+
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bottom_sheet_background">
+        <FrameLayout
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="卫星报警列表"
+                android:layout_marginStart="10dp"
+                android:gravity="center|start"
+                android:textColor="@color/c7"
+                android:textSize="16sp" />
+            <LinearLayout
+                android:id="@+id/filter_linear"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_gravity="end"
+                android:gravity="center">
+                <TextView
+                    android:id="@+id/filter_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="按时间分类"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    android:textColor="@color/c7"
+                    android:textSize="14sp" />
+                <ImageView
+                    android:id="@+id/filter_image"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_down"
+                    android:layout_marginEnd="20dp"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"/>
+            </LinearLayout>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:background="@color/c1"
+            android:gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="查询完毕，查询时间内共"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:textColor="@color/c6"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/warn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="0"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:textColor="@color/text_color_orange"
+                android:textSize="12sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="条报警数据"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:textColor="@color/c6"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/smart"
+            android:background="@drawable/bottom_sheet_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rlv"
+                android:background="@drawable/bottom_sheet_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+    </LinearLayout>
+</layout>

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:id="@+id/ll_item"
+    android:padding="16dp"
+    android:layout_marginBottom="8dp"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="wrap_content">
+
+
+    <!--标题 && 区域 && 状态-->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_title"
+                android:text="20210729随手拍"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/tv_area"
+                android:layout_marginLeft="16dp"
+                android:text="兰山区/银雀山街道"
+                android:textSize="14sp"
+                android:textColor="@color/black_G"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_status"
+            android:text="待审核"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="@color/black_G"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <!--经纬度 && 检查时间-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@drawable/ic_tomap" />
+
+            <TextView
+                android:id="@+id/tv_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:text="120.486,33.122"
+                android:textColor="@color/black_G"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:gravity="left|center_vertical"
+                android:text="检查时间:"
+                android:textColor="@color/black_G"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tv_checkdate"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:gravity="left|center_vertical"
+                android:text="2021-07-29 12:12"
+                android:textColor="@color/black_G"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+    <!--执行人 && 整治时间-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/tv_worker"
+            android:layout_width="0dp"
+            android:layout_height="25dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="发起人: 文香"
+            android:textColor="@color/black_G"
+            android:textSize="14sp" />
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:gravity="left|center_vertical"
+                android:text="整治时间:"
+                android:textColor="@color/black_G"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_playdate"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:text="2021-07-29 12:12"
+                android:textColor="@color/black_G"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+    <!--任务结束时间-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="25dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textColor="@color/black_G"
+            android:textSize="14sp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:gravity="left|center_vertical"
+                android:text="截止时间:"
+                android:textColor="@color/black_G"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_endtime"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:text="2021-07-29 12:12"
+                android:textColor="@color/black_G"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--介绍`结果-->
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right|center_vertical"
+        android:text="检查设施不到位"
+        android:textColor="@color/gray"
+        android:textSize="14sp" />
+    <!--检查按钮-->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_gravity="right"
+        android:paddingTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btn_guide"
+            android:text="到这里"
+            android:layout_gravity="center_vertical|right"
+            android:textSize="15sp"
+            android:textColor="@color/theme_primary"
+            android:background="@drawable/btn_tab_border"
+            android:layout_width="70dp"
+            android:layout_height="35dp"/>
+        <Button
+            android:id="@+id/btn_check"
+            android:text="检查"
+            android:visibility="gone"
+            android:layout_marginLeft="15dp"
+            android:layout_gravity="center_vertical|right"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_theme"
+            android:layout_width="70dp"
+            android:layout_height="35dp"/>
+        <Button
+            android:id="@+id/btn_zhengzhi"
+            android:text="整治"
+            android:layout_marginLeft="15dp"
+            android:visibility="gone"
+            android:layout_gravity="center_vertical|right"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_theme"
+            android:layout_width="70dp"
+            android:layout_height="35dp"/>
+        <Button
+            android:id="@+id/btn_shenhe"
+            android:text="审核"
+            android:layout_marginLeft="15dp"
+            android:visibility="gone"
+            android:layout_gravity="center_vertical|right"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_theme"
+            android:layout_width="70dp"
+            android:layout_height="35dp"/>
+        <Button
+            android:id="@+id/btn_pass"
+            android:text="通过"
+            android:layout_marginLeft="15dp"
+            android:visibility="gone"
+            android:layout_gravity="center_vertical|right"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_theme_gray"
+            android:layout_width="70dp"
+            android:layout_height="35dp"/>
+    </LinearLayout>
+
+
+</LinearLayout>

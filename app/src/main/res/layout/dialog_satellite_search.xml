@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data class="DialogSatelliteSearchBinding">
+
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bottom_sheet_background">
+        <TextView
+            android:id="@+id/current"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:clickable="true"
+            android:background="@drawable/selector_click_background"
+            android:text="当前时间"
+            android:textSize="16sp"
+            android:textColor="@color/c6"
+            />
+        <TextView
+            android:id="@+id/one_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:clickable="true"
+            android:background="@drawable/selector_click_background"
+            android:text="1小时内"
+            android:textSize="16sp"
+            android:textColor="@color/c6"
+            />
+        <TextView
+            android:id="@+id/three_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:clickable="true"
+            android:background="@drawable/selector_click_background"
+            android:text="3小时内"
+            android:textSize="16sp"
+            android:textColor="@color/c6"
+            />
+        <TextView
+            android:id="@+id/one_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:clickable="true"
+            android:background="@drawable/selector_click_background"
+            android:text="1天内"
+            android:textSize="16sp"
+            android:textColor="@color/c6"
+            />
+        <TextView
+            android:id="@+id/three_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:clickable="true"
+            android:background="@drawable/selector_click_background"
+            android:text="3天内"
+            android:textSize="16sp"
+            android:textColor="@color/c6"
+            />
+        <TextView
+            android:id="@+id/five_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:clickable="true"
+            android:background="@drawable/selector_click_background"
+            android:padding="15dp"
+            android:text="5天内"
+            android:textSize="16sp"
+            android:textColor="@color/c6"
+            />
+        <TextView
+            android:id="@+id/advanced"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:clickable="true"
+            android:background="@drawable/selector_click_background"
+            android:text="高级"
+            android:textSize="16sp"
+            android:textColor="@color/c6"
+            />
+
+    </LinearLayout>
+</layout>

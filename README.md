@@ -1,2 +1,0 @@
-# hhRebuild
-haohai fire rebuild

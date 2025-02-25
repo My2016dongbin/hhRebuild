@@ -2,6 +2,7 @@ package com.haohai.platform.fireforestplatform.utils;
 
 import com.baidu.trace.LBSTraceClient;
 import com.haohai.platform.fireforestplatform.ui.bean.VideoDeleteModel;
+import com.haohai.platform.fireforestplatform.ui.multitype.Suggestion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,8 @@ public class CommonData {
     public static int mainTabIndex = 0;
     public static String search;
     public static String sessionKey;
+
+    public static Suggestion suggestion;
 
     public static void clear() {
         token = "";

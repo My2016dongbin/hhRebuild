@@ -2,8 +2,8 @@ package com.haohai.platform.fireforestplatform.constant;
 
 public class URLConstant {
 
-//    public static final String BASE_PATH = "http://192.168.1.34:8012/";//Release 测试服务器
-    public static final String BASE_PATH = "http://120.221.19.46:10000/";//Release-穿透
+    public static final String BASE_PATH = "http://192.168.1.34:8012/";//Release 测试服务器
+//    public static final String BASE_PATH = "http://120.221.19.46:10000/";//Release-穿透
 //    public static final String BASE_PATH = "http://192.168.1.40:8011/";//Release web
 
     public static final String SATELLITE_IMAGE = "http://120.221.19.46:10000";
@@ -79,6 +79,9 @@ public class URLConstant {
     public static final String POST_NEWS = BASE_PATH +"auth/api/auth/news/list";//新闻列表
     public static final String POST_NEWS_PAGE = BASE_PATH +"auth/api/auth/news/page?type=appInternet";//新闻列表-分页
     public static final String GET_NEWS_INFO = BASE_PATH +"auth/api/auth/news";//新闻列表详情
+
+    public static final String POST_SUGGESTION = BASE_PATH +"oa/api/complaintsAndSuggestions";//投诉建议提交
+    public static final String POST_SUGGESTION_LIST = BASE_PATH +"oa/api/complaintsAndSuggestions/page";//投诉建议查询
 
     public static final String POST_MESSAGE = BASE_PATH +"fire/api/appMessage/list";//获取消息列表
     public static final String POST_MESSAGE_NEW = BASE_PATH +"fire/api/appMessage/listNew";//NEW获取消息列表

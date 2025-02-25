@@ -113,6 +113,8 @@
         <activity android:name=".ui.activity.RangerActivity" />
         <activity android:name=".ui.activity.MapSnapActivity" />
         <activity android:name=".ui.activity.VideoStreamActivity" />
+        <activity android:name=".ui.activity.SuggestionActivity" />
+        <activity android:name=".ui.activity.SuggestionInfoActivity" />
 
         <service
             android:name=".old.TrackService"

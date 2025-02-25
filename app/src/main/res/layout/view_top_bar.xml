@@ -63,8 +63,9 @@
             android:src="@drawable/ic_red_fire"
             android:visibility="gone"
             android:layout_marginEnd="6dp"
-            android:layout_width="6dp"
-            android:layout_height="6dp"/>
+            android:padding="3dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"/>
     </LinearLayout>
     <View
         android:background="@color/c2"

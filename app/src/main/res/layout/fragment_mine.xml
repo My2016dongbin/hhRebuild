@@ -82,6 +82,17 @@
                 layout="@layout/view_mine_menu"
                 binding:onImgClick ="@{fragmentModel.onRootClick}"
                 binding:model="@{fragmentModel.mineMenuListListener.get(2)}" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@color/back_color_f8"/>
+            <include
+                android:id="@+id/suggestion"
+                layout="@layout/view_mine_menu"
+                binding:onImgClick ="@{fragmentModel.onSuggestionClick}"
+                binding:model="@{fragmentModel.mineMenuListListener.get(5)}" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/view_bottom"

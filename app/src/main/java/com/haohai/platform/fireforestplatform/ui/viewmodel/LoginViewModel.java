@@ -105,9 +105,9 @@ public class LoginViewModel extends BaseViewModel {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             CommonData.token = jsonObject.getString("access_token");
-                            CommonData.sessionKey = jsonObject.getString("sessionKey");
+//                            CommonData.sessionKey = jsonObject.getString("sessionKey");
                             SPUtils.put(HhApplication.getInstance(), SPValue.token, CommonData.token);
-                            SPUtils.put(HhApplication.getInstance(), SPValue.sessionKey, CommonData.sessionKey);
+//                            SPUtils.put(HhApplication.getInstance(), SPValue.sessionKey, CommonData.sessionKey);
                             SPUtils.put(HhApplication.getInstance(), SPValue.userName, userName);
                             SPUtils.put(HhApplication.getInstance(), SPValue.password, password);
                             getUserInfo();

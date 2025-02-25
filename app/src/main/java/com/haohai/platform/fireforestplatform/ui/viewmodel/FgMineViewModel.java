@@ -15,6 +15,7 @@ import com.haohai.platform.fireforestplatform.event.Ext;
 import com.haohai.platform.fireforestplatform.old.AutoStartActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.ChangePassWordActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.LoginActivity;
+import com.haohai.platform.fireforestplatform.ui.activity.SuggestionActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.MineMenu;
 import com.haohai.platform.fireforestplatform.ui.bean.VideoDeleteModel;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
@@ -55,6 +56,7 @@ public class FgMineViewModel extends BaseViewModel {
         mineMenuList.add(new MineMenu(context.getResources().getDrawable(R.drawable.anquan),"权限开启","",false,true));
         mineMenuList.add(new MineMenu(context.getResources().getDrawable(R.drawable.ic_location),"实时位置上传","",false,true));
         mineMenuList.add(new MineMenu(context.getResources().getDrawable(R.drawable.yinliangda),"语音播报","",false,true));
+        mineMenuList.add(new MineMenu(context.getResources().getDrawable(R.drawable.yinliangda),"投诉建议","",false,true));
         mineMenuListListener.setValue(mineMenuList);
     }
 
@@ -80,6 +82,9 @@ public class FgMineViewModel extends BaseViewModel {
     }
     public void onPasswordClick(View v){
         context.startActivity(new Intent(context, ChangePassWordActivity.class));
+    }
+    public void onSuggestionClick(View v){
+        context.startActivity(new Intent(context, SuggestionActivity.class));
     }
     public void onRootClick(View v){
         context.startActivity(new Intent(context, AutoStartActivity.class));

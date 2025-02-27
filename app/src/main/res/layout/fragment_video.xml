@@ -1,0 +1,1119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data class="FgVideo">
+
+        <variable
+            name="fragmentModel"
+            type="com.haohai.platform.fireforestplatform.ui.viewmodel.FgVideoViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <!--导航栏-->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@color/white"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/video_menu"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:padding="6dp"
+                android:src="@drawable/list" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="视频监控"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/video_add"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical|right"
+                android:padding="6dp"
+                android:src="@drawable/ic_add" />
+        </FrameLayout>
+        <!--视频播放栏-->
+        <FrameLayout
+            android:id="@+id/sf_frame"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/black">
+
+            <FrameLayout
+                android:id="@+id/group_one"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+
+
+                <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                    android:id="@+id/gsy_player_one1"
+                    android:visibility="invisible"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <SurfaceView
+                    android:id="@+id/sf_video_one1"
+                    android:gravity="center"
+                    android:layout_marginBottom="1dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <SurfaceView
+                    android:id="@+id/sf_back"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:background="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <FrameLayout
+                    android:id="@+id/add_one1"
+                    android:onClick="@{() -> fragmentModel.addClick(1)}"
+                    android:background="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:src="@drawable/ic_c"
+                        android:layout_gravity="center"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"/>
+                </FrameLayout>
+                <View
+                    android:id="@+id/status_one1"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_gravity="bottom"
+                    android:background="@color/blue"/>
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/group_four"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp">
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_four1"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_four1"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_four1"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_four1"
+                            android:onClick="@{() -> fragmentModel.addClick(1)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_four1"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_four2"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_four2"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_four2"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_four2"
+                            android:onClick="@{() -> fragmentModel.addClick(2)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_four2"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp">
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_four3"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_four3"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_four3"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_four3"
+                            android:onClick="@{() -> fragmentModel.addClick(3)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_four3"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_four4"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_four4"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_four4"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_four4"
+                            android:onClick="@{() -> fragmentModel.addClick(4)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_four4"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/group_nine"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp">
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_nine1"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_nine1"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_nine1"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_nine1"
+                            android:onClick="@{() -> fragmentModel.addClick(1)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_nine1"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_nine2"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_nine2"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_nine2"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_nine2"
+                            android:onClick="@{() -> fragmentModel.addClick(2)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_nine2"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_nine3"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_nine3"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_nine3"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_nine3"
+                            android:onClick="@{() -> fragmentModel.addClick(3)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_nine3"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp">
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_nine4"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_nine4"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_nine4"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_nine4"
+                            android:onClick="@{() -> fragmentModel.addClick(4)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_nine4"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_nine5"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_nine5"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_nine5"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_nine5"
+                            android:onClick="@{() -> fragmentModel.addClick(5)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_nine5"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_nine6"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_nine6"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_nine6"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_nine6"
+                            android:onClick="@{() -> fragmentModel.addClick(6)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_nine6"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp">
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_nine7"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_nine7"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_nine7"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_nine7"
+                            android:onClick="@{() -> fragmentModel.addClick(7)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_nine7"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_nine8"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_nine8"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_nine8"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_nine8"
+                            android:onClick="@{() -> fragmentModel.addClick(8)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_nine8"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                            android:id="@+id/gsy_player_nine9"
+                            android:visibility="invisible"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_video_nine9"
+                            android:layout_marginBottom="1dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <SurfaceView
+                            android:id="@+id/sf_back_nine9"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                        <FrameLayout
+                            android:id="@+id/add_nine9"
+                            android:onClick="@{() -> fragmentModel.addClick(9)}"
+                            android:background="@color/black"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:src="@drawable/ic_c"
+                                android:layout_gravity="center"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"/>
+                        </FrameLayout>
+                        <View
+                            android:id="@+id/status_nine9"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/blue"/>
+                    </FrameLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <SurfaceView
+                android:id="@+id/sf_back_all"
+                android:gravity="center"
+                android:visibility="gone"
+                android:background="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+        <!--视窗切换栏-->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@color/white"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right">
+
+                <ImageView
+                    android:id="@+id/image_one"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="20dp"
+                    android:onClick="@{fragmentModel.oneClick}"
+                    android:src="@drawable/ic_one" />
+
+                <ImageView
+                    android:id="@+id/image_four"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="20dp"
+                    android:onClick="@{fragmentModel.fourClick}"
+                    android:src="@drawable/ic_four" />
+
+                <ImageView
+                    android:id="@+id/image_nine"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="20dp"
+                    android:onClick="@{fragmentModel.nineClick}"
+                    android:src="@drawable/ic_nine" />
+            </LinearLayout>
+        </FrameLayout>
+        <!--控制栏-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/back_color_design2"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp">
+
+                <LinearLayout
+                    android:id="@+id/view_zoom_in"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(11)}"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableTop="@drawable/ic_zoom_in"
+                        android:text="拉近"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_up_left"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(25)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/turn_upleft_un" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="左上"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_up"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(21)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/turn_up_un" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="上移"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_up_right"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(26)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/turn_upright_un" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="右上"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_zoom_out"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="3"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(12)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/turn_zoom_out" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="拉远"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp">
+
+                <LinearLayout
+                    android:id="@+id/view_shot"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(103)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:visibility="invisible"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_printscreen" />
+
+                    <TextView
+                        android:visibility="invisible"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="截屏"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_left"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(23)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/turn_left_un" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="左移"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_cruise"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(8)}"
+
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:visibility="invisible"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_e" />
+
+                    <TextView
+                        android:visibility="invisible"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="巡航"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_right"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(24)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/turn_right" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="右移"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_record"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="3"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(104)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:visibility="invisible"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_luxiang2" />
+
+                    <TextView
+                        android:visibility="invisible"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="开始录像"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp">
+
+                <LinearLayout
+                    android:id="@+id/view_fix"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(105)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_point" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="聚焦"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_down_left"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(27)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/turn_downleft_un" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="左下"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_down"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(22)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/turn_down_un" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="下移"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_down_right"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(28)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/turn_downright_un" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="右下"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_remove"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="3"
+                    android:background="@drawable/selector_background"
+                    android:gravity="center"
+                    android:onClick="@{() -> fragmentModel.turnClick(106)}"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_close" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="移除视频"
+                        android:textColor="@color/black60"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="50dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.haohai.platform.fireforestplatform.ui.viewmodel.TaskListInfoViewModel" />
+    </data>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:binding="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        tools:context=".ui.activity.MonitorFireMessageInfoActivity">
+        <include
+            android:id="@+id/top_bar"
+            layout="@layout/view_top_bar"
+            binding:onLeftClick ="@{viewModel.barLeftClick}"/>
+
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="none">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <include
+                        android:id="@+id/line_name"
+                        layout="@layout/view_info_line"/>
+                    <include
+                        android:id="@+id/line_type"
+                        layout="@layout/view_info_line"/>
+                    <include
+                        android:id="@+id/line_time"
+                        layout="@layout/view_info_line"/>
+                    <include
+                        android:id="@+id/line_lng_lat"
+                        layout="@layout/view_info_line"/>
+                    <include
+                        android:id="@+id/line_address"
+                        layout="@layout/view_info_line"/>
+                    <include
+                        android:id="@+id/line_handle"
+                        layout="@layout/view_info_line"/>
+                    <include
+                        android:id="@+id/line_handle_time"
+                        layout="@layout/view_info_line"/>
+                    <include
+                        android:id="@+id/line_handle_user"
+                        layout="@layout/view_info_line"/>
+
+                    <!--任务内容-在地图查看-->
+                    <FrameLayout
+                        android:id="@+id/map_content_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:background="@color/white"
+                        android:minHeight="50dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:minHeight="50dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="15dp"
+                                android:layout_weight="1"
+                                android:text="任务内容"
+                                android:gravity="center|start"
+                                android:textColor="@color/c7"
+                                android:textSize="14sp" />
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="14dp"
+                                android:scaleType="fitXY"
+                                android:src="@drawable/mapccc" />
+                            <TextView
+                                android:id="@+id/map_content"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginEnd="15dp"
+                                android:text="在地图上查看"
+                                android:gravity="center|start"
+                                android:textColor="@color/blue"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="15dp"
+                                android:layout_weight="1"
+                                android:gravity="center|start"
+                                android:textColor="@color/c6"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.5dp"
+                            android:layout_gravity="bottom"
+                            android:background="@color/back_color_line" />
+                    </FrameLayout>
+                    <include
+                        android:id="@+id/line_handle_options"
+                        layout="@layout/view_info_line"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:text="图片视频"
+                        android:layout_marginStart="15dp"
+                        android:gravity="center|start"
+                        android:textColor="@color/c7"
+                        android:textSize="14sp" />
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:id="@+id/ll_pictures"
+                            android:padding="15dp"
+                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </HorizontalScrollView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:text="上报信息"
+                        android:layout_marginStart="15dp"
+                        android:gravity="center|start"
+                        android:textColor="@color/c7"
+                        android:textSize="14sp" />
+                <LinearLayout
+                    android:id="@+id/ll_upload"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/text_status"
+                            android:visibility="gone"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/commit_button"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:padding="10dp"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="未开始"/>
+                        <TextView
+                            android:id="@+id/text_upload"
+                            android:visibility="gone"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/commit_button"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:padding="10dp"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="现场上报"/>
+                        <TextView
+                            android:id="@+id/text_refuse"
+                            android:visibility="gone"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/refuse_button"
+                            android:textColor="@color/c7"
+                            android:textSize="16sp"
+                            android:padding="10dp"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="拒绝"/>
+                        <TextView
+                            android:id="@+id/text_confirm"
+                            android:visibility="gone"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/commit_button"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:padding="10dp"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="接受"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </ScrollView>
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+    </LinearLayout>
+</layout>

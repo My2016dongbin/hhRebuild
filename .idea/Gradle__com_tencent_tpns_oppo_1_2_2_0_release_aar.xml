@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="Gradle: com.tencent.tpns:oppo:1.2.2.0-release@aar">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/06fe9470c3e328f7c52ff38dbf1933b4/jetified-oppo-1.2.2.0-release/jars/classes.jar!/" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches////jetified-oppo-1.2.2.0-release/res" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches////jetified-oppo-1.2.2.0-release/AndroidManifest.xml" />
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/06fe9470c3e328f7c52ff38dbf1933b4/jetified-oppo-1.2.2.0-release/jars/libs/tpns-oppo-1.2.2.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.tencent.tpns/oppo/1.2.2.0-release/ef8cd3084f42f7399dad0cefb7f973437935a9e8/oppo-1.2.2.0-release-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.tencent.tpns/oppo/1.2.2.0-release/ef8cd3084f42f7399dad0cefb7f973437935a9e8/oppo-1.2.2.0-release-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

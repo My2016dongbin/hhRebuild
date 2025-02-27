@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="Gradle: com.tencent.tpns:meizu:1.2.2.0-release@aar">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/b6fe4a528ae4d41853b3b9aae0c10f8c/jetified-meizu-1.2.2.0-release/jars/classes.jar!/" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches////jetified-meizu-1.2.2.0-release/res" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches////jetified-meizu-1.2.2.0-release/AndroidManifest.xml" />
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/b6fe4a528ae4d41853b3b9aae0c10f8c/jetified-meizu-1.2.2.0-release/jars/libs/tpns-meizu-1.2.2.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.tencent.tpns/meizu/1.2.2.0-release/1c45f1d3dec7e6e2a3d90feb7f3d30b41695c6f8/meizu-1.2.2.0-release-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.tencent.tpns/meizu/1.2.2.0-release/1c45f1d3dec7e6e2a3d90feb7f3d30b41695c6f8/meizu-1.2.2.0-release-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

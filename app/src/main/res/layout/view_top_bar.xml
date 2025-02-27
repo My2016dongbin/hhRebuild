@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="onLeftClick"
+            type="android.view.View.OnClickListener" />
+        <variable
+            name="onRightClick"
+            type="android.view.View.OnClickListener" />
+    </data>
+<FrameLayout
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+    <ImageView
+        android:id="@+id/left_icon"
+        android:src="@drawable/ic_back"
+        android:layout_marginStart="10dp"
+        android:scaleType="fitXY"
+        android:padding="5dp"
+        android:onClick="@{onLeftClick}"
+        android:layout_gravity="center_vertical"
+        android:layout_width="30dp"
+        android:layout_height="30dp"/>
+    <TextView
+        android:id="@+id/left"
+        android:text="返回"
+        android:onClick="@{onLeftClick}"
+        android:textStyle="bold"
+        android:textColor="@color/text_color3"
+        android:textSize="14sp"
+        android:padding="5dp"
+        android:layout_marginStart="32dp"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/title"
+        android:textStyle="bold"
+        android:textColor="@color/text_color3"
+        android:textSize="16sp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_gravity="center_vertical|end"
+        android:gravity="center_vertical"
+        android:layout_marginEnd="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/right"
+            android:text=""
+            android:textColor="@color/text_color6"
+            android:textSize="14sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/right_icon"
+            android:layout_marginStart="5dp"
+            android:onClick="@{onRightClick}"
+            android:src="@drawable/ic_red_fire"
+            android:visibility="gone"
+            android:layout_marginEnd="6dp"
+            android:padding="3dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"/>
+    </LinearLayout>
+    <View
+        android:background="@color/c2"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_gravity="bottom"/>
+</FrameLayout>
+
+</layout>

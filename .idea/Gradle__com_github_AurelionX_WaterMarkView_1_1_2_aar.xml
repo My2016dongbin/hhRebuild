@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.AurelionX:WaterMarkView:1.1.2@aar">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/c0ef2945b5505d2b1c4d55975e01cf3b/jetified-WaterMarkView-1.1.2/jars/classes.jar!/" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches/////res" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches/////AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.github.AurelionX/WaterMarkView/1.1.2/b325d947470b9153da092e8cfe7fe64f150daec2/WaterMarkView-1.1.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.github.AurelionX/WaterMarkView/1.1.2/cc06b70f66173d341e97c008642c41ea10e7f685/WaterMarkView-1.1.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

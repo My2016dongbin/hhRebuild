@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="Gradle: com.tencent.tpns:huawei:1.2.1.0-release@aar">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/db7027f8298ce9b3304a95aaa684b6ab/jetified-huawei-1.2.1.0-release/jars/classes.jar!/" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches/////res" />
+      <root url="file:///Applications//Contents/gradle/gradle-6.7.1/caches/////AndroidManifest.xml" />
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/transforms-2/files-2.1/db7027f8298ce9b3304a95aaa684b6ab/jetified-huawei-1.2.1.0-release/jars/libs/hw4tpns1.2.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.tencent.tpns/huawei/1.2.1.0-release/9eaed5b0da582a89ef3ff8fe977627a63482a835/huawei-1.2.1.0-release-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$APPLICATION_HOME_DIR$/gradle/gradle-6.7.1/caches/modules-2/files-2.1/com.tencent.tpns/huawei/1.2.1.0-release/9eaed5b0da582a89ef3ff8fe977627a63482a835/huawei-1.2.1.0-release-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

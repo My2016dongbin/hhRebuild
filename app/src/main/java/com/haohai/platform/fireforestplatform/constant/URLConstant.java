@@ -13,10 +13,10 @@ public class URLConstant {
     public static final String PERMISSION_PER = BASE_PATH + "auth/api/auth/auth/list/element/from/menu";
 
     //融合通信相关debug
-//    public static final String NU_SDK_IP = "123.139.88.18";
-//    public static final String NU_SDK_PORT = "8089";
-//    public static final String NU_SDK_ACCOUNT = "ceshi08";
-//    public static final String NU_SDK_PASSWORD = "Nucleus!123";
+    //public static final String NU_SDK_IP = "123.139.88.18";
+    //public static final String NU_SDK_PORT = "8089";
+    //public static final String NU_SDK_ACCOUNT = "ceshi08";
+    //public static final String NU_SDK_PASSWORD = "Nucleus!123";
 
     //融合通信相关release
     public static final String NU_SDK_IP = "119.167.67.162";

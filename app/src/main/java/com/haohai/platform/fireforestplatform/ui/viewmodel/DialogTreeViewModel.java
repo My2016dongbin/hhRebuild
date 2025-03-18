@@ -245,9 +245,9 @@ public class DialogTreeViewModel extends BaseViewModel {
         DialogHelper.getInstance().show(context, "获取中..");
         HhHttp.get().url(URLConstant.GET_VIDEO_LIVE_URL)
                             .addParams("cameraId", cameraId)
-                            //.addParams("manufacturer", "2")
-                            //.addParams("streamType", "1")
-                            .addParams("protocolType", "http")
+                            .addParams("manufacturer", "4")
+                            .addParams("streamType", "2")
+                            .addParams("protocolType", "rtsp")
                             .build().execute(new LoggedInStringCallback(DialogTreeViewModel.this, context) {
                         @Override
                         public void onSuccess(String response, int id) {

@@ -2,8 +2,8 @@ package com.haohai.platform.fireforestplatform.constant;
 
 public class URLConstant {
 
-    public static final String BASE_PATH = "http://192.168.1.34:8012/";//Release 测试服务器
-//    public static final String BASE_PATH = "http://120.221.19.46:10000/";//Release-穿透
+//    public static final String BASE_PATH = "http://192.168.1.34:8012/";//Release 测试服务器
+    public static final String BASE_PATH = "http://120.221.19.46:10000/";//Release-穿透
 //    public static final String BASE_PATH = "http://192.168.1.40:8011/";//Release web
 
     public static final String SATELLITE_IMAGE = "http://120.221.19.46:10000";
@@ -51,7 +51,7 @@ public class URLConstant {
     public static final String POST_MAP_RESOURCE_LIST_END = "/list";//类型查询资源列表-后缀 （前缀+ApiUrl+后缀）
     public static final String GET_MAP_RESOURCE_DETAIL_MONITOR = BASE_PATH + "resource/api/monitor";//资源详情查询-摄像机
     public static final String GET_RESOURCE_SEARCH = BASE_PATH + "resource/api/resourceList/searchResources";//资源搜索
-    public static final String GET_GRID_BY_LEVEL = BASE_PATH + "resource/api/grid/getAreaDataAndPeople";//获取区3/街道4/社区5网格 ?level=3&gridNo=370214
+    public static final String GET_GRID_BY_LEVEL = BASE_PATH + "resource/api/grid/getAreaDataAndPeopleForApp";//"resource/api/grid/getAreaDataAndPeople";//获取区3/街道4/社区5网格 ?level=3&gridNo=370214
     public static final String GET_GRID_LINE = BASE_PATH + "auth/api/sysAreaGeoInfo/getMapJson";//获取区3/街道4/社区5网格下gridNo边界 ?gridNo=370214&mapType=3
 
     public static final String POST_MONITOR_COUNT = BASE_PATH + "resource/api/monitor/getCount";//查询监控设备数量

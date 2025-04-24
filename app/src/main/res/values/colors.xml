@@ -32,6 +32,7 @@
 
     <color name="whiteColor">#fff</color>
     <color name="redColor">#F44336</color>
+    <color name="back_calling">#F7F8FB</color>
 
     <color name="text_color0">#000000</color>
     <color name="text_color3">#333333</color>

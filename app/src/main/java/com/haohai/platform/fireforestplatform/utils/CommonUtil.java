@@ -1,28 +1,43 @@
 package com.haohai.platform.fireforestplatform.utils;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.TintContextWrapper;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+
+import com.haohai.platform.fireforestplatform.HhApplication;
+import com.haohai.platform.fireforestplatform.R;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -769,4 +784,253 @@ public class CommonUtil {
                 context.getWindowManager().getDefaultDisplay().getRotation() == Surface.ROTATION_270;
 
     }
+
+
+    public static long times = 0;
+    ///点击事件封装-点击
+    public static void click(View view,Action action) {
+        final boolean[] force = {false};//防止连续点击300ms
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        long now = new Date().getTime();
+                        if(now - times < 300){
+                            force[0] = true;
+                            return true;
+                        }
+                        force[0] = false;
+                        times = now;
+                        CommonUtil.applyClickDownAnimation(view);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if(force[0]){
+                            return true;
+                        }
+                        times = new Date().getTime();
+                        CommonUtil.applyClickUpAnimation(view);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                action.click();
+                            }
+                        },100);
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        if(force[0]){
+                            return true;
+                        }
+                        times = new Date().getTime();
+                        CommonUtil.applyClickUpAnimation(view);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+    ///点击事件封装-按下抬起
+    public static void clickDownUp(View view,ActionDownUp action) {
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        CommonUtil.applyClickDownAnimation(view);
+                        action.clickDown();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        CommonUtil.applyClickUpAnimation(view);
+                        action.clickUp();
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        CommonUtil.applyClickUpAnimation(view);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+    //按下缩小
+    public static void applyClickDownAnimation(View view) {
+        ScaleAnimation scaleAnimation = new ScaleAnimation(
+                1.0f, 0.93f,  // 从正常缩放到缩小
+                1.0f, 0.93f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(100); // 动画时长
+        scaleAnimation.setFillAfter(true); // 保持缩放后的状态
+        view.startAnimation(scaleAnimation);
+    }
+    //松手放大
+    public static void applyClickUpAnimation(View view) {
+        ScaleAnimation scaleAnimation = new ScaleAnimation(
+                0.93f, 1.0f,  // 从缩小恢复到原始大小
+                0.93f, 1.0f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(100); // 动画时长
+        scaleAnimation.setFillAfter(false); //保持最终状态（还原）防止setVisibility()失效
+        view.startAnimation(scaleAnimation);
+    }
+
+    //背景切换动画
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public static void applyFancyAnimation(View view) {
+        // **1. 背景颜色渐变**
+        Drawable[] layers;
+        layers = new Drawable[]{
+                ContextCompat.getDrawable(HhApplication.getInstance(), R.drawable.circle_gray),
+                ContextCompat.getDrawable(HhApplication.getInstance(), R.drawable.circle_blue)
+        };
+
+        // 创建背景渐变效果的 TransitionDrawable
+        TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
+        view.setBackground(transitionDrawable);
+        transitionDrawable.startTransition(500); // 背景切换渐变 500ms
+
+        // **2. 按钮点击时的缩放动画（轻微缩小再弹回）**
+        PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 0.9f, 1f);
+        PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 0.9f, 1f);
+
+        // **3. 旋转动画（轻微旋转增加动感）**
+        //PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat(View.ROTATION, 0f, 2f, -2f, 0f);
+
+        // **4. 透明度动画（微闪效果）**
+        PropertyValuesHolder alpha = PropertyValuesHolder.ofFloat(View.ALPHA, 1f, 0.6f, 1f);
+
+        // 组合动画
+        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(view, scaleX, scaleY, /*rotation,*/ alpha);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator()); // 平滑过渡
+        animator.setDuration(600);
+        animator.start();
+    }
+
+    //背景切换动画
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public static void applyFancyBackAnimation(View view) {
+        // **1. 背景颜色渐变**
+        Drawable[] layers;
+        layers = new Drawable[]{
+                ContextCompat.getDrawable(HhApplication.getInstance(), R.drawable.circle_blue),
+                ContextCompat.getDrawable(HhApplication.getInstance(), R.drawable.circle_gray)
+        };
+
+        // 创建背景渐变效果的 TransitionDrawable
+        TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
+        view.setBackground(transitionDrawable);
+        transitionDrawable.startTransition(500); // 背景切换渐变 500ms
+
+        // **2. 按钮点击时的缩放动画（轻微缩小再弹回）**
+        //PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 0.9f, 1f);
+        //PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 0.9f, 1f);
+
+        // **3. 旋转动画（轻微旋转增加动感）**
+        PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat(View.ROTATION, 0f, 2f, -2f, 0f);
+
+        // **4. 透明度动画（微闪效果）**
+        PropertyValuesHolder alpha = PropertyValuesHolder.ofFloat(View.ALPHA, 1f, 0.6f, 1f);
+
+        // 组合动画
+        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(view, /*scaleX, scaleY,*/ rotation, alpha);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator()); // 平滑过渡
+        animator.setDuration(600);
+        animator.start();
+    }
+
+    public static void showConfirm(Context context,String message,String confirmText,String cancelText,Action confirmClick) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context,R.style.DialogNoBackground);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View customView = inflater.inflate(R.layout.dialog_message, null);
+        builder.setView(customView)
+                .setCancelable(true);
+        AlertDialog dialog = builder.create();
+        TextView confirmButton = customView.findViewById(R.id.cancel);
+        TextView cancelButton = customView.findViewById(R.id.confirm);
+        confirmButton.setText(confirmText);
+        cancelButton.setText(cancelText);
+        CommonUtil.click(confirmButton, new Action() {
+            @Override
+            public void click() {
+                dialog.cancel();
+                confirmClick.click();
+            }
+        });
+        CommonUtil.click(cancelButton, new Action() {
+            @Override
+            public void click() {
+                dialog.cancel();
+            }
+        });
+        dialog.show();
+    }
+    public static void showConfirm(Context context,String message,String confirmText,String cancelText,Action confirmClick,Action cancelClick) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context,R.style.DialogNoBackground);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View customView = inflater.inflate(R.layout.dialog_message, null);
+        builder.setView(customView)
+                .setCancelable(true);
+        AlertDialog dialog = builder.create();
+        TextView confirmButton = customView.findViewById(R.id.cancel);
+        TextView cancelButton = customView.findViewById(R.id.confirm);
+        confirmButton.setText(confirmText);
+        cancelButton.setText(cancelText);
+        CommonUtil.click(confirmButton, new Action() {
+            @Override
+            public void click() {
+                dialog.cancel();
+                confirmClick.click();
+            }
+        });
+        CommonUtil.click(cancelButton, new Action() {
+            @Override
+            public void click() {
+                dialog.cancel();
+                cancelClick.click();
+            }
+        });
+        dialog.show();
+    }
+
+    public static void showConfirm(Context context,String message,String confirmText,String cancelText,Action confirmClick,Action cancelClick,Boolean delete) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context,R.style.DialogNoBackground);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View customView = inflater.inflate(R.layout.dialog_message, null);
+        builder.setView(customView)
+                .setCancelable(true);
+        AlertDialog dialog = builder.create();
+        TextView messageView = customView.findViewById(R.id.message);
+        TextView confirmButton = customView.findViewById(R.id.confirm);
+        TextView cancelButton = customView.findViewById(R.id.cancel);
+        messageView.setText(message);
+        confirmButton.setText(confirmText);
+        cancelButton.setText(cancelText);
+        if(delete){
+            confirmButton.setBackground(ContextCompat.getDrawable(context,R.drawable.circle_red_4));
+        }else{
+            confirmButton.setBackground(ContextCompat.getDrawable(context,R.drawable.circle_blue_4));
+        }
+        CommonUtil.click(confirmButton, new Action() {
+            @Override
+            public void click() {
+                dialog.cancel();
+                confirmClick.click();
+            }
+        });
+        CommonUtil.click(cancelButton, new Action() {
+            @Override
+            public void click() {
+                dialog.cancel();
+                cancelClick.click();
+            }
+        });
+        dialog.show();
+    }
+
 }

@@ -37,6 +37,8 @@ import com.haohai.platform.fireforestplatform.old.SignMonthActivity;
 import com.haohai.platform.fireforestplatform.old.WeatherActivity;
 import com.haohai.platform.fireforestplatform.old.bean.MapDialogDismiss;
 import com.haohai.platform.fireforestplatform.permission.CommonPermission;
+import com.haohai.platform.fireforestplatform.ui.activity.CallingActivity;
+import com.haohai.platform.fireforestplatform.ui.activity.CallingListActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.FireUploadActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.HiddenDangerActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.NewsActivity;
@@ -331,6 +333,10 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
             }
             if(mainFgMenu.getTitle().equals("考勤管理")){
                 requireActivity().startActivity(new Intent(requireActivity(), SignMonthActivity.class));
+            }
+            if(mainFgMenu.getTitle().equals("视频通话")){
+                requireActivity().startActivity(new Intent(requireActivity(), CallingListActivity.class));
+
             }
             if(mainFgMenu.getTitle().equals("天气")){
                 requireActivity().startActivity(new Intent(requireActivity(), WeatherActivity.class));

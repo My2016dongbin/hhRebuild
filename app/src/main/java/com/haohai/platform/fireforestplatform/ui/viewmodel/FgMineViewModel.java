@@ -24,6 +24,8 @@ import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.HhToast;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
+import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.auth.AuthService;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -62,6 +64,7 @@ public class FgMineViewModel extends BaseViewModel {
     }
 
     public void outLogin(){
+        NIMClient.getService(AuthService.class).logout(100);
         SPUtils.put(context,SPValue.login,false);
         CommonData.token = "";
         CommonData.videoAddingIndex = 0;

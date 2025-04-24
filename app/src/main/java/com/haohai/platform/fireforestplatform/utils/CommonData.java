@@ -2,6 +2,7 @@ package com.haohai.platform.fireforestplatform.utils;
 
 import com.baidu.trace.LBSTraceClient;
 import com.haohai.platform.fireforestplatform.ui.bean.VideoDeleteModel;
+import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,4 +60,14 @@ public class CommonData {
         lng = 0;
         hasSensor = false;
     }
+
+
+    //网易云信
+    public static String wyyAccId = "";
+    public static String wyyToken = "";
+    public static String audioRoomName = "";
+    public static String audioRoomId = "";
+    public static String xdChannelId = "";
+    public static InvitedEvent invitedEvent;
+
 }

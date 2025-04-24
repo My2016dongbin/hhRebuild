@@ -1,6 +1,8 @@
 package com.haohai.platform.fireforestplatform;
 
+import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Environment;
@@ -16,11 +18,15 @@ import com.cretin.www.cretinautoupdatelibrary.utils.SSLUtils;
 import com.github.piasy.biv.BigImageViewer;
 import com.github.piasy.biv.loader.glide.GlideImageLoader;
 import com.haohai.platform.fireforestplatform.utils.OkHttp3Connection;
+import com.haohai.platform.fireforestplatform.utils.SSLUtilsX;
 import com.kongzue.dialogx.DialogX;
 import com.kongzue.dialogx.style.IOSStyle;
 import com.kongzue.dialogx.style.MaterialStyle;
 import com.kongzue.dialogx.util.InputInfo;
 import com.kongzue.dialogx.util.TextInfo;
+import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.SDKOptions;
+import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.qweather.sdk.view.HeConfig;
 import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushConfig;
@@ -33,6 +39,8 @@ import org.xutils.x;
 
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
 
@@ -53,10 +61,22 @@ public class HhApplication extends Application {
         }
         return instance;
     }
-
+    private boolean isMainProcess() {
+        int pid = android.os.Process.myPid();
+        String processName = "";
+        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningAppProcessInfo processInfo : am.getRunningAppProcesses()) {
+            if (processInfo.pid == pid) {
+                processName = processInfo.processName;
+                break;
+            }
+        }
+        return getPackageName().equals(processName);
+    }
     @Override
     public void onCreate() {
         super.onCreate();
+        if (!isMainProcess()) return;
         instance=this;
 
 //        ARouter.init(this); //ARouter初始化
@@ -79,12 +99,13 @@ public class HhApplication extends Application {
 
 
         //如果你想使用okhttp作为下载的载体，那么你需要自己依赖okhttp，更新库不强制依赖okhttp！可以使用如下代码创建一个OkHttpClient 并在UpdateConfig中配置setCustomDownloadConnectionCreator start
+        X509TrustManager trustManager = SSLUtilsX.getX509TrustManager();
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.connectTimeout(30_000, TimeUnit.SECONDS)
                 .readTimeout(30_000, TimeUnit.SECONDS)
                 .writeTimeout(30_000, TimeUnit.SECONDS)
                 //如果你需要信任所有的证书，可解决根证书不被信任导致无法下载的问题 start
-                .sslSocketFactory(SSLUtils.createSSLSocketFactory())
+                .sslSocketFactory(SSLUtils.createSSLSocketFactory(),trustManager)
                 .hostnameVerifier(new SSLUtils.TrustAllHostnameVerifier())
                 //如果你需要信任所有的证书，可解决根证书不被信任导致无法下载的问题 end
                 .retryOnConnectionFailure(true);
@@ -232,6 +253,24 @@ public class HhApplication extends Application {
 
         initTPNS();
 
+
+        // 网易云信 SDK初始化（启动后台服务，若已经存在用户登录信息， SDK 将进行自动登录）。不能对初始化语句添加进程判断逻辑。
+        NIMClient.init(this, loginInfo(), options());
+
+    }
+
+    // 网易云信 如果提供，将同时进行自动登录。如果当前还没有登录用户，请传入null。详见自动登录章节。
+    private LoginInfo loginInfo() {
+        return null;
+    }
+    // 网易云信 设置初始化配置参数，如果返回值为 null，则全部使用默认参数。
+    private SDKOptions options() {
+        SDKOptions options = new SDKOptions();
+
+        // 配置是否需要预下载附件缩略图，默认为 true
+        options.preloadAttach = true;
+
+        return options;
     }
 
     private void initTPNS() {

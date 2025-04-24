@@ -119,4 +119,12 @@ public class URLConstant {
 
 
 
+    //网易云信
+    public static final String JOIN_ROOM = BASE_PATH +"auth/api/nertc/getToken";//加入音频房间
+    public static final String YX_LOGIN = BASE_PATH +"auth/api/im/user/getToken";//登录
+    public static final String YX_CREATE = BASE_PATH +"auth/api/nertc/room";//创建房间
+    public static final String POST_PERSON_LIST = BASE_PATH +"auth/api/auth/user/list";//视频通话人员列表
+
+
+
 }

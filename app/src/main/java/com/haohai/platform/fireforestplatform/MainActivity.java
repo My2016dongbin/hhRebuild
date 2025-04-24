@@ -40,10 +40,13 @@ import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
 import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.constant.URLConstant;
 import com.haohai.platform.fireforestplatform.databinding.ActivityMainBinding;
+import com.haohai.platform.fireforestplatform.event.Calling;
 import com.haohai.platform.fireforestplatform.event.DoUpdate;
+import com.haohai.platform.fireforestplatform.event.Join;
 import com.haohai.platform.fireforestplatform.event.MainTabChange;
 import com.haohai.platform.fireforestplatform.event.MessageChange;
 import com.haohai.platform.fireforestplatform.event.Update;
+import com.haohai.platform.fireforestplatform.ui.activity.CallingActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.VersionBean;
 import com.haohai.platform.fireforestplatform.ui.fragment.MainFragment;
 import com.haohai.platform.fireforestplatform.ui.fragment.MapFragment;
@@ -73,6 +76,19 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
+
+import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.Observer;
+import com.netease.nimlib.sdk.avsignalling.SignallingServiceObserver;
+import com.netease.nimlib.sdk.avsignalling.constant.SignallingEventType;
+import com.netease.nimlib.sdk.avsignalling.event.CanceledInviteEvent;
+import com.netease.nimlib.sdk.avsignalling.event.ChannelCloseEvent;
+import com.netease.nimlib.sdk.avsignalling.event.ChannelCommonEvent;
+import com.netease.nimlib.sdk.avsignalling.event.ControlEvent;
+import com.netease.nimlib.sdk.avsignalling.event.InviteAckEvent;
+import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
+import com.netease.nimlib.sdk.avsignalling.event.UserJoinEvent;
+import com.netease.nimlib.sdk.avsignalling.event.UserLeaveEvent;
 
 public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainViewModel> implements BottomNavigationBar.OnTabSelectedListener{
     private MainFragment mainFragment;
@@ -193,7 +209,105 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
                 .show();*/
 
         CommonData.walkDistance = (int) SPUtils.get(this, SPValue.walk, CommonData.walkDistance);
+
+        //初始化绑定网易云信信令回调事件
+        bindYunXinCallback();
     }
+
+    private Observer<ChannelCommonEvent> onlineObserver;
+    private void bindYunXinCallback() {
+        // 在线通知事件观察者
+        onlineObserver = new Observer<ChannelCommonEvent>() {
+            @Override
+            public void onEvent(ChannelCommonEvent event) {
+                SignallingEventType eventType = event.getEventType();
+                switch (eventType) {
+                    case CLOSE:
+                        HhLog.e("网易云信 CLOSE 频道关闭回调");
+                        ChannelCloseEvent channelCloseEvent = (ChannelCloseEvent) event;
+/*                        EventBus.getDefault().post(new CloseChannel());*/
+                        break;
+                    case JOIN:
+                        UserJoinEvent userJoinEvent = (UserJoinEvent) event;
+                        HhLog.e("网易云信 JOIN 有人加入频道回调"+userJoinEvent.getFromAccountId());
+                        break;
+                    case INVITE:
+                        InvitedEvent invitedEvent = (InvitedEvent) event;
+                        CommonData.invitedEvent = invitedEvent;
+                        HhLog.e("网易云信 INVITE 被邀请回调"+ obtainViewModel().reqId + " getRequestId:  " + invitedEvent.getRequestId() + " , event.getCustomInfo() = " + event.getCustomInfo());
+                        if(!Objects.equals(invitedEvent.getRequestId(), obtainViewModel().reqId)){
+                            obtainViewModel().reqId = invitedEvent.getRequestId();
+                            //Toast.makeText(MainActivity.this, "被邀请 next requestId= " + invitedEvent.getRequestId(), Toast.LENGTH_SHORT).show();
+                            callInvited(invitedEvent);
+                        }
+                        break;
+                    case CANCEL_INVITE:
+                        HhLog.e("网易云信 CANCEL_INVITE 邀请人取消邀请回调");
+                        CanceledInviteEvent canceledInviteEvent = (CanceledInviteEvent) event;
+/*                        EventBus.getDefault().post(new CloseChannel());*/
+                        break;
+                    case REJECT:
+                        InviteAckEvent eventReject = (InviteAckEvent) event;
+                        HhLog.e("网易云信 REJECT 拒绝邀请回调 id " + eventReject.getFromAccountId());
+                        String rejectId = eventReject.getRequestId().substring(0,eventReject.getRequestId().length()-4);
+/*                        if(CommonData.personList.size()>1){
+                            CommonData.personListSize--;
+                            //Toast.makeText(MainActivity.this,CommonData.personListSize+"", Toast.LENGTH_SHORT).show();
+                            if(CommonData.personListSize == 0){
+                                EventBus.getDefault().post(new CloseChannel());
+                            }
+                        }else{
+                            EventBus.getDefault().post(new CloseChannel());
+                        }*/
+                        break;
+                    case ACCEPT:
+                        InviteAckEvent ackEvent = (InviteAckEvent) event;
+                        HhLog.e("网易云信 ACCEPT 接受邀请回调" + obtainViewModel().reqId + " ackEvent.getRequestId() " + ackEvent.getRequestId() + " , event.getCustomInfo " + event.getCustomInfo());
+                        if(!Objects.equals(ackEvent.getRequestId(), obtainViewModel().reqId)){
+                            obtainViewModel().reqId = ackEvent.getRequestId();
+                            Toast.makeText(MainActivity.this, "对方已接收邀请 next requestId = " + ackEvent.getRequestId(), Toast.LENGTH_SHORT).show();
+                            //joinChannel(ackEvent);
+                            //加入音频房间
+                            //joinRoom(CommonData.audioRoomName);//移到CallingActivity
+                            EventBus.getDefault().post(new Join());
+                        }
+                        break;
+                    case LEAVE:
+                        UserLeaveEvent userLeaveEvent = (UserLeaveEvent) event;
+                        HhLog.e("网易云信 LEAVE 有人离开频道回调"+userLeaveEvent.getFromAccountId());
+                        Toast.makeText(MainActivity.this, userLeaveEvent.getFromAccountId()+"已离开房间", Toast.LENGTH_SHORT).show();
+                        break;
+                    case CONTROL:
+                        HhLog.e("网易云信 CONTROL 自定义回调");
+                        ControlEvent controlEvent = (ControlEvent) event;
+                        break;
+                }
+            }
+        };
+
+        //注册
+        NIMClient.getService(SignallingServiceObserver.class).observeOnlineNotification(onlineObserver, true);
+
+    }
+
+
+    /**
+     * 信令被邀请回调
+     * @param invitedEvent
+     */
+    private void callInvited(InvitedEvent invitedEvent) {
+        obtainViewModel().reqId = invitedEvent.getRequestId();
+        String customInfo = invitedEvent.getCustomInfo();
+        Intent intent = new Intent(this, CallingActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        intent.putExtra("channelId",invitedEvent.getChannelBaseInfo().getChannelId());
+        intent.putExtra("accountId",invitedEvent.getFromAccountId());
+        intent.putExtra("requestId",invitedEvent.getRequestId());
+        intent.putExtra("customInfo",customInfo);
+        intent.putExtra("isCalling",false);
+        startActivity(intent);
+    }
+
 
     private boolean show = true;
     @Override

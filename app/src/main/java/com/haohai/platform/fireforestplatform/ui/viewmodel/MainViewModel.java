@@ -19,6 +19,7 @@ import okhttp3.Call;
 
 public class MainViewModel extends BaseViewModel {
     public Context context;
+    public String  reqId;
     public void start(Context context){
         this.context = context;
     }

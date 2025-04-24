@@ -18,6 +18,10 @@ import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
+import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.auth.AuthService;
+import com.netease.nimlib.sdk.auth.LoginInfo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +57,7 @@ public class LaunchViewModel extends BaseViewModel {
                             SPUtils.put(HhApplication.getInstance(), SPValue.token, CommonData.token);
                             SPUtils.put(HhApplication.getInstance(), SPValue.userName, userName);
                             SPUtils.put(HhApplication.getInstance(), SPValue.password, password);
+                            doYXLogin();
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -78,6 +83,70 @@ public class LaunchViewModel extends BaseViewModel {
                                 ((LaunchActivity)context).finish();
                             }
                         },2000);
+                    }
+                });
+    }
+
+
+    private void doYXLogin() {
+        HhHttp.post()
+                .url(URLConstant.YX_LOGIN)
+                .addParams("accid",(String) SPUtils.get(context, SPValue.phone,""))
+                .build()
+                .connTimeOut(10000)
+                .execute(new LoggedInStringCallback(this, context) {
+                    @Override
+                    public void onSuccess(String response, int id) {
+                        Log.e("TAG", "onSuccess: YX_LOGIN = " + response);
+                        try {
+                            JSONObject object = new JSONObject(response);
+                            JSONArray data = object.getJSONArray("data");
+                            JSONObject obj = (JSONObject) data.get(0);
+                            JSONObject model = obj.getJSONObject("info");
+                            String accid = model.getString("accid");
+                            String token = model.getString("token");
+                            CommonData.wyyAccId = accid;
+                            CommonData.wyyToken = token;
+
+                            LoginInfo info = new LoginInfo(accid,token);
+                            RequestCallback<LoginInfo> callback =
+                                    new RequestCallback<LoginInfo>() {
+                                        @Override
+                                        public void onSuccess(LoginInfo param) {
+                                            // your code
+                                            HhLog.e( "onSuccess: 网易云信login" +param);
+                                        }
+
+                                        @Override
+                                        public void onFailed(int code) {
+                                            HhLog.e( "网易云信login"+"onFailed code " + code);
+                                            if (code == 302) {
+                                                // your code
+                                            } else {
+                                                // your code
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onException(Throwable exception) {
+                                            // your code
+                                            HhLog.e( "网易云信login"+"onException code " + exception);
+                                        }
+                                    };
+
+                            //执行手动登录
+                            NIMClient.getService(AuthService.class).login(info).setCallback(callback);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Exception e, int id) {
+                        HhLog.e("onFailure: " + e.toString());
+                        msg.setValue(e.getMessage());
+                        loading.setValue(new LoadingEvent(false, ""));
                     }
                 });
     }

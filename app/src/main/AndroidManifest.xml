@@ -43,6 +43,13 @@
 
     <uses-permission android:name="com.haohai.platform.fireforestplatform.permission.RECEIVE_MSG" />
 
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera.autofocus"/>
+
     <application
         android:name=".HhApplication"
         android:allowBackup="true"
@@ -56,15 +63,86 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:label,android:icon,android:name">
 
+        <meta-data
+            android:name="design_width_in_dp"
+            android:value="393"/>
+        <meta-data
+            android:name="design_height_in_dp"
+            android:value="785"/>
+
         <!--targetVersion30-Failed resolution of: Lorg/apache/http/impl/client/DefaultHttpClient;-->
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
+        <uses-native-library android:name="libOpenCL.so" android:required="false"/>
+
+
+
+
+        <!-- 网易云信 APP key, 可以在这里设置，也可以在 SDKOptions 中提供。
+            如果 SDKOptions 中提供了，则取 SDKOptions 中的值。 -->
+        <meta-data
+            android:name="com.netease.nim.appKey"
+            android:value="@string/yun_xin_key" />
+
+        <!-- 云信后台服务，请使用独立进程。 -->
+        <service
+            android:name="com.netease.nimlib.service.NimService"
+            android:process=":core"/>
+
+        <!-- 云信后台辅助服务 -->
+        <service
+            android:name="com.netease.nimlib.service.NimService$Aux"
+            android:process=":core"/>
+
+        <!-- 云信后台辅助服务 -->
+        <service
+            android:name="com.netease.nimlib.job.NIMJobService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:process=":core"
+            tools:replace="android:exported" />
+
+        <!-- 云信监视系统启动和网络变化的广播接收器，保持和 NimService 同一进程 -->
+        <receiver android:name="com.netease.nimlib.service.NimReceiver"
+            android:process=":core"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- 云信进程间通信 Receiver -->
+        <receiver android:name="com.netease.nimlib.service.ResponseReceiver"/>
+
+        <!-- 云信进程间通信service -->
+        <service android:name="com.netease.nimlib.service.ResponseService"/>
+
+        <!-- 云信进程间通信provider -->
+        <provider
+            android:name="com.netease.nimlib.ipc.NIMContentProvider"
+            android:authorities="com.haohai.platform.fireforestplatform.ipc.provider"
+            android:exported="false"
+            android:process=":core" />
+
+        <!-- 云信内部使用的进程间通信provider -->
+        <!-- SDK启动时会强制检测该组件的声明是否配置正确，如果检测到该声明不正确，SDK会主动抛出异常引发崩溃 -->
+        <provider
+            android:name="com.netease.nimlib.ipc.cp.provider.PreferenceContentProvider"
+            android:authorities="com.haohai.platform.fireforestplatform.ipc.provider.preference"
+            android:exported="false"
+            tools:replace="android:authorities"/>
+
+
+
+
+
         <activity android:name=".ui.activity.PhotoViewerActivity"/>
+        <activity android:name=".ui.activity.CallingListActivity"/>
 
         <service
             android:name="com.baidu.trace.LBSTraceService"
             android:enabled="true"
-            android:process=":remote"></service>
+            android:process=":remote"/>
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
@@ -76,12 +154,6 @@
         <activity
             android:name=".ui.activity.LoginActivity"
             android:launchMode="singleInstance" />
-        <activity
-            android:name=".nusdk.NuSDKMainActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".nusdk.MsgActivity" />
-        <activity android:name=".nusdk.AddressBookActivity" />
-        <activity android:name=".nusdk.SettingActivity" />
         <activity android:name=".ui.activity.FireUploadActivity" />
         <activity android:name=".ui.activity.HiddenDangerActivity" />
         <activity android:name=".ui.activity.TaskActivity" />
@@ -112,6 +184,8 @@
         <activity android:name=".ui.activity.RangerActivity" />
         <activity android:name=".ui.activity.MapSnapActivity" />
         <activity android:name=".ui.activity.VideoStreamActivity" />
+        <activity android:name=".ui.activity.CallingActivity"
+            android:launchMode="singleTask"/>
 
         <service
             android:name=".old.TrackService"

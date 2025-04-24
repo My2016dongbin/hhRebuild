@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="adapter"
+            type="com.haohai.platform.fireforestplatform.ui.multitype.VideoChatViewBinder" />
+        <variable
+            name="item"
+            type="com.haohai.platform.fireforestplatform.ui.multitype.VideoChat" />
+    </data>
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/back_color">
+
+        <ImageView
+            android:id="@+id/header"
+            android:layout_margin="5dp"
+            android:layout_width="125dp"
+            android:layout_height="125dp"/>
+        <com.netease.lava.nertc.sdk.video.NERtcVideoView
+            android:id="@+id/video"
+            android:layout_margin="5dp"
+            android:layout_width="125dp"
+            android:layout_height="125dp"/>
+        <ImageView
+            android:id="@+id/voice"
+            android:src="@drawable/icon_audio_open"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="5dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"/>
+
+    </FrameLayout>
+</layout>

@@ -619,13 +619,22 @@ public class FgMainViewModel extends BaseViewModel {
     }
 
     public void getWeatherData() {
+        if(CommonData.lng==0 || CommonData.lat==0){
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getWeatherData();
+                }
+            },5000);
+            return;
+        }
         date = new Date();
         @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
         dateStr = format.format(date);
 
         HhLog.e("LngLat " + CommonData.lng + "," + CommonData.lat);
-        double lng = 120.314031;
-        double lat = 36.308606;
+        double lng = 125.110386;//大庆 125.110386,46.597598
+        double lat = 46.597598;
         //获取当前城市信息
         QWeather.getGeoCityLookup(context, (CommonData.lng==0?lng:CommonData.lng) + "," + (CommonData.lat==0?lat:CommonData.lat), new QWeather.OnResultGeoListener() {
             @Override

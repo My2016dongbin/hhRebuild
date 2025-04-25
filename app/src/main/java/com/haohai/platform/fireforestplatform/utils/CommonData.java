@@ -15,7 +15,7 @@ import java.util.List;
  * Copyright © 2018 青岛浩海网络科技股份有限公司 版权所有
  */
 public class CommonData {
-    public static String pushFlag = "wwyt";//对应平台配置项目标签 http://192.168.1.88:8082/#/resource/appVersion
+    public static String pushFlag = "dq";//对应平台配置项目标签 http://192.168.1.88:8082/#/resource/appVersion
 
     public static String token = "";
     public static double lat = 0;

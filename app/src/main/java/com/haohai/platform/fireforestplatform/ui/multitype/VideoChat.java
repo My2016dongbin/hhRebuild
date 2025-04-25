@@ -9,15 +9,25 @@ public class VideoChat {
     long id;
     String header;
     String name;
+    String role;
     boolean audio;
     boolean video;
 
-    public VideoChat(long id, String header, String name, boolean audio, boolean video) {
+    public VideoChat(long id, String header, String name, String role, boolean audio, boolean video) {
         this.id = id;
         this.header = header;
         this.name = name;
+        this.role = role;
         this.audio = audio;
         this.video = video;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public long getId() {

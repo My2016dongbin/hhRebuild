@@ -1,5 +1,7 @@
 package com.haohai.platform.fireforestplatform.ui.multitype;
 
+import static com.netease.lava.nertc.sdk.video.NERtcVideoStreamType.kNERtcVideoStreamTypeMain;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +19,13 @@ import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.databinding.ItemNewsBinding;
 import com.haohai.platform.fireforestplatform.databinding.ItemVideoChatBinding;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
+import com.haohai.platform.fireforestplatform.utils.SPUtils;
+import com.haohai.platform.fireforestplatform.utils.SPValue;
 import com.netease.lava.api.IVideoRender;
 import com.netease.lava.nertc.sdk.NERtcEx;
 import com.netease.lava.nertc.sdk.video.NERtcRemoteVideoStreamType;
+
+import java.util.Objects;
 
 import me.drakeet.multitype.ItemViewProvider;
 
@@ -55,9 +61,15 @@ public class VideoChatViewBinder extends ItemViewProvider<VideoChat, VideoChatVi
         binding.executePendingBindings(); //防止闪烁
 
 
-        //对方开启视频，按需设置画布及订阅视频
-        NERtcEx.getInstance().setupRemoteVideoCanvas(binding.video,videoChat.getId());
-        NERtcEx.getInstance().subscribeRemoteVideoStream(videoChat.getId(), NERtcRemoteVideoStreamType.kNERtcRemoteVideoStreamTypeHigh,true);
+        if(Objects.equals(SPUtils.get(context, SPValue.phone,"")+"", videoChat.getId()+"")){
+            //把自己视频放到画面
+            NERtcEx.getInstance().setupLocalVideoCanvas(binding.video);
+            NERtcEx.getInstance().startVideoPreview(kNERtcVideoStreamTypeMain);
+        }else{
+            //对方开启视频，按需设置画布及订阅视频
+            NERtcEx.getInstance().setupRemoteVideoCanvas(binding.video,videoChat.getId());
+            NERtcEx.getInstance().subscribeRemoteVideoStream(videoChat.getId(), NERtcRemoteVideoStreamType.kNERtcRemoteVideoStreamTypeHigh,true);
+        }
         binding.video.setMirror(true);
         binding.video.setScalingType(IVideoRender.ScalingType.SCALE_ASPECT_BALANCED);
         if(videoChat.isVideo()){
@@ -76,6 +88,12 @@ public class VideoChatViewBinder extends ItemViewProvider<VideoChat, VideoChatVi
         }else{
             binding.voice.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.icon_audio_close));
         }
+        binding.click.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClick(videoChat);
+            }
+        });
 
     }
 
@@ -89,11 +107,6 @@ public class VideoChatViewBinder extends ItemViewProvider<VideoChat, VideoChatVi
         public B getBinding() {
             return mBinding;
         }
-    }
-
-
-    public void onItemClick(VideoChat videoChat){
-        listener.onItemClick(videoChat);
     }
 
     public interface OnItemClickListener{

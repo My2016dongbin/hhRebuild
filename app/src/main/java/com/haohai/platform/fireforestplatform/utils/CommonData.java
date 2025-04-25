@@ -2,6 +2,8 @@ package com.haohai.platform.fireforestplatform.utils;
 
 import com.baidu.trace.LBSTraceClient;
 import com.haohai.platform.fireforestplatform.ui.bean.VideoDeleteModel;
+import com.haohai.platform.fireforestplatform.ui.multitype.CallingList;
+import com.netease.nimlib.sdk.avsignalling.builder.InviteParamBuilder;
 import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 
 import java.util.ArrayList;
@@ -68,6 +70,9 @@ public class CommonData {
     public static String audioRoomName = "";
     public static String audioRoomId = "";
     public static String xdChannelId = "";
-    public static InvitedEvent invitedEvent;
+    public static InvitedEvent invitedEvent;//被邀请事件
+    public static List<InviteParamBuilder> invitedReqList = new ArrayList<>();//主动邀请请求
+    public static List<CallingList> invitedUserList = new ArrayList<>();//主动邀请人列表
+    public static List<CallingList> invitedUserListForDelete = new ArrayList<>();//主动邀请人列表copy
 
 }

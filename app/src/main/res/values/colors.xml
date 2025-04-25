@@ -39,6 +39,7 @@
     <color name="text_color5">#555555</color>
     <color name="text_color6">#666666</color>
     <color name="text_color8">#888888</color>
+    <color name="text_color8_trans">#99888888</color>
     <color name="text_color9">#999999</color>
     <color name="text_color12">#CAC8C8</color>
     <color name="text_color_blue">#2697FF</color>

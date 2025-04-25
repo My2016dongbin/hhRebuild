@@ -264,8 +264,8 @@ dependencies {
 //    implementation 'com.netease.nimlib:avsignalling:8.9.107'// 信令服务需要
 
     implementation 'com.netease.yunxin:nertc-base:5.8.10'
-    implementation 'com.netease.nimlib:basesdk:9.20.10'
-    implementation 'com.netease.nimlib:avsignalling:9.20.10'
+    implementation 'com.netease.nimlib:basesdk:10.8.21'
+    implementation 'com.netease.nimlib:avsignalling:10.8.21'
 
     implementation 'me.jessyan:autosize:1.1.2'
 

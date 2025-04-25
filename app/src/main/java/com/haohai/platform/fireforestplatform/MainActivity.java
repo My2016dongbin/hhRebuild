@@ -46,6 +46,9 @@ import com.haohai.platform.fireforestplatform.event.Join;
 import com.haohai.platform.fireforestplatform.event.MainTabChange;
 import com.haohai.platform.fireforestplatform.event.MessageChange;
 import com.haohai.platform.fireforestplatform.event.Update;
+import com.haohai.platform.fireforestplatform.event.YXClose;
+import com.haohai.platform.fireforestplatform.event.YXControl;
+import com.haohai.platform.fireforestplatform.event.YXReject;
 import com.haohai.platform.fireforestplatform.ui.activity.CallingActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.VersionBean;
 import com.haohai.platform.fireforestplatform.ui.fragment.MainFragment;
@@ -225,7 +228,7 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
                     case CLOSE:
                         HhLog.e("网易云信 CLOSE 频道关闭回调");
                         ChannelCloseEvent channelCloseEvent = (ChannelCloseEvent) event;
-/*                        EventBus.getDefault().post(new CloseChannel());*/
+                        EventBus.getDefault().post(new YXClose());
                         break;
                     case JOIN:
                         UserJoinEvent userJoinEvent = (UserJoinEvent) event;
@@ -234,7 +237,7 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
                     case INVITE:
                         InvitedEvent invitedEvent = (InvitedEvent) event;
                         CommonData.invitedEvent = invitedEvent;
-                        HhLog.e("网易云信 INVITE 被邀请回调"+ obtainViewModel().reqId + " getRequestId:  " + invitedEvent.getRequestId() + " , event.getCustomInfo() = " + event.getCustomInfo());
+                        HhLog.e("网易云信 INVITE 被邀请回调"+ invitedEvent.getFromAccountId() + " , " + obtainViewModel().reqId + " getRequestId:  " + invitedEvent.getRequestId() + " , event.getCustomInfo() = " + event.getCustomInfo());
                         if(!Objects.equals(invitedEvent.getRequestId(), obtainViewModel().reqId)){
                             obtainViewModel().reqId = invitedEvent.getRequestId();
                             //Toast.makeText(MainActivity.this, "被邀请 next requestId= " + invitedEvent.getRequestId(), Toast.LENGTH_SHORT).show();
@@ -244,21 +247,12 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
                     case CANCEL_INVITE:
                         HhLog.e("网易云信 CANCEL_INVITE 邀请人取消邀请回调");
                         CanceledInviteEvent canceledInviteEvent = (CanceledInviteEvent) event;
-/*                        EventBus.getDefault().post(new CloseChannel());*/
+                        EventBus.getDefault().post(new YXClose());
                         break;
                     case REJECT:
                         InviteAckEvent eventReject = (InviteAckEvent) event;
                         HhLog.e("网易云信 REJECT 拒绝邀请回调 id " + eventReject.getFromAccountId());
-                        String rejectId = eventReject.getRequestId().substring(0,eventReject.getRequestId().length()-4);
-/*                        if(CommonData.personList.size()>1){
-                            CommonData.personListSize--;
-                            //Toast.makeText(MainActivity.this,CommonData.personListSize+"", Toast.LENGTH_SHORT).show();
-                            if(CommonData.personListSize == 0){
-                                EventBus.getDefault().post(new CloseChannel());
-                            }
-                        }else{
-                            EventBus.getDefault().post(new CloseChannel());
-                        }*/
+                        EventBus.getDefault().post(new YXReject(eventReject.getFromAccountId()));
                         break;
                     case ACCEPT:
                         InviteAckEvent ackEvent = (InviteAckEvent) event;
@@ -266,9 +260,6 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
                         if(!Objects.equals(ackEvent.getRequestId(), obtainViewModel().reqId)){
                             obtainViewModel().reqId = ackEvent.getRequestId();
                             Toast.makeText(MainActivity.this, "对方已接收邀请 next requestId = " + ackEvent.getRequestId(), Toast.LENGTH_SHORT).show();
-                            //joinChannel(ackEvent);
-                            //加入音频房间
-                            //joinRoom(CommonData.audioRoomName);//移到CallingActivity
                             EventBus.getDefault().post(new Join());
                         }
                         break;
@@ -278,8 +269,10 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
                         Toast.makeText(MainActivity.this, userLeaveEvent.getFromAccountId()+"已离开房间", Toast.LENGTH_SHORT).show();
                         break;
                     case CONTROL:
-                        HhLog.e("网易云信 CONTROL 自定义回调");
                         ControlEvent controlEvent = (ControlEvent) event;
+                        HhLog.e("网易云信 CONTROL 自定义回调" + controlEvent.getCustomInfo());
+//                        HhLog.e("网易云信 CONTROL 自定义回调" + controlEvent.());
+                        EventBus.getDefault().post(new YXControl(controlEvent.getCustomInfo()));
                         break;
                 }
             }

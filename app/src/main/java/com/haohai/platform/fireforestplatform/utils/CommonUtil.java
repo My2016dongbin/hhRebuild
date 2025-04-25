@@ -5,6 +5,7 @@ import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AppOpsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -66,6 +67,16 @@ public class CommonUtil {
         }
 
         return permissions.contains(permissionCode+"_");
+    }
+
+    public static String parseNull(String content){
+        if(content==null){
+            return "";
+        }
+        if("null".equals(content)){
+            return "";
+        }
+        return content;
     }
 
     public static String parseContent(String content){
@@ -951,8 +962,10 @@ public class CommonUtil {
         builder.setView(customView)
                 .setCancelable(true);
         AlertDialog dialog = builder.create();
-        TextView confirmButton = customView.findViewById(R.id.cancel);
-        TextView cancelButton = customView.findViewById(R.id.confirm);
+        TextView cancelButton = customView.findViewById(R.id.cancel);
+        TextView confirmButton = customView.findViewById(R.id.confirm);
+        TextView messageView = customView.findViewById(R.id.message);
+        messageView.setText(message);
         confirmButton.setText(confirmText);
         cancelButton.setText(cancelText);
         CommonUtil.click(confirmButton, new Action() {
@@ -977,8 +990,10 @@ public class CommonUtil {
         builder.setView(customView)
                 .setCancelable(true);
         AlertDialog dialog = builder.create();
-        TextView confirmButton = customView.findViewById(R.id.cancel);
-        TextView cancelButton = customView.findViewById(R.id.confirm);
+        TextView cancelButton = customView.findViewById(R.id.cancel);
+        TextView confirmButton = customView.findViewById(R.id.confirm);
+        TextView messageView = customView.findViewById(R.id.message);
+        messageView.setText(message);
         confirmButton.setText(confirmText);
         cancelButton.setText(cancelText);
         CommonUtil.click(confirmButton, new Action() {

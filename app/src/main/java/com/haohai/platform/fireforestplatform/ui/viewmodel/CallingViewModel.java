@@ -4,6 +4,7 @@ import static me.drakeet.multitype.MultiTypeAsserts.assertAllRegistered;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.haohai.platform.fireforestplatform.constant.URLConstant;
 import com.haohai.platform.fireforestplatform.event.LoadingEvent;
 import com.haohai.platform.fireforestplatform.event.MessageChange;
 import com.haohai.platform.fireforestplatform.ui.activity.CallingActivity;
+import com.haohai.platform.fireforestplatform.ui.multitype.CallingList;
 import com.haohai.platform.fireforestplatform.ui.multitype.Empty;
 import com.haohai.platform.fireforestplatform.ui.multitype.Message;
 import com.haohai.platform.fireforestplatform.ui.multitype.News;
@@ -50,8 +52,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import me.drakeet.multitype.MultiTypeAdapter;
 import okhttp3.Call;
@@ -61,15 +65,20 @@ public class CallingViewModel extends BaseViewModel {
     public MultiTypeAdapter adapter;
     public List<VideoChat> videoChatList = new ArrayList<>();
     public List<Object> items = new ArrayList<>();
-    public final MutableLiveData<Integer> videoStatus = new MutableLiveData<>();
+    public final MutableLiveData<Integer> videoStatus = new MutableLiveData<>(1);
+    public int videoCounts = 1;
     public void start(Context context){
         this.context = context;
     }
 
     public AudioManager audioManager;
-    InviteParamBuilder inviteParamBuilder;
+
+    public Calendar calendar = Calendar.getInstance();
 
     public boolean isCalling ;
+    public boolean startTimer = false;
+    public boolean hasAudio = true;
+    public boolean hasVideo = true;
     public String channelId ;
     public String accountId ;
     public String requestId ;
@@ -80,6 +89,7 @@ public class CallingViewModel extends BaseViewModel {
     public String roomName ;
     public String roomId ;
     public String cId ;
+    public boolean ing = false ;
 
 
     public void barLeftClick(View v){
@@ -165,7 +175,7 @@ public class CallingViewModel extends BaseViewModel {
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put("name",SPUtils.get(context, SPValue.fullName,""));
                             jsonObject.put("header",SPUtils.get(context, SPValue.headUrl,""));
-                            jsonObject.put("info","我要加入语音房间");
+                            jsonObject.put("role",SPUtils.get(context, SPValue.roleName,""));
                             channelOptions.customInfo = jsonObject.toString();
                             NERtcEx.getInstance().joinChannel(token,roomName,Long.parseLong((String) SPUtils.get(context, SPValue.phone,"")), channelOptions);
                             HhLog.e( "onSuccess: yunxin " + token);
@@ -271,37 +281,60 @@ public class CallingViewModel extends BaseViewModel {
                 });
     }
 
+    int number = 0;
     private void inviteOther() {
-        String invitedRequestId = String.valueOf(System.currentTimeMillis());
-        InviteParamBuilder param = new InviteParamBuilder(cId, "13946970588", roomName);//张立峰 1054767010702950400138 13946970588
-        param.customInfo((String) SPUtils.get(context,SPValue.fullName,""));
-        //Toast.makeText(this, "发起邀请 ：channelId = " + channelId + ", requestId = " + invitedRequestId, Toast.LENGTH_SHORT).show();
-        param.offlineEnabled(true);
-        inviteParamBuilder = param;
-        NIMClient.getService(SignallingService.class).invite(param).setCallback(new RequestCallback<Void>() {
-            @Override
-            public void onSuccess(Void param) {
-                Toast.makeText(context, "邀请成功 ：cId = " + cId + ", requestId = " + invitedRequestId+ ", roomName = " + roomName, Toast.LENGTH_SHORT).show();
-
-
+        number = 0;
+        CommonData.invitedReqList = new ArrayList<>();
+        for (int i = 0; i < CommonData.invitedUserList.size(); i++) {
+            CallingList callingModel = CommonData.invitedUserList.get(i);
+            InviteParamBuilder param = new InviteParamBuilder(cId, callingModel.getPhone(), roomName);
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("name",SPUtils.get(context, SPValue.fullName,""));
+                jsonObject.put("header",SPUtils.get(context, SPValue.headUrl,""));
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            param.customInfo(jsonObject.toString());
+            CommonData.invitedReqList.add(param);
+            NIMClient.getService(SignallingService.class).invite(param).setCallback(new RequestCallback<Void>() {
+                @Override
+                public void onSuccess(Void param) {
+                    Toast.makeText(context, "邀请成功 ：cId = " + cId + ", roomName = " + roomName, Toast.LENGTH_SHORT).show();
 
-            @Override
-            public void onFailed(int code) {
-                    if(code == 10202){
-                        Toast.makeText(context, "不在线" + code, Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(context, "邀请失败" + code, Toast.LENGTH_SHORT).show();
+
+                }
+
+                @Override
+                public void onFailed(int code) {
+                    for (int i = 0; i < CommonData.invitedUserListForDelete.size(); i++) {
+                        CallingList calling = CommonData.invitedUserListForDelete.get(i);
+                        if(Objects.equals(calling.getPhone(), callingModel.getPhone())){
+                            CommonData.invitedUserListForDelete.remove(calling);
+                            if(CommonData.invitedUserListForDelete.isEmpty()){
+                                ((CallingActivity)context).finish();
+                            }
+                            return;
+                        }
                     }
-                ((CallingActivity)context).finish();
-            }
+                    number++;
+                    if(code == 10202){
+                        Toast.makeText(context, callingModel.getFullName()+"不在线", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(context, callingModel.getFullName()+"邀请失败" + code, Toast.LENGTH_SHORT).show();
+                    }
+                    if(number == CommonData.invitedReqList.size()){
+                        ((CallingActivity)context).finish();
+                    }
+                }
 
-            @Override
-            public void onException(Throwable exception) {
-                Log.e("TAG", "网易云信 onException = ");
-                //Toast.makeText(IMActivity.this, "邀请异常 ：exception = " + exception, Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onException(Throwable exception) {
+                    Log.e("TAG", "网易云信 onException = ");
+                    //Toast.makeText(IMActivity.this, "邀请异常 ：exception = " + exception, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
 
@@ -309,29 +342,44 @@ public class CallingViewModel extends BaseViewModel {
      * 取消邀请别人
      */
     public void cancelInviteOther() {
-        if(inviteParamBuilder == null){
+        if(CommonData.invitedReqList == null || CommonData.invitedReqList.isEmpty() ){
             ((CallingActivity)context).finish();
             return;
         }
-        inviteParamBuilder.offlineEnabled(true);
-        NIMClient.getService(SignallingService.class).cancelInvite(inviteParamBuilder).setCallback(new RequestCallback<Void>() {
-            @Override
-            public void onSuccess(Void param) {
-                Toast.makeText(context, "已取消邀请", Toast.LENGTH_SHORT).show();
-                ((CallingActivity)context).finish();
-            }
+        cancelOther();
+        Toast.makeText(context, "已取消邀请", Toast.LENGTH_SHORT).show();
+        ((CallingActivity)context).finish();
+    }
 
+    public void cancelOther(){
+        new Thread(){
             @Override
-            public void onFailed(int code) {
-                Toast.makeText(context, "取消邀请失败", Toast.LENGTH_SHORT).show();
-                //Toast.makeText(CallingActivity.this, "取消邀请失败 ：code = " + code, Toast.LENGTH_SHORT).show();
-            }
+            public void run() {
+                super.run();
+                for (int i = 0; i < CommonData.invitedReqList.size(); i++) {
+                    InviteParamBuilder inviteParamBuilder = CommonData.invitedReqList.get(i);
+                    NIMClient.getService(SignallingService.class).cancelInvite(inviteParamBuilder).setCallback(new RequestCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void param) {
+                            //Toast.makeText(context, "已取消邀请", Toast.LENGTH_SHORT).show();
+                            ((CallingActivity)context).finish();
+                        }
 
-            @Override
-            public void onException(Throwable exception) {
-                Toast.makeText(context, "取消邀请异常", Toast.LENGTH_SHORT).show();
-                //Toast.makeText(CallingActivity.this, "取消邀请异常 ：exception = " + exception, Toast.LENGTH_SHORT).show();
+                        @Override
+                        public void onFailed(int code) {
+                            //Toast.makeText(context, "取消邀请失败", Toast.LENGTH_SHORT).show();
+                            ((CallingActivity)context).finish();
+                        }
+
+                        @Override
+                        public void onException(Throwable exception) {
+                            Toast.makeText(context, "取消邀请异常", Toast.LENGTH_SHORT).show();
+                            ((CallingActivity)context).finish();
+                            //Toast.makeText(CallingActivity.this, "取消邀请异常 ：exception = " + exception, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
-        });
+        }.start();
     }
 }

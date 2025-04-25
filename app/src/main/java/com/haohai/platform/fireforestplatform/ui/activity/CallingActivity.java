@@ -1,6 +1,7 @@
 package com.haohai.platform.fireforestplatform.ui.activity;
 
 import static com.netease.lava.nertc.sdk.video.NERtcVideoStreamType.kNERtcVideoStreamTypeMain;
+import static com.qweather.sdk.view.HeContext.context;
 
 import static me.drakeet.multitype.MultiTypeAsserts.assertHasTheSameAdapter;
 
@@ -8,22 +9,34 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.haohai.platform.fireforestplatform.ui.multitype.CallingList;
+import com.netease.lava.api.IVideoRender;
+
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.base.BaseLiveActivity;
 import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
 import com.haohai.platform.fireforestplatform.databinding.ActivityCallingBinding;
 import com.haohai.platform.fireforestplatform.event.Join;
+import com.haohai.platform.fireforestplatform.event.YXClose;
+import com.haohai.platform.fireforestplatform.event.YXControl;
+import com.haohai.platform.fireforestplatform.event.YXReject;
 import com.haohai.platform.fireforestplatform.ui.multitype.Empty;
 import com.haohai.platform.fireforestplatform.ui.multitype.EmptyViewBinder;
 import com.haohai.platform.fireforestplatform.ui.multitype.News;
@@ -51,6 +64,10 @@ import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.avsignalling.SignallingService;
 import com.netease.nimlib.sdk.avsignalling.builder.InviteParamBuilder;
 import com.netease.nimlib.sdk.avsignalling.model.ChannelFullInfo;
+import com.netease.nimlib.sdk.v2.V2NIMError;
+import com.netease.nimlib.sdk.v2.V2NIMFailureCallback;
+import com.netease.nimlib.sdk.v2.V2NIMSuccessCallback;
+import com.netease.nimlib.sdk.v2.avsignalling.V2NIMSignallingService;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.scwang.smartrefresh.layout.listener.SimpleMultiPurposeListener;
@@ -60,6 +77,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Calendar;
+import java.util.Objects;
 
 import me.drakeet.multitype.MultiTypeAdapter;
 
@@ -78,6 +98,11 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
     @Override
     protected void onDestroy() {
         EventBus.getDefault().unregister(this);
+        try {
+            mediaPlayer.stop();
+        }catch (Exception e){
+            //
+        }
         try {
             obtainViewModel().closeSpeaker();
         }catch (Exception e){
@@ -99,11 +124,135 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
         changeVisible();
     }
 
+    ///云信自定义控制指令
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetMessage(YXControl control) {
+        HhLog.e("onGetMessage YXControl");
+        long l = Long.parseLong((String) SPUtils.get(CallingActivity.this, SPValue.phone, ""));
+        try {
+            JSONObject jsonObject = new JSONObject(control.getInfo());
+            String type = jsonObject.getString("type");
+            //被请离房间
+            if("pleaseLeave".equals(type)){
+                finish();
+            }
+            //被禁言
+            if("shutUp".equals(type)){
+                obtainViewModel().hasAudio = false;
+                obtainViewModel().closeMicrophone();
+                binding.audioBack.setBackground(ContextCompat.getDrawable(this,R.drawable.white_circle));
+                userAudioStop(l);
+            }
+            //被取消禁言
+            if("unShutUp".equals(type)){
+                obtainViewModel().hasAudio = true;
+                obtainViewModel().openMicrophone();
+                binding.audioBack.setBackground(ContextCompat.getDrawable(this,R.drawable.green_circle));
+                userAudioStart(l);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    ///云信有人拒绝
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetMessage(YXReject reject) {
+        HhLog.e("onGetMessage YXReject");
+
+        for (int i = 0; i < CommonData.invitedUserListForDelete.size(); i++) {
+            CallingList calling = CommonData.invitedUserListForDelete.get(i);
+            if(Objects.equals(calling.getPhone(), reject.uid)){
+                CommonData.invitedUserListForDelete.remove(calling);
+                if(CommonData.invitedUserListForDelete.isEmpty()){
+                    finish();
+                }
+                return;
+            }
+        }
+    }
+
+    ///云信关闭
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetMessage(YXClose close) {
+        HhLog.e("onGetMessage YXClose");
+
+        finish();
+    }
+
     private void changeVisible() {
         binding.flCalling.setVisibility(View.GONE);
         binding.llSpeaking.setVisibility(View.VISIBLE);
+
+        parseStartDo();
+    }
+
+    private void parseStartDo() {
+        if(obtainViewModel().ing){
+            return;
+        }
+        obtainViewModel().ing = true;
         //以开启本地视频主流采集并发送为例
         NERtcEx.getInstance().enableLocalVideo(kNERtcVideoStreamTypeMain,true);
+
+        if(obtainViewModel().isCalling){
+            //主动呼叫-把自己视频放到主画面
+            NERtcEx.getInstance().setupLocalVideoCanvas(binding.topVideo);
+            NERtcEx.getInstance().startVideoPreview(kNERtcVideoStreamTypeMain);
+            binding.topVideo.setMirror(true);
+            binding.topVideo.setScalingType(IVideoRender.ScalingType.SCALE_ASPECT_BALANCED);
+            binding.leaderName.setText(CommonUtil.parseNull((String) SPUtils.get(this,SPValue.fullName,"")));
+        }else{
+            //被邀请人加入房间-先把把自己画面放到列表显示
+            obtainViewModel().videoChatList.add(new VideoChat(Long.parseLong((String) SPUtils.get(this,SPValue.phone,"")),(String) SPUtils.get(this,SPValue.headUrl,""),(String) SPUtils.get(this,SPValue.fullName,""),(String) SPUtils.get(this,SPValue.roleName,""),true,true));
+            obtainViewModel().updateData();
+        }
+
+
+        //关闭计时
+        obtainViewModel().startTimer = false;
+    }
+
+
+    public MediaPlayer mediaPlayer;
+    private void startRing() {
+        mediaPlayer = MediaPlayer.create(context, R.raw.wechat);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+    }
+    private void startCallingVideo() {
+        NERtcEx.getInstance().setupLocalVideoCanvas(binding.callingVideo);
+        NERtcEx.getInstance().startVideoPreview(kNERtcVideoStreamTypeMain);
+        binding.callingVideo.setMirror(true);
+        binding.callingVideo.setScalingType(IVideoRender.ScalingType.SCALE_ASPECT_BALANCED);
+    }
+    @SuppressLint("SetTextI18n")
+    private void startTimer() {
+        obtainViewModel().calendar.add(Calendar.SECOND,1);
+        binding.callCount.setText(CommonUtil.parseZero(obtainViewModel().calendar.get(Calendar.HOUR_OF_DAY))+":"+
+                CommonUtil.parseZero(obtainViewModel().calendar.get(Calendar.MINUTE))+":"+
+                CommonUtil.parseZero(obtainViewModel().calendar.get(Calendar.SECOND)));
+        if(obtainViewModel().calendar.get(Calendar.SECOND)>=30){
+            if(obtainViewModel().isCalling){
+                Toast.makeText(this, "对方未接听", Toast.LENGTH_SHORT).show();
+            }
+            finish();
+        }
+        try{
+            if(obtainViewModel().startTimer){
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startTimer();
+                    }
+                },1000);
+            }else{
+                mediaPlayer.stop();
+            }
+        }catch (Exception e){
+            //
+        }
     }
 
 
@@ -135,6 +284,14 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
         //初始化网易云信
         stupNERtc();
 
+        //开启计时
+        obtainViewModel().startTimer = true;
+        obtainViewModel().calendar = Calendar.getInstance();
+        obtainViewModel().calendar.set(1,1,1,0,0,0);
+        startTimer();
+        startRing();
+        startCallingVideo();
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         binding.videoList.setLayoutManager(linearLayoutManager);
         obtainViewModel().adapter = new MultiTypeAdapter(obtainViewModel().items);
@@ -165,11 +322,18 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
                 e.printStackTrace();
             }
         }else{
+            obtainViewModel().accountId = (String) SPUtils.get(this,SPValue.phone,"");
             obtainViewModel().invite();
             binding.callingOpen.setVisibility(View.GONE);
             binding.callingCloseText.setVisibility(View.GONE);
             binding.callingFlSpace.setVisibility(View.GONE);
-            binding.callName.setText("被邀请人");
+            String bName = "";
+            if(CommonData.invitedUserList.size()==1){
+                bName = CommonData.invitedUserList.get(0).getFullName();
+            }else{
+                bName = CommonData.invitedUserList.get(0).getFullName()+"等"+ CommonData.invitedUserList.size() +"人";
+            }
+            binding.callName.setText(bName);
             binding.callStatus.setText("正在发起视频通话...");
         }
     }
@@ -209,13 +373,34 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
         CommonUtil.click(binding.audio, new Action() {
             @Override
             public void click() {
-
+                obtainViewModel().hasAudio = !obtainViewModel().hasAudio;
+                long l = Long.parseLong((String) SPUtils.get(CallingActivity.this, SPValue.phone, ""));
+                if(obtainViewModel().hasAudio){
+                    binding.audioBack.setBackground(ContextCompat.getDrawable(CallingActivity.this,R.drawable.green_circle));
+                    binding.audioText.setText("关闭语音");
+                    obtainViewModel().openMicrophone();
+                    userAudioStart(l);
+                }else{
+                    binding.audioBack.setBackground(ContextCompat.getDrawable(CallingActivity.this,R.drawable.white_circle));
+                    binding.audioText.setText("开启语音");
+                    obtainViewModel().closeMicrophone();
+                    userAudioStop(l);
+                }
             }
         });
         CommonUtil.click(binding.video, new Action() {
             @Override
             public void click() {
-
+                obtainViewModel().hasVideo = !obtainViewModel().hasVideo;
+                if(obtainViewModel().hasVideo){
+                    binding.videoBack.setBackground(ContextCompat.getDrawable(CallingActivity.this,R.drawable.green_circle));
+                    binding.videoText.setText("关闭视频");
+                    NERtcEx.getInstance().enableLocalVideo(kNERtcVideoStreamTypeMain,true);
+                }else{
+                    binding.videoBack.setBackground(ContextCompat.getDrawable(CallingActivity.this,R.drawable.white_circle));
+                    binding.videoText.setText("开启视频");
+                    NERtcEx.getInstance().enableLocalVideo(kNERtcVideoStreamTypeMain,false);
+                }
             }
         });
         CommonUtil.click(binding.person, new Action() {
@@ -259,7 +444,7 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
             }
         }
 
-        setLocalAudioEnable(true);
+//        setLocalAudioEnable(true);
     }
 
 
@@ -288,11 +473,12 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
     }
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void subscribeObserver() {
         super.subscribeObserver();
         obtainViewModel().videoStatus.observe(this, integer -> {
-
+            binding.personNumber.setText(obtainViewModel().videoCounts+"");
         });
     }
 
@@ -300,7 +486,7 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
     public void onJoinChannel(int i, long l, long l1, long l2) {
         Log.e(TAG, "网易云信 onJoinChannel: " + i +","+ l + "," + l1 );
         //Toast.makeText(this, i+"", Toast.LENGTH_SHORT).show();
-        setLocalAudioEnable(true);
+//        setLocalAudioEnable(true);
     }
 
     @Override
@@ -312,53 +498,114 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
     @Override
     public void onUserJoined(long uid) {
 
-//        Log.e(TAG, "网易云信 onUserJoined: " + uid );
-
     }
 
     @Override
     public void onUserJoined(long uid, NERtcUserJoinExtraInfo joinExtraInfo) {
+
+        Log.e(TAG, "网易云信 onUserJoined: " + uid + joinExtraInfo.customInfo );
+        obtainViewModel().videoCounts++;
+        obtainViewModel().videoStatus.postValue(obtainViewModel().videoCounts);
+        obtainViewModel().openMicrophone();
         String customInfo = joinExtraInfo.customInfo;
+        String name = "";
+        String header = "";
+        String role = "";
         try {
             JSONObject jsonObject = new JSONObject(customInfo);
             Toast.makeText(this, jsonObject.getString("name")+"加入了房间", Toast.LENGTH_SHORT).show();
+            role = jsonObject.getString("role");
+            header = jsonObject.getString("header");
+            name = jsonObject.getString("name");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        Log.e(TAG, "网易云信 onUserJoined: " + uid + joinExtraInfo.customInfo );
-
 /*        //对方开启视频，按需设置画布及订阅视频
         NERtcEx.getInstance().setupRemoteVideoCanvas(binding.topVideo,uid);
         NERtcEx.getInstance().subscribeRemoteVideoStream(uid, NERtcRemoteVideoStreamType.kNERtcRemoteVideoStreamTypeHigh,true);
-        binding.topVideo.setMirror(true);*/
+        binding.topVideo.setMirror(true);
+        binding.video.setScalingType(IVideoRender.ScalingType.SCALE_ASPECT_BALANCED);*/
 
-        obtainViewModel().videoChatList.add(new VideoChat(uid,"header","name",true,true));
-        obtainViewModel().updateData();
+        if(Objects.equals(obtainViewModel().accountId, uid + "")){
+            //发起人加入房间-主画面显示
+            NERtcEx.getInstance().setupRemoteVideoCanvas(binding.topVideo,uid);
+            NERtcEx.getInstance().subscribeRemoteVideoStream(uid, NERtcRemoteVideoStreamType.kNERtcRemoteVideoStreamTypeHigh,true);
+            binding.topVideo.setMirror(true);
+            binding.topVideo.setScalingType(IVideoRender.ScalingType.SCALE_ASPECT_BALANCED);
+            binding.leaderName.setText(name);
+        }else{
+            //被邀请人加入房间-列表画面显示
+            obtainViewModel().videoChatList.add(new VideoChat(uid,header,name,role,true,true));
+            obtainViewModel().updateData();
+        }
     }
 
     @Override
     public void onUserLeave(long uid, int reason) {
 
-        Log.e(TAG, "网易云信 onUserLeave: " + uid );
     }
 
     @Override
     public void onUserLeave(long uid, int reason, NERtcUserLeaveExtraInfo leaveExtraInfo) {
 
         Log.e(TAG, "网易云信 onUserLeave: " + uid );
+        if((uid + "").equals(obtainViewModel().accountId)){
+            Toast.makeText(this, "视频通话已结束", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        for (int i = 0; i < obtainViewModel().videoChatList.size(); i++) {
+            VideoChat videoChat = obtainViewModel().videoChatList.get(i);
+            if(videoChat.getId() == uid){
+                obtainViewModel().videoChatList.remove(videoChat);
+                obtainViewModel().updateData();
+                obtainViewModel().videoCounts--;
+                HhLog.e("onUserLeave -" + obtainViewModel().videoCounts);
+                if(obtainViewModel().videoCounts==1){
+                    finish();
+                }else{
+                    obtainViewModel().videoStatus.postValue(obtainViewModel().videoCounts);
+                }
+                return;
+            }
+        }
+
     }
 
     @Override
     public void onUserAudioStart(long l) {
 
         Log.e(TAG, "网易云信 onUserAudioStart: " + l );
+        userAudioStart(l);
+    }
+    public void userAudioStart(long l){
+        for (int i = 0; i < obtainViewModel().videoChatList.size(); i++) {
+            VideoChat model = obtainViewModel().videoChatList.get(i);
+            if(l == model.getId()){
+                model.setAudio(true);
+                obtainViewModel().updateData();
+                return;
+            }
+        }
     }
 
     @Override
     public void onUserAudioStop(long l) {
 
         Log.e(TAG, "网易云信 onUserAudioStop: " + l );
+        userAudioStop(l);
+    }
+    public void userAudioStop(long l){
+        for (int i = 0; i < obtainViewModel().videoChatList.size(); i++) {
+            VideoChat model = obtainViewModel().videoChatList.get(i);
+            if(l == model.getId()){
+                model.setAudio(false);
+                obtainViewModel().updateData();
+                return;
+            }
+        }
     }
 
     @Override
@@ -385,8 +632,104 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
         Log.e(TAG, "网易云信 onClientRoleChange: " + i +","+ i1  );
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onItemClick(VideoChat videoChat) {
-
+        long l = Long.parseLong((String) SPUtils.get(CallingActivity.this, SPValue.phone, ""));
+        BottomSheetDialog dialog = new BottomSheetDialog(this,R.style.DialogNoBackground);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_bottom_sheet, null);
+        ImageView close = view.findViewById(R.id.close);
+        TextView name = view.findViewById(R.id.name);
+        TextView phone = view.findViewById(R.id.phone);
+        TextView role = view.findViewById(R.id.role);
+        TextView force = view.findViewById(R.id.force);
+        TextView leave = view.findViewById(R.id.leave);
+        name.setText(CommonUtil.parseNull(videoChat.getName()));
+        phone.setText(CommonUtil.parseNull(videoChat.getId()+""));
+        role.setText(CommonUtil.parseNull(videoChat.getRole()));
+        if(videoChat.isAudio()){
+            force.setText("禁言");
+        }else{
+            force.setText("解除禁言");
+        }
+        if(l==videoChat.getId()){
+            leave.setText("离开");
+        }else{
+            leave.setText("请离");
+        }
+        CommonUtil.click(force, new Action() {
+            @Override
+            public void click() {
+                //非发起人无操作权限
+                if ((!obtainViewModel().isCalling) && (!(l + "").equals(obtainViewModel().accountId)) && (l != videoChat.getId())) {
+                    Toast.makeText(CallingActivity.this, "只有发起人有操作权限", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                videoChat.setAudio(!videoChat.isAudio());
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    if (videoChat.isAudio()) {
+                        //是本人
+                        if (l == videoChat.getId()) {
+                            binding.audioBack.setBackground(ContextCompat.getDrawable(CallingActivity.this, R.drawable.green_circle));
+                            binding.audioText.setText("关闭语音");
+                            obtainViewModel().openMicrophone();
+                            userAudioStart(l);
+                        } else {
+                            //不是本人
+                            jsonObject.put("type", "unShutUp");
+                            NIMClient.getService(SignallingService.class).sendControl(obtainViewModel().cId, videoChat.getId() + "", jsonObject.toString());
+                        }
+                        force.setText("禁言");
+                    } else {
+                        //是本人
+                        if (l == videoChat.getId()) {
+                            binding.audioBack.setBackground(ContextCompat.getDrawable(CallingActivity.this, R.drawable.white_circle));
+                            binding.audioText.setText("开启语音");
+                            obtainViewModel().closeMicrophone();
+                            userAudioStop(l);
+                        } else {
+                            //不是本人
+                            jsonObject.put("type", "shutUp");
+                            NIMClient.getService(SignallingService.class).sendControl(obtainViewModel().cId, videoChat.getId() + "", jsonObject.toString());
+                        }
+                        force.setText("解除禁言");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        CommonUtil.click(leave, new Action() {
+            @Override
+            public void click() {
+                //非发起人无操作权限&&非本人
+                if((!obtainViewModel().isCalling) && (!(l + "").equals(obtainViewModel().accountId)) && (l!=videoChat.getId())){
+                    Toast.makeText(CallingActivity.this, "只有发起人有操作权限", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                //是本人
+                if(l==videoChat.getId()){
+                    finish();
+                }else{
+                    //不是本人
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("type","pleaseLeave");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    NIMClient.getService(SignallingService.class).sendControl(obtainViewModel().cId, videoChat.getId()+"", jsonObject.toString());
+                }
+            }
+        });
+        CommonUtil.click(close, new Action() {
+            @Override
+            public void click() {
+                dialog.cancel();
+            }
+        });
+        dialog.setContentView(view);
+        dialog.show();
     }
 }

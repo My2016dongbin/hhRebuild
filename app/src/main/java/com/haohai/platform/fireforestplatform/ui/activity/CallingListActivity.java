@@ -3,7 +3,10 @@ package com.haohai.platform.fireforestplatform.ui.activity;
 import static me.drakeet.multitype.MultiTypeAsserts.assertHasTheSameAdapter;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,7 +26,9 @@ import com.haohai.platform.fireforestplatform.ui.multitype.CallingListViewBinder
 import com.haohai.platform.fireforestplatform.ui.multitype.CallingListViewBinder;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.CallingListViewModel;
 import com.haohai.platform.fireforestplatform.utils.Action;
+import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.CommonUtil;
+import com.haohai.platform.fireforestplatform.utils.FloatPermissionHelper;
 import com.scwang.smartrefresh.header.MaterialHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
@@ -46,8 +51,35 @@ public class CallingListActivity extends BaseLiveActivity<ActivityCallingListBin
         obtainViewModel().getTrees();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //申请权限
+        if (!FloatPermissionHelper.hasOverlayPermission(this)) {
+            //悬浮窗权限
+            CommonUtil.showConfirm(this, "为了更好的通话体验，是否现在去开启悬浮窗权限？", "去开启", "以后再说", new Action() {
+                @Override
+                public void click() {
+                    FloatPermissionHelper.requestOverlayPermission(CallingListActivity.this);
+                }
+            });
+        }else{
+            /*//后台弹出权限
+            if (!FloatPermissionHelper.canStartActivityFromBackground(this)) {
+                CommonUtil.showConfirm(this, "为方便接听通话，是否现在去开启后台弹出权限？", "去开启", "以后再说", new Action() {
+                    @Override
+                    public void click() {
+                        FloatPermissionHelper.openAutoStartSetting(CallingListActivity.this);
+                    }
+                });
+            }*/
+        }
+    }
+
     private void init_() {
         binding.topBar.title.setText("视频通话");
+
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         binding.rlv.setLayoutManager(linearLayoutManager);
@@ -94,6 +126,9 @@ public class CallingListActivity extends BaseLiveActivity<ActivityCallingListBin
                         list.add(model);
                     }
                 }
+                CommonData.invitedUserList = list;
+                CommonData.invitedUserListForDelete = new ArrayList<>();
+                CommonData.invitedUserListForDelete.addAll(list);
                 if(list.isEmpty()){
                     Toast.makeText(CallingListActivity.this, "请至少选择一个联系人", Toast.LENGTH_SHORT).show();
                     return;

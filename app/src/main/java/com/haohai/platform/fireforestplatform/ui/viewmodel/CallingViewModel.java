@@ -300,7 +300,7 @@ public class CallingViewModel extends BaseViewModel {
             NIMClient.getService(SignallingService.class).invite(param).setCallback(new RequestCallback<Void>() {
                 @Override
                 public void onSuccess(Void param) {
-                    Toast.makeText(context, "邀请成功 ：cId = " + cId + ", roomName = " + roomName, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "邀请成功 ：cId = " + cId + ", roomName = " + roomName, Toast.LENGTH_SHORT).show();
 
 
                 }
@@ -313,15 +313,15 @@ public class CallingViewModel extends BaseViewModel {
                             CommonData.invitedUserListForDelete.remove(calling);
                             if(CommonData.invitedUserListForDelete.isEmpty()){
                                 ((CallingActivity)context).finish();
+                                return;
                             }
-                            return;
                         }
                     }
                     number++;
                     if(code == 10202){
                         Toast.makeText(context, callingModel.getFullName()+"不在线", Toast.LENGTH_SHORT).show();
                     }else{
-                        Toast.makeText(context, callingModel.getFullName()+"邀请失败" + code, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, callingModel.getFullName()+"邀请失败", Toast.LENGTH_SHORT).show();
                     }
                     if(number == CommonData.invitedReqList.size()){
                         ((CallingActivity)context).finish();

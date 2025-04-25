@@ -264,11 +264,11 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
                     @Override
                     public void onResult(int i, ChannelFullInfo channelFullInfo, Throwable throwable) {
                         if (i == ResponseCode.RES_SUCCESS) {
-                            Toast.makeText(CallingActivity.this, "加入频道成功", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(CallingActivity.this, "加入频道成功", Toast.LENGTH_SHORT).show();
                         } else if (i == ResponseCode.RES_CHANNEL_MEMBER_HAS_EXISTS) {
-                            Toast.makeText(CallingActivity.this, "已经在频道中", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(CallingActivity.this, "已经在频道中", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(CallingActivity.this, "加入频道失败 code=" + i, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(CallingActivity.this, "加入频道失败 code=" + i, Toast.LENGTH_SHORT).show();
                             HhLog.e("obtainViewModel().channelId = " + obtainViewModel().channelId + " , selfUid = " + selfUid);
                         }
                     }
@@ -438,7 +438,7 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
             try {
                 NERtcEx.getInstance().init(getApplicationContext(), getString(R.string.yun_xin_key), this, options);
             } catch (Exception ex) {
-                Toast.makeText(this, "SDK初始化失败", Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "SDK初始化失败", Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
@@ -513,7 +513,7 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
         String role = "";
         try {
             JSONObject jsonObject = new JSONObject(customInfo);
-            Toast.makeText(this, jsonObject.getString("name")+"加入了房间", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, jsonObject.getString("name")+"加入了房间", Toast.LENGTH_SHORT).show();
             role = jsonObject.getString("role");
             header = jsonObject.getString("header");
             name = jsonObject.getString("name");

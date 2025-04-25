@@ -259,14 +259,14 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
                         HhLog.e("网易云信 ACCEPT 接受邀请回调" + obtainViewModel().reqId + " ackEvent.getRequestId() " + ackEvent.getRequestId() + " , event.getCustomInfo " + event.getCustomInfo());
                         if(!Objects.equals(ackEvent.getRequestId(), obtainViewModel().reqId)){
                             obtainViewModel().reqId = ackEvent.getRequestId();
-                            Toast.makeText(MainActivity.this, "对方已接收邀请 next requestId = " + ackEvent.getRequestId(), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(MainActivity.this, "对方已接收邀请 next requestId = " + ackEvent.getRequestId(), Toast.LENGTH_SHORT).show();
                             EventBus.getDefault().post(new Join());
                         }
                         break;
                     case LEAVE:
                         UserLeaveEvent userLeaveEvent = (UserLeaveEvent) event;
                         HhLog.e("网易云信 LEAVE 有人离开频道回调"+userLeaveEvent.getFromAccountId());
-                        Toast.makeText(MainActivity.this, userLeaveEvent.getFromAccountId()+"已离开房间", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, userLeaveEvent.getFromAccountId()+"已离开房间", Toast.LENGTH_SHORT).show();
                         break;
                     case CONTROL:
                         ControlEvent controlEvent = (ControlEvent) event;

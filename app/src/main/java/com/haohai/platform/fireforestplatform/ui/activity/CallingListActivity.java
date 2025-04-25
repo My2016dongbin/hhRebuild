@@ -169,8 +169,12 @@ public class CallingListActivity extends BaseLiveActivity<ActivityCallingListBin
 
     @Override
     public void onItemClick(CallingList callingList, boolean state) {
-        int index = obtainViewModel().callingLists.indexOf(callingList);
-        obtainViewModel().callingLists.get(index).setState(state);
-        obtainViewModel().updateData();
+        try{
+            int index = obtainViewModel().callingLists.indexOf(callingList);
+            obtainViewModel().callingLists.get(index).setState(state);
+            obtainViewModel().updateData();
+        }catch (Exception e){
+            //
+        }
     }
 }

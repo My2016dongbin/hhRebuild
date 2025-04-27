@@ -65,6 +65,7 @@ public class CommonData {
 
 
     //网易云信
+    public static boolean calling = false;//通话中
     public static String wyyAccId = "";
     public static String wyyToken = "";
     public static String audioRoomName = "";

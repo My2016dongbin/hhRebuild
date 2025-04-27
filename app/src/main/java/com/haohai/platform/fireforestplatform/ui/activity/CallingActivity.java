@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.haohai.platform.fireforestplatform.event.YXCancelInvite;
 import com.haohai.platform.fireforestplatform.ui.multitype.CallingList;
 import com.netease.lava.api.IVideoRender;
 
@@ -173,6 +174,16 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
         }
     }
 
+    ///云信被取消邀请
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetMessage(YXCancelInvite cancelInvite) {
+        HhLog.e("onGetMessage YXCancelInvite");
+
+        if(!obtainViewModel().ing){
+            finish();
+        }
+    }
+
     ///云信关闭
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetMessage(YXClose close) {
@@ -193,6 +204,7 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
             return;
         }
         obtainViewModel().ing = true;
+        CommonData.calling = true;
         //以开启本地视频主流采集并发送为例
         NERtcEx.getInstance().enableLocalVideo(kNERtcVideoStreamTypeMain,true);
 
@@ -217,7 +229,7 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
 
     public MediaPlayer mediaPlayer;
     private void startRing() {
-        mediaPlayer = MediaPlayer.create(context, R.raw.wechat);
+        mediaPlayer = MediaPlayer.create(CallingActivity.this, R.raw.wechat);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
     }
@@ -392,14 +404,27 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
             @Override
             public void click() {
                 obtainViewModel().hasVideo = !obtainViewModel().hasVideo;
+                long my = Long.parseLong((String) SPUtils.get(CallingActivity.this, SPValue.phone, ""));
                 if(obtainViewModel().hasVideo){
                     binding.videoBack.setBackground(ContextCompat.getDrawable(CallingActivity.this,R.drawable.green_circle));
                     binding.videoText.setText("关闭视频");
-                    NERtcEx.getInstance().enableLocalVideo(kNERtcVideoStreamTypeMain,true);
+                    NERtcEx.getInstance().enableLocalVideo(true);
+                    //NERtcEx.getInstance().muteLocalVideoStream(false);
+                    if((my + "").equals(obtainViewModel().accountId)){
+                        binding.topVideo.setVisibility(View.VISIBLE);
+                    }else{
+                        videoStart(my);
+                    }
                 }else{
                     binding.videoBack.setBackground(ContextCompat.getDrawable(CallingActivity.this,R.drawable.white_circle));
                     binding.videoText.setText("开启视频");
-                    NERtcEx.getInstance().enableLocalVideo(kNERtcVideoStreamTypeMain,false);
+                    NERtcEx.getInstance().enableLocalVideo(false);
+                    //NERtcEx.getInstance().muteLocalVideoStream(true);
+                    if((my + "").equals(obtainViewModel().accountId)){
+                        binding.topVideo.setVisibility(View.GONE);
+                    }else{
+                        videoStop(my);
+                    }
                 }
             }
         });
@@ -612,12 +637,36 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
     public void onUserVideoStart(long l, int i) {
 
         Log.e(TAG, "网易云信 onUserVideoStart: " + l +","+ i );
+        videoStart(l);
+    }
+
+    private void videoStart(long l) {
+        for (int j = 0; j < obtainViewModel().videoChatList.size(); j++) {
+            VideoChat chat = obtainViewModel().videoChatList.get(j);
+            if(l == chat.getId()){
+                chat.setVideo(true);
+                obtainViewModel().updateData();
+                return;
+            }
+        }
     }
 
     @Override
     public void onUserVideoStop(long l) {
 
         Log.e(TAG, "网易云信 onUserVideoStop: " + l );
+        videoStop(l);
+    }
+
+    private void videoStop(long l) {
+        for (int j = 0; j < obtainViewModel().videoChatList.size(); j++) {
+            VideoChat chat = obtainViewModel().videoChatList.get(j);
+            if(l == chat.getId()){
+                chat.setVideo(false);
+                obtainViewModel().updateData();
+                return;
+            }
+        }
     }
 
     @Override

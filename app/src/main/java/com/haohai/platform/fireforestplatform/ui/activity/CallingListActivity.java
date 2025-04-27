@@ -55,6 +55,8 @@ public class CallingListActivity extends BaseLiveActivity<ActivityCallingListBin
     protected void onResume() {
         super.onResume();
 
+        CommonData.calling = false;
+
         //申请权限
         if (!FloatPermissionHelper.hasOverlayPermission(this)) {
             //悬浮窗权限
@@ -165,7 +167,6 @@ public class CallingListActivity extends BaseLiveActivity<ActivityCallingListBin
         super.subscribeObserver();
 
     }
-
 
     @Override
     public void onItemClick(CallingList callingList, boolean state) {

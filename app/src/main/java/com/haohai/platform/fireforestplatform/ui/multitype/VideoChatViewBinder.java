@@ -78,11 +78,12 @@ public class VideoChatViewBinder extends ItemViewProvider<VideoChat, VideoChatVi
         }else{
             binding.header.setVisibility(View.VISIBLE);
             binding.video.setVisibility(View.GONE);
-            Glide.with(context).load(videoChat.getHeader())
-                    .error(R.drawable.ic_no_pic)
-                    .circleCrop()
-                    .into(binding.header);
         }
+        Glide.with(context).load(videoChat.getHeader())
+                .error(R.drawable.ic_mine)
+                .circleCrop()
+                .into(binding.header);
+        binding.name.setText(videoChat.getName());
         if(videoChat.isAudio()){
             binding.voice.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.icon_audio_open));
         }else{

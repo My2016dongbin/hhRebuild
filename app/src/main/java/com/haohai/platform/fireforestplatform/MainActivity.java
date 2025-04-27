@@ -46,6 +46,7 @@ import com.haohai.platform.fireforestplatform.event.Join;
 import com.haohai.platform.fireforestplatform.event.MainTabChange;
 import com.haohai.platform.fireforestplatform.event.MessageChange;
 import com.haohai.platform.fireforestplatform.event.Update;
+import com.haohai.platform.fireforestplatform.event.YXCancelInvite;
 import com.haohai.platform.fireforestplatform.event.YXClose;
 import com.haohai.platform.fireforestplatform.event.YXControl;
 import com.haohai.platform.fireforestplatform.event.YXReject;
@@ -243,13 +244,15 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
                         if(!Objects.equals(invitedEvent.getRequestId(), obtainViewModel().reqId)){
                             obtainViewModel().reqId = invitedEvent.getRequestId();
                             //Toast.makeText(MainActivity.this, "被邀请 next requestId= " + invitedEvent.getRequestId(), Toast.LENGTH_SHORT).show();
-                            callInvited(invitedEvent);
+                            if(!CommonData.calling){
+                                callInvited(invitedEvent);
+                            }
                         }
                         break;
                     case CANCEL_INVITE:
                         HhLog.e("网易云信 CANCEL_INVITE 邀请人取消邀请回调");
                         CanceledInviteEvent canceledInviteEvent = (CanceledInviteEvent) event;
-                        EventBus.getDefault().post(new YXClose());
+                        EventBus.getDefault().post(new YXCancelInvite());
                         break;
                     case REJECT:
                         InviteAckEvent eventReject = (InviteAckEvent) event;

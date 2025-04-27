@@ -57,7 +57,9 @@ import com.haohai.platform.fireforestplatform.ui.multitype.MainFgMenuViewBinder;
 import com.haohai.platform.fireforestplatform.ui.multitype.ResourceType;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.DialogTreeViewModel;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.FgMainViewModel;
+import com.haohai.platform.fireforestplatform.utils.Action;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
+import com.haohai.platform.fireforestplatform.utils.CommonUtil;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
@@ -466,34 +468,52 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
 
     private void click_() {
         //消息
-        binding.btnMessage.setOnClickListener(v -> {
-            EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.messageIndex,2)));
+        CommonUtil.click(binding.btnMessage, new Action() {
+            @Override
+            public void click() {
+                EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.messageIndex,2)));
+            }
         });
         //监控设备
-        binding.deviceMonitorView.setOnClickListener(v -> {
-            obtainViewModel().mainDeviceStatus = "";
-            obtainViewModel().getMainDeviceData();
-            mainDeviceListDialog.show();
+        CommonUtil.click(binding.deviceMonitorView, new Action() {
+            @Override
+            public void click() {
+                obtainViewModel().mainDeviceStatus = "";
+                obtainViewModel().getMainDeviceData();
+                mainDeviceListDialog.show();
+            }
         });
         //在线数
-        binding.deviceOnlineView.setOnClickListener(v -> {
-            obtainViewModel().mainDeviceStatus = "1";
-            obtainViewModel().getMainDeviceData();
-            mainDeviceListDialog.show();
+        CommonUtil.click(binding.deviceOnlineView, new Action() {
+            @Override
+            public void click() {
+                obtainViewModel().mainDeviceStatus = "1";
+                obtainViewModel().getMainDeviceData();
+                mainDeviceListDialog.show();
+            }
         });
         //离线数
-        binding.deviceOfflineView.setOnClickListener(v -> {
-            obtainViewModel().mainDeviceStatus = "0";
-            obtainViewModel().getMainDeviceData();
-            mainDeviceListDialog.show();
+        CommonUtil.click(binding.deviceOfflineView, new Action() {
+            @Override
+            public void click() {
+                obtainViewModel().mainDeviceStatus = "0";
+                obtainViewModel().getMainDeviceData();
+                mainDeviceListDialog.show();
+            }
         });
         //报警信息-查看更多
-        binding.moreWarn.setOnClickListener(v -> {
-            EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"oneBody"));
+        CommonUtil.click(binding.moreWarn, new Action() {
+            @Override
+            public void click() {
+                EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"oneBody"));
+            }
         });
         //天气信息-查看更多
-        binding.moreWeather.setOnClickListener(v -> {
-            requireActivity().startActivity(new Intent(requireActivity(), WeatherActivity.class));
+        CommonUtil.click(binding.moreWeather, new Action() {
+            @Override
+            public void click() {
+                requireActivity().startActivity(new Intent(requireActivity(), WeatherActivity.class));
+            }
         });
     }
 

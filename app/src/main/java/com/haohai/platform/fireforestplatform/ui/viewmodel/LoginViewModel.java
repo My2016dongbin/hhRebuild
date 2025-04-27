@@ -148,7 +148,7 @@ public class LoginViewModel extends BaseViewModel {
                                 SPUtils.put(HhApplication.getInstance(), SPValue.gridNo, userJsonObj.getString("gridNo"));
                                 SPUtils.put(HhApplication.getInstance(), SPValue.groupName, userJsonObj.getString("groupName"));
                                 SPUtils.put(HhApplication.getInstance(), SPValue.headUrl, userJsonObj.getString("headUrl"));
-                                SPUtils.put(HhApplication.getInstance(), SPValue.roleName, userJsonObj.getString("roleName"));
+                                SPUtils.put(HhApplication.getInstance(), SPValue.roleName, userJsonObj.getString("deptName"));
                                 SPUtils.put(HhApplication.getInstance(), SPValue.state, userJsonObj.getString("state"));
                                 SPUtils.put(HhApplication.getInstance(), SPValue.manager, true);
 

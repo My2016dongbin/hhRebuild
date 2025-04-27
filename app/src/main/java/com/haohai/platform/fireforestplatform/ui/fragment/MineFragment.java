@@ -25,6 +25,8 @@ import com.haohai.platform.fireforestplatform.event.MainTabChange;
 import com.haohai.platform.fireforestplatform.event.SettingEvent;
 import com.haohai.platform.fireforestplatform.permission.CommonPermission;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.FgMineViewModel;
+import com.haohai.platform.fireforestplatform.utils.Action;
+import com.haohai.platform.fireforestplatform.utils.CommonUtil;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
 import com.kongzue.dialogx.dialogs.MessageDialog;
@@ -78,17 +80,20 @@ public class MineFragment extends BaseFragment<FgMine, FgMineViewModel> {
     }
 
     private void bind_() {
-        binding.outLogin.setOnClickListener(v -> {
-            TextInfo okTextInfo = new TextInfo();
-            okTextInfo.setFontColor(requireActivity().getResources().getColor(R.color.text_color_red));
-            MessageDialog.show("温馨提示", "确定要退出登录吗？","退出登录","取消")
-                    .setButtonOrientation(LinearLayout.VERTICAL)
-                    .setOkTextInfo(okTextInfo)
-                    .setOkButtonClickListener((dialog, v1) -> {
-                        obtainViewModel().outLogin();
-                        return false;
-                    })
-                    .setCancelable(true);
+        CommonUtil.click(binding.outLogin, new Action() {
+            @Override
+            public void click() {
+                TextInfo okTextInfo = new TextInfo();
+                okTextInfo.setFontColor(requireActivity().getResources().getColor(R.color.text_color_red));
+                MessageDialog.show("温馨提示", "确定要退出登录吗？","退出登录","取消")
+                        .setButtonOrientation(LinearLayout.VERTICAL)
+                        .setOkTextInfo(okTextInfo)
+                        .setOkButtonClickListener((dialog, v1) -> {
+                            obtainViewModel().outLogin();
+                            return false;
+                        })
+                        .setCancelable(true);
+            }
         });
     }
 

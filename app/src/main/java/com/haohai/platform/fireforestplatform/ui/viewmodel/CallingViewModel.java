@@ -89,7 +89,7 @@ public class CallingViewModel extends BaseViewModel {
     public String roomName ;
     public String roomId ;
     public String cId ;
-    public boolean ing = false ;
+    public boolean ing = false ;//已接听
 
 
     public void barLeftClick(View v){

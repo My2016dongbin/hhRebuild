@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -66,10 +67,14 @@ import com.haohai.platform.fireforestplatform.ui.cell.SatelliteSearchDialog;
 import com.haohai.platform.fireforestplatform.ui.multitype.ResourceType;
 import com.haohai.platform.fireforestplatform.ui.multitype.SatelliteFire;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.FgMapViewModel;
+import com.haohai.platform.fireforestplatform.utils.Action;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
+import com.haohai.platform.fireforestplatform.utils.CommonUtil;
 import com.haohai.platform.fireforestplatform.utils.GetJsonDataUtil;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.LatLngChangeNew;
+import com.kongzue.dialogx.dialogs.MessageDialog;
+import com.kongzue.dialogx.util.TextInfo;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -122,15 +127,24 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void bind_() {
-        binding.searchMenu.setOnClickListener(v -> {
-            delayDialog(resourceListDialog);
+        CommonUtil.click(binding.searchMenu, new Action() {
+            @Override
+            public void click() {
+                delayDialog(resourceListDialog);
+            }
         });
-        binding.viewResourceList.setOnClickListener(v -> {
-            resourceListDialog.show();
+        CommonUtil.click(binding.viewResourceList, new Action() {
+            @Override
+            public void click() {
+                resourceListDialog.show();
+            }
         });
-        binding.viewResourceAdd.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), ResourceAddActivity.class);
-            startActivity(intent);
+        CommonUtil.click(binding.viewResourceAdd, new Action() {
+            @Override
+            public void click() {
+                Intent intent = new Intent(getActivity(), ResourceAddActivity.class);
+                startActivity(intent);
+            }
         });
         binding.editFind.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -155,27 +169,48 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 obtainViewModel().search = s.toString();
             }
         });
-        binding.viewStarSetting.setOnClickListener(v -> {
-            requireActivity().startActivity(new Intent(requireActivity(), SatelliteSettingActivity.class));
+        CommonUtil.click(binding.viewStarSetting, new Action() {
+            @Override
+            public void click() {
+                requireActivity().startActivity(new Intent(requireActivity(), SatelliteSettingActivity.class));
+            }
         });
-        binding.viewStarFire.setOnClickListener(v -> {
-            delayDialog(satelliteListDialog);
+        CommonUtil.click(binding.viewStarFire, new Action() {
+            @Override
+            public void click() {
+                delayDialog(satelliteListDialog);
+            }
         });
-        binding.viewStarFind.setOnClickListener(v -> {
-            delayDialog(satelliteSearchDialog);
+        CommonUtil.click(binding.viewStarFind, new Action() {
+            @Override
+            public void click() {
+                delayDialog(satelliteSearchDialog);
+            }
         });
-        binding.viewWarnList.setOnClickListener(v -> {
-            delayDialog(oneBodyListDialog);
+        CommonUtil.click(binding.viewWarnList, new Action() {
+            @Override
+            public void click() {
+                delayDialog(oneBodyListDialog);
+            }
         });
-        binding.viewTask.setOnClickListener(v -> {
-            startActivity(new Intent(requireActivity(), TaskActivity.class));
+        CommonUtil.click(binding.viewTask, new Action() {
+            @Override
+            public void click() {
+                startActivity(new Intent(requireActivity(), TaskActivity.class));
+            }
         });
-        binding.viewLocation.setOnClickListener(v -> {
-            flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
-            userLocationMarker();
+        CommonUtil.click(binding.viewLocation, new Action() {
+            @Override
+            public void click() {
+                flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
+                userLocationMarker();
+            }
         });
-        binding.viewGridShequ.setOnClickListener(v -> {
-            sheQuListDialog.show();
+        CommonUtil.click(binding.viewGridShequ, new Action() {
+            @Override
+            public void click() {
+                sheQuListDialog.show();
+            }
         });
     }
 

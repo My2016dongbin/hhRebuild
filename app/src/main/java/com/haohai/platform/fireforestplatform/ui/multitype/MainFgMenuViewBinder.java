@@ -21,6 +21,8 @@ import com.haohai.platform.fireforestplatform.BR;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.databinding.ItemEmptyBinding;
 import com.haohai.platform.fireforestplatform.databinding.ItemMenuBinding;
+import com.haohai.platform.fireforestplatform.utils.Action;
+import com.haohai.platform.fireforestplatform.utils.CommonUtil;
 
 import java.io.File;
 
@@ -61,6 +63,12 @@ public class MainFgMenuViewBinder extends ItemViewProvider<MainFgMenu, MainFgMen
 
         binding.title.setText(mainFgMenu.getTitle());
         binding.icon.setImageDrawable(context.getResources().getDrawable(mainFgMenu.getRes()));
+        CommonUtil.click(binding.click, new Action() {
+            @Override
+            public void click() {
+                listener.onItemClick(mainFgMenu);
+            }
+        });
     }
 
     static class ViewHolder<B extends ViewDataBinding> extends RecyclerView.ViewHolder {
@@ -75,10 +83,6 @@ public class MainFgMenuViewBinder extends ItemViewProvider<MainFgMenu, MainFgMen
         }
     }
 
-
-    public void onItemClick(MainFgMenu mainFgMenu){
-        listener.onItemClick(mainFgMenu);
-    }
 
     public interface OnItemClickListener{
         void onItemClick(MainFgMenu mainFgMenu);

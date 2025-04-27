@@ -843,6 +843,52 @@ public class CommonUtil {
             }
         });
     }
+
+
+
+    ///点击事件封装-点击-无动画
+    public static void clickNoTap(View view,Action action) {
+        final boolean[] force = {false};//防止连续点击300ms
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        long now = new Date().getTime();
+                        if(now - times < 300){
+                            force[0] = true;
+                            return true;
+                        }
+                        force[0] = false;
+                        times = now;
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if(force[0]){
+                            return true;
+                        }
+                        times = new Date().getTime();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                action.click();
+                            }
+                        },100);
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        if(force[0]){
+                            return true;
+                        }
+                        times = new Date().getTime();
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
     ///点击事件封装-按下抬起
     public static void clickDownUp(View view,ActionDownUp action) {
         view.setOnTouchListener(new View.OnTouchListener() {

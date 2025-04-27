@@ -24,10 +24,28 @@
             android:layout_height="125dp"
             android:background="@color/black">
 
-            <ImageView
-                android:id="@+id/header"
-                android:layout_width="125dp"
-                android:layout_height="125dp"/>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/header"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"/>
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:maxLines="1"
+                    android:text=""
+                    android:textColor="@color/whiteColor"
+                    android:textSize="12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
             <com.netease.lava.nertc.sdk.video.NERtcVideoView
                 android:id="@+id/video"
                 android:layout_width="125dp"

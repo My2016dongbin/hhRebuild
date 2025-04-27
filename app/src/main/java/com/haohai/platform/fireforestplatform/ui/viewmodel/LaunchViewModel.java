@@ -120,6 +120,7 @@ public class LaunchViewModel extends BaseViewModel {
                                         @Override
                                         public void onFailed(int code) {
                                             HhLog.e( "网易云信login"+"onFailed code " + code);
+                                            doYXLogin();
                                             if (code == 302) {
                                                 // your code
                                             } else {

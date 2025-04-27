@@ -21,9 +21,13 @@ import com.haohai.platform.fireforestplatform.databinding.ItemCallingListBinding
 import com.haohai.platform.fireforestplatform.ui.activity.RangerActivity;
 import com.haohai.platform.fireforestplatform.utils.Action;
 import com.haohai.platform.fireforestplatform.utils.CommonUtil;
+import com.haohai.platform.fireforestplatform.utils.HhLog;
+import com.haohai.platform.fireforestplatform.utils.SPUtils;
+import com.haohai.platform.fireforestplatform.utils.SPValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import me.drakeet.multitype.ItemViewProvider;
 import me.drakeet.multitype.MultiTypeAdapter;
@@ -57,19 +61,33 @@ public class CallingListViewBinder extends ItemViewProvider<CallingList, Calling
 
         ItemCallingListBinding binding = (ItemCallingListBinding) viewHolder.getBinding();
         binding.name.setText(callingList.getFullName());
-        if(callingList.isState()){
-            binding.state.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_yes));
+        String s = (String) SPUtils.get(context, SPValue.phone, "");
+        HhLog.e("onBindViewHolder "+callingList.getPhone() +" , " + s);
+        if(Objects.equals(callingList.getPhone(), s)){
+            binding.state.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_yes_mine));
         }else{
-            binding.state.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_un));
+            if(callingList.isState()){
+                binding.state.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_yes));
+            }else{
+                binding.state.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_un));
+            }
         }
 
-        CommonUtil.click(binding.click, new Action() {
-            @Override
-            public void click() {
-//                callingList.setState(!callingList.isState());
-                listener.onItemClick(callingList,!callingList.isState());
-            }
-        });
+        if(Objects.equals(callingList.getPhone(), s)){
+            CommonUtil.clickNoTap(binding.click, new Action() {
+                @Override
+                public void click() {
+
+                }
+            });
+        }else{
+            CommonUtil.click(binding.click, new Action() {
+                @Override
+                public void click() {
+                    listener.onItemClick(callingList,!callingList.isState());
+                }
+            });
+        }
 
     }
 

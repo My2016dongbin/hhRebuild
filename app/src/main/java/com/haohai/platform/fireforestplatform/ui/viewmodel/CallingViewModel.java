@@ -307,9 +307,15 @@ public class CallingViewModel extends BaseViewModel {
 
                 @Override
                 public void onFailed(int code) {
+                    HhLog.e("网易云信inviteOther " + code);
                     for (int i = 0; i < CommonData.invitedUserListForDelete.size(); i++) {
                         CallingList calling = CommonData.invitedUserListForDelete.get(i);
                         if(Objects.equals(calling.getPhone(), callingModel.getPhone())){
+                            if(code == 10202){
+                                Toast.makeText(context, callingModel.getFullName()+"不在线", Toast.LENGTH_SHORT).show();
+                            }else{
+                                Toast.makeText(context, callingModel.getFullName()+"邀请失败", Toast.LENGTH_SHORT).show();
+                            }
                             CommonData.invitedUserListForDelete.remove(calling);
                             if(CommonData.invitedUserListForDelete.isEmpty()){
                                 ((CallingActivity)context).finish();
@@ -318,11 +324,6 @@ public class CallingViewModel extends BaseViewModel {
                         }
                     }
                     number++;
-                    if(code == 10202){
-                        Toast.makeText(context, callingModel.getFullName()+"不在线", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(context, callingModel.getFullName()+"邀请失败", Toast.LENGTH_SHORT).show();
-                    }
                     if(number == CommonData.invitedReqList.size()){
                         ((CallingActivity)context).finish();
                     }

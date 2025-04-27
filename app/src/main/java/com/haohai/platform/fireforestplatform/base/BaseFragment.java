@@ -21,13 +21,16 @@ import com.haohai.platform.fireforestplatform.helper.DialogHelper;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.FgMainViewModel;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 
-public abstract class BaseFragment<T extends ViewDataBinding, V extends BaseViewModel> extends Fragment {
+import me.jessyan.autosize.internal.CustomAdapt;
+
+public abstract class BaseFragment<T extends ViewDataBinding, V extends BaseViewModel> extends BaseOutFragment{
     protected T binding;
 
     public static BaseFragment newInstance(String param1) {
         Bundle args = new Bundle();
         args.putString("args", param1);
         BaseFragment fragment = new BaseFragment() {
+
             @Override
             protected void setupViewModel() {
 

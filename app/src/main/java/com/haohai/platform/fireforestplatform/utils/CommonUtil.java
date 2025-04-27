@@ -1048,4 +1048,19 @@ public class CommonUtil {
         dialog.show();
     }
 
+    public static int parseFloatToInt(float dimension) {
+        int r = 0;
+        String str = dimension+"";
+        try{
+            if(str.contains(".")){
+                int i = str.indexOf(".");
+                str = str.substring(0,i);
+            }else{
+                r = Integer.parseInt(str);
+            }
+        }catch (Exception e){
+            //
+        }
+        return r;
+    }
 }

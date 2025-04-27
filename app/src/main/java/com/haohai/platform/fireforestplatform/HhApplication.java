@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Environment;
 import android.util.Log;
+import com.haohai.platform.fireforestplatform.R;
 
 //import com.alibaba.android.arouter.launcher.ARouter;
 import com.baidu.mapapi.CoordType;
@@ -17,6 +18,7 @@ import com.cretin.www.cretinautoupdatelibrary.utils.AppUpdateUtils;
 import com.cretin.www.cretinautoupdatelibrary.utils.SSLUtils;
 import com.github.piasy.biv.BigImageViewer;
 import com.github.piasy.biv.loader.glide.GlideImageLoader;
+import com.haohai.platform.fireforestplatform.utils.CommonUtil;
 import com.haohai.platform.fireforestplatform.utils.OkHttp3Connection;
 import com.haohai.platform.fireforestplatform.utils.SSLUtilsX;
 import com.kongzue.dialogx.DialogX;

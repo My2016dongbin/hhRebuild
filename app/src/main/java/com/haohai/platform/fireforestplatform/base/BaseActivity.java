@@ -12,11 +12,14 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 
-public class BaseActivity extends AppCompatActivity{
+import me.jessyan.autosize.internal.CustomAdapt;
+
+public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,4 +100,5 @@ public class BaseActivity extends AppCompatActivity{
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
     }
+
 }

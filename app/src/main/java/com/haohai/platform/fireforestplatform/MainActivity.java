@@ -93,6 +93,8 @@ import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 import com.netease.nimlib.sdk.avsignalling.event.UserJoinEvent;
 import com.netease.nimlib.sdk.avsignalling.event.UserLeaveEvent;
 
+import me.jessyan.autosize.AutoSize;
+
 public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainViewModel> implements BottomNavigationBar.OnTabSelectedListener{
     private MainFragment mainFragment;
     private VideoFragment videoFragment;
@@ -748,6 +750,9 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
         currentTabIndex = index;
 
         //  transaction.commit();// 事务提交
+
+        AutoSize.autoConvertDensityOfGlobal(MainActivity.this);
+
     }
 
     /**

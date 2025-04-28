@@ -363,23 +363,21 @@ public class CallingViewModel extends BaseViewModel {
                         @Override
                         public void onSuccess(Void param) {
                             //Toast.makeText(context, "已取消邀请", Toast.LENGTH_SHORT).show();
-                            ((CallingActivity)context).finish();
                         }
 
                         @Override
                         public void onFailed(int code) {
                             //Toast.makeText(context, "取消邀请失败", Toast.LENGTH_SHORT).show();
-                            ((CallingActivity)context).finish();
                         }
 
                         @Override
                         public void onException(Throwable exception) {
                             Toast.makeText(context, "取消邀请异常", Toast.LENGTH_SHORT).show();
-                            ((CallingActivity)context).finish();
                             //Toast.makeText(CallingActivity.this, "取消邀请异常 ：exception = " + exception, Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
+                ((CallingActivity)context).finish();
             }
         }.start();
     }

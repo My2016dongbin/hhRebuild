@@ -98,6 +98,7 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
 
     @Override
     protected void onDestroy() {
+        CommonData.calling = false;
         EventBus.getDefault().unregister(this);
         try {
             mediaPlayer.stop();
@@ -379,7 +380,8 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
         CommonUtil.click(binding.speakingClose, new Action() {
             @Override
             public void click() {
-                finish();
+                //取消邀请
+                obtainViewModel().cancelInviteOther();
             }
         });
         CommonUtil.click(binding.audio, new Action() {

@@ -358,7 +358,7 @@ public class FgMapViewModel extends BaseViewModel {
         satelliteParams.setPage(1);
         satelliteParams.setDto(new SatelliteParams.DTO("","","","","",endTimeStr,startTimeStr,""));
         HhHttp.postString()
-                .url(URLConstant.POST_MAP_SATELLITE)
+                .url(URLConstant.POST_MAP_SATELLITE+SPUtils.get(context,SPValue.gridNo,""))
                 .content(gson.toJson(satelliteParams))
                 .build()
                 .connTimeOut(10000)

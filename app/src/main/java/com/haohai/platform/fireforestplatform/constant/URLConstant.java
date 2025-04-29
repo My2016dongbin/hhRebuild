@@ -6,7 +6,7 @@ public class URLConstant {
     public static final String BASE_PATH = "http://111.43.13.104:18011/";//Release-穿透
 
     public static final String SATELLITE_IMAGE = "http://web.ehaohai.com:2018";//卫星图片前缀
-    public static final String COMMON_VERSION = "http://192.168.1.88:8082/auth/api/androidUpgrade/page";
+    public static final String COMMON_VERSION = BASE_PATH + "auth/api/androidUpgrade/page";
 
 
     public static final String PERMISSION_MAIN = BASE_PATH + "auth/api/auth/auth/user/auth";
@@ -32,7 +32,7 @@ public class URLConstant {
     public static final String POST_MAP_ONE_BODY = BASE_PATH + "fire/api/monitorFirealarm/page?type=appInternet";//一体机报警数据
     public static final String GET_MAP_FIRE_VIDEO_URL = BASE_PATH + "fire/api/monitorFirealarm/getMonitorAlarmById?type=appInternet";//一体机报警详情
 //    public static final String POST_MAP_SATELLITE = BASE_PATH + "fire/api/satelliteFirealarm/list";//卫星报警数据
-    public static final String POST_MAP_SATELLITE = BASE_PATH + "fire/api/satelliteFirealarm/getFirePage?fireIds=&gridNo=370214";//卫星报警数据NEW
+    public static final String POST_MAP_SATELLITE = BASE_PATH + "fire/api/satelliteFirealarm/getFirePage?fireIds=&gridNo=";//卫星报警数据NEW
     public static final String POST_MAP_RESOURCE_TYPE = BASE_PATH + "resource/api/resourceList/list";//资源类型列表
     public static final String POST_MAP_RESOURCE_TYPE_NEW = BASE_PATH + "resource/api/resourceType/list";//资源类型列表-新增
     public static final String POST_MAP_RESOURCE_LIST_NEW = BASE_PATH + "resource/api/commonResource/list";//按类型查询资源列表-新增

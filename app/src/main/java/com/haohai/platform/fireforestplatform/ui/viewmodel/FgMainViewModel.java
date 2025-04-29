@@ -129,7 +129,7 @@ public class FgMainViewModel extends BaseViewModel {
                     HhHttp.get().url(URLConstant.GET_VIDEO_LIVE_URL)
                             .addParams("cameraId", cameraId)
                             .addParams("manufacturer", "2")
-                            //.addParams("streamType", "1")
+                            .addParams("streamType", "1")
                             .addParams("protocolType", "rtsp")
                             .build().execute(new LoggedInStringCallback(FgMainViewModel.this, context) {
                         @Override

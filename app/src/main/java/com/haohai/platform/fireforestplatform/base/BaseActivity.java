@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 
-import me.jessyan.autosize.internal.CustomAdapt;
 
 public class BaseActivity extends AppCompatActivity {
 

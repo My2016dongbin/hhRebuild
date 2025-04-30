@@ -21,7 +21,6 @@ import com.haohai.platform.fireforestplatform.helper.DialogHelper;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.FgMainViewModel;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 
-import me.jessyan.autosize.internal.CustomAdapt;
 
 public abstract class BaseFragment<T extends ViewDataBinding, V extends BaseViewModel> extends BaseOutFragment{
     protected T binding;

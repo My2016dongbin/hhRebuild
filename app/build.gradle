@@ -2,8 +2,8 @@ plugins {
     id 'com.android.application'
 }
 
-def VERSION_CODE = 214
-def VERSION_NAME = "2.1.4"
+def VERSION_CODE = 215
+def VERSION_NAME = "2.1.5"
 def keyfile = file('s.keystore.temp')
 ext{
     routerApiVersion = '1.5.0'
@@ -267,7 +267,7 @@ dependencies {
     implementation 'com.netease.nimlib:basesdk:10.8.21'
     implementation 'com.netease.nimlib:avsignalling:10.8.21'
 
-    implementation 'me.jessyan:autosize:1.1.2'
+//    implementation 'me.jessyan:autosize:1.1.2'
 
   /*  //依赖包冲突
     configurations {

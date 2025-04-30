@@ -94,7 +94,7 @@ import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 import com.netease.nimlib.sdk.avsignalling.event.UserJoinEvent;
 import com.netease.nimlib.sdk.avsignalling.event.UserLeaveEvent;
 
-import me.jessyan.autosize.AutoSize;
+//import me.jessyan.autosize.AutoSize;
 
 public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainViewModel> implements BottomNavigationBar.OnTabSelectedListener{
     private MainFragment mainFragment;
@@ -754,7 +754,7 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
 
         //  transaction.commit();// 事务提交
 
-        AutoSize.autoConvertDensityOfGlobal(MainActivity.this);
+//        AutoSize.autoConvertDensityOfGlobal(MainActivity.this);
 
     }
 

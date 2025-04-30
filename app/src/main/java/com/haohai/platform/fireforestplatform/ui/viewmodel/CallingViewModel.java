@@ -108,6 +108,28 @@ public class CallingViewModel extends BaseViewModel {
         }
     }
 
+    public void updateDataAt(int i) {
+        assertAllRegistered(adapter, items);
+        adapter.notifyItemChanged(i,videoChatList.get(i));
+    }
+
+    public void updateDataAdd() {
+        if (videoChatList != null && videoChatList.size()!=0) {
+//            items.clear();
+            items.add(videoChatList.get(videoChatList.size()-1));
+
+            assertAllRegistered(adapter, items);
+            adapter.notifyItemInserted(items.size()-1);
+        }
+    }
+
+    public void updateDataDelete(int i) {
+        items.remove(i);
+
+        assertAllRegistered(adapter, items);
+        adapter.notifyItemRemoved(i);
+    }
+
 
     /**
      * 接受对方的的邀请并加入频道

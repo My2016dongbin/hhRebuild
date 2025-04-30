@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -90,6 +91,7 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         EventBus.getDefault().register(this);
         obtainViewModel().audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         init_();
@@ -195,6 +197,9 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
 
     private void changeVisible() {
         binding.flCalling.setVisibility(View.GONE);
+        binding.callingVideo.setVisibility(View.GONE);
+        //解绑本地预览 View，不显示了，但推流还在
+        NERtcEx.getInstance().setupLocalVideoCanvas(null);
         binding.llSpeaking.setVisibility(View.VISIBLE);
 
         parseStartDo();
@@ -219,7 +224,8 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
         }else{
             //被邀请人加入房间-先把把自己画面放到列表显示
             obtainViewModel().videoChatList.add(new VideoChat(Long.parseLong((String) SPUtils.get(this,SPValue.phone,"")),(String) SPUtils.get(this,SPValue.headUrl,""),(String) SPUtils.get(this,SPValue.fullName,""),(String) SPUtils.get(this,SPValue.roleName,""),true,true));
-            obtainViewModel().updateData();
+//            obtainViewModel().updateData();
+            obtainViewModel().updateDataAdd();
         }
 
 
@@ -564,7 +570,8 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
         }else{
             //被邀请人加入房间-列表画面显示
             obtainViewModel().videoChatList.add(new VideoChat(uid,header,name,role,true,true));
-            obtainViewModel().updateData();
+//            obtainViewModel().updateData();
+            obtainViewModel().updateDataAdd();
         }
     }
 
@@ -587,7 +594,8 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
             VideoChat videoChat = obtainViewModel().videoChatList.get(i);
             if(videoChat.getId() == uid){
                 obtainViewModel().videoChatList.remove(videoChat);
-                obtainViewModel().updateData();
+//                obtainViewModel().updateData();
+                obtainViewModel().updateDataDelete(i);
                 obtainViewModel().videoCounts--;
                 HhLog.e("onUserLeave -" + obtainViewModel().videoCounts);
                 if(obtainViewModel().videoCounts==1){
@@ -612,7 +620,8 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
             VideoChat model = obtainViewModel().videoChatList.get(i);
             if(l == model.getId()){
                 model.setAudio(true);
-                obtainViewModel().updateData();
+//                obtainViewModel().updateData();
+                obtainViewModel().updateDataAt(i);
                 return;
             }
         }
@@ -629,7 +638,8 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
             VideoChat model = obtainViewModel().videoChatList.get(i);
             if(l == model.getId()){
                 model.setAudio(false);
-                obtainViewModel().updateData();
+//                obtainViewModel().updateData();
+                obtainViewModel().updateDataAt(i);
                 return;
             }
         }
@@ -647,7 +657,8 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
             VideoChat chat = obtainViewModel().videoChatList.get(j);
             if(l == chat.getId()){
                 chat.setVideo(true);
-                obtainViewModel().updateData();
+//                obtainViewModel().updateData();
+                obtainViewModel().updateDataAt(j);
                 return;
             }
         }
@@ -665,7 +676,8 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
             VideoChat chat = obtainViewModel().videoChatList.get(j);
             if(l == chat.getId()){
                 chat.setVideo(false);
-                obtainViewModel().updateData();
+//                obtainViewModel().updateData();
+                obtainViewModel().updateDataAt(j);
                 return;
             }
         }

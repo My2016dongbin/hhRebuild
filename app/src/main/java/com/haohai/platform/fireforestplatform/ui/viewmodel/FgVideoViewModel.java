@@ -59,6 +59,8 @@ public class FgVideoViewModel extends BaseViewModel {
     }
 
     public void postMove(int type, int speed, int stop) {
+        String gridNo = (String) SPUtils.get(context, SPValue.gridNo, "370214");
+        String groupId = (String) SPUtils.get(context, SPValue.groupId, "001021");
         HhHttp.get()
                 .url(URLConstant.GET_CONTROL)
                 .addParams("monitorId", CommonData.videoDeleteMonitorId)
@@ -67,14 +69,22 @@ public class FgVideoViewModel extends BaseViewModel {
                 .addParams("stop", stop+"")
                 //.addParams("controlId", CommonData.videoDeleteControlId)
                 .addParams("controlType", type+"")
-                //.addParams("gridNo", (String) SPUtils.get(context, SPValue.gridNo,"370214"))
-                //.addParams("groupId", (String) SPUtils.get(context, SPValue.groupId,"001021"))
-                .addParams("gridNo", "370214")
-                .addParams("groupId", "001021")
+                .addParams("gridNo", gridNo)
+                .addParams("groupId", groupId)
+//                .addParams("groupId", "001021")
                 .build()
                 .execute(new LoggedInStringCallback(this,context) {
                     @Override
                     public void onSuccess(String response, int id) {
+                        HhLog.e("GET_CONTROL " + URLConstant.GET_CONTROL
+                                + "?monitorId="+CommonData.videoDeleteMonitorId
+                        +"&channelId="+CommonData.videoDeleteChannelId
+                        +"&speed="+speed
+                        +"&stop="+stop
+                        +"&controlType="+type
+                        +"&gridNo="+gridNo
+                        +"&groupId="+groupId
+                        );
                         HhLog.e("GET_CONTROL " + response);
                         HhLog.e("GET_CONTROL monitorId " + CommonData.videoDeleteMonitorId);
                         HhLog.e("GET_CONTROL channelId " + CommonData.videoDeleteChannelId);

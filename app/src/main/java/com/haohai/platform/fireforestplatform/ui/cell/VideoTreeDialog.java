@@ -31,6 +31,7 @@ import com.haohai.platform.fireforestplatform.ui.multitype.GridTreesViewBinder;
 import com.haohai.platform.fireforestplatform.ui.multitype.RangerGridViewBinder;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.DialogTreeViewModel;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
+import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.scwang.smartrefresh.header.MaterialHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
@@ -306,6 +307,7 @@ public class VideoTreeDialog extends Dialog implements GridTreesViewBinder.OnIte
 
     @Override
     public void onItemClick(GridModel gridModel, boolean state) {
+        HhLog.e("gridModel = " + gridModel.toString());
         if(viewModel.tabStatus==0){
             int offset = binding.rlv.computeVerticalScrollOffset();
             viewModel.updateData();
@@ -338,6 +340,7 @@ public class VideoTreeDialog extends Dialog implements GridTreesViewBinder.OnIte
 
     @Override
     public void onItemClick(GridCamera gridCamera) {
+        HhLog.e("gridCamera = " + gridCamera.toString());
         //获取流后跳转播放 monitorId->getVideoId channelId->getMonitorId
         //viewModel.getStream(gridCamera.getId(),  "be1d755c-ceab-46cc-b6dc-046c933d8360","89e8c6f4-8d0c-4415-9802-37c60f7cd9de",gridCamera.getControlDeviceId());
         viewModel.getStream(gridCamera.getId(), gridCamera.getMonitorId(), gridCamera.getId());

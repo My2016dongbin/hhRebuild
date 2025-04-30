@@ -416,6 +416,7 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
                 if(obtainViewModel().hasVideo){
                     binding.videoBack.setBackground(ContextCompat.getDrawable(CallingActivity.this,R.drawable.green_circle));
                     binding.videoText.setText("关闭视频");
+                    binding.ivVideo.setImageDrawable(ContextCompat.getDrawable(CallingActivity.this,R.drawable.video_on));
                     NERtcEx.getInstance().enableLocalVideo(true);
                     //NERtcEx.getInstance().muteLocalVideoStream(false);
                     if((my + "").equals(obtainViewModel().accountId)){
@@ -426,6 +427,7 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
                 }else{
                     binding.videoBack.setBackground(ContextCompat.getDrawable(CallingActivity.this,R.drawable.white_circle));
                     binding.videoText.setText("开启视频");
+                    binding.ivVideo.setImageDrawable(ContextCompat.getDrawable(CallingActivity.this,R.drawable.icon_video_call));
                     NERtcEx.getInstance().enableLocalVideo(false);
                     //NERtcEx.getInstance().muteLocalVideoStream(true);
                     if((my + "").equals(obtainViewModel().accountId)){
@@ -436,12 +438,12 @@ public class CallingActivity extends BaseLiveActivity<ActivityCallingBinding, Ca
                 }
             }
         });
-        CommonUtil.click(binding.person, new Action() {
+        /*CommonUtil.click(binding.person, new Action() {
             @Override
             public void click() {
 
             }
-        });
+        });*/
     }
 
 

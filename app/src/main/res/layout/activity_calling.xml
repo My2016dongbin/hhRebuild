@@ -118,8 +118,9 @@
                         android:layout_width="46dp"
                         android:layout_height="46dp">
                         <ImageView
+                            android:id="@+id/iv_video"
                             android:layout_gravity="center"
-                            android:src="@drawable/icon_video_call"
+                            android:src="@drawable/video_on"
                             android:layout_width="24dp"
                             android:layout_height="33dp"/>
                     </FrameLayout>

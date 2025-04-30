@@ -124,10 +124,14 @@ public class CallingViewModel extends BaseViewModel {
     }
 
     public void updateDataDelete(int i) {
-        items.remove(i);
+        if (videoChatList != null && videoChatList.size()!=0) {
+            items.remove(i);
 
-        assertAllRegistered(adapter, items);
-        adapter.notifyItemRemoved(i);
+            assertAllRegistered(adapter, items);
+            adapter.notifyItemRemoved(i);
+        }else{
+            adapter.notifyDataSetChanged();
+        }
     }
 
 

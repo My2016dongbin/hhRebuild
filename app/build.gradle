@@ -209,7 +209,7 @@ dependencies {
 
     implementation 'com.tencent.tbs:tbssdk:44153'
 
-    def dialogx_version = "0.0.46.beta8"
+    def dialogx_version = "0.0.46"
     implementation "com.github.kongzue.DialogX:DialogX:${dialogx_version}"
     implementation "com.github.kongzue.DialogX:DialogXIOSStyle:${dialogx_version}"
 

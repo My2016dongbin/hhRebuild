@@ -229,7 +229,7 @@ public class TaskListInfoActivity extends BaseLiveActivity<ActivityTaskListInfoB
             LinearLayout ll_pictures = view.findViewById(R.id.ll_pictures);
             LinearLayout ll_videos = view.findViewById(R.id.ll_videos);
             user.setText(model.getCreateUser());
-            time.setText(model.getCreateTime());
+            time.setText(StringData.parse19(model.getCreateTime()));
             live_detail.setText(model.getSiteConditions());
             live_other.setText(model.getOtherConditions());
             List<String> pictures = CommonUtil.parseListString(model.getImgUrl());

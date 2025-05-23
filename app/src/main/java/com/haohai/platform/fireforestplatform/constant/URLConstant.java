@@ -3,7 +3,7 @@ package com.haohai.platform.fireforestplatform.constant;
 public class URLConstant {
 
     public static final String BASE_PATH = "http://117.132.5.139:18044/";//Release
-//    public static final String BASE_PATH = "http://192.168.1.196:8444/";//debug-本地
+//    public static final String BASE_PATH = "http://192.168.1.169:8444/";//debug-本地
 
     public static final String SATELLITE_IMAGE = "http://web.ehaohai.com:2018";//卫星图片前缀
     public static final String COMMON_VERSION = "http://117.132.5.139:18044/auth/api/androidUpgrade/page";

@@ -29,7 +29,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -119,9 +122,21 @@ public class LoginViewModel extends BaseViewModel {
                                 Set<String> tagSet = new LinkedHashSet<>();
                                 tagSet.add(userJsonObj.getString("id"));
                                 tagSet.add(userJsonObj.getString("gridNo"));
-                                tagSet.add("cy_" + userJsonObj.getString("groupId"));
-                                tagSet.add("cy_logout_" + CommonData.sessionKey);
-                                tagSet.add("cy_" + CommonData.sessionKey);
+                                tagSet.add("xian_" + userJsonObj.getString("groupId"));
+                                String roleId = userJsonObj.getString("roleId");
+                                String[] roleIdList;
+                                try{
+                                    roleIdList = roleId.split(",");
+                                    tagSet.addAll(Arrays.asList(roleIdList));
+
+                                    HhLog.e("Arrays.asList(roleIdList) try " + Arrays.asList(roleIdList));
+
+                                }catch (Exception e){
+                                    tagSet.add(userJsonObj.getString("roleId")+"");
+                                    HhLog.e("Arrays.asList(roleIdList) catch roleId " + userJsonObj.getString("roleId"));
+                                }
+                                tagSet.add("xian_logout_" + CommonData.sessionKey);
+                                tagSet.add("xian_" + CommonData.sessionKey);
                                 tagSet.add("debug20240304");
                                 XGPushManager.setTags(context, "setTag", tagSet, new XGIOperateCallback() {
                                     @Override
@@ -268,6 +283,7 @@ public class LoginViewModel extends BaseViewModel {
 
         permissionStr = "";
         String[] menuCodeList = {CommonPermission.MAIN_APP, CommonPermission.MAIN_VIDEO, CommonPermission.MAIN_MESSAGE, CommonPermission.MAIN_MAP, CommonPermission.MAIN_MY};
+        permissionCount = 0;
         for (int i = 0; i < menuCodeList.length; i++) {
             getInnerPermission(menuCodeList[i]);
         }
@@ -301,7 +317,7 @@ public class LoginViewModel extends BaseViewModel {
                                 }
                             }
                             permissionCount++;
-                            if (permissionCount == 5) {
+                            if (permissionCount >= 5) {
                                 try {
                                     SPUtils.put(context, SPValue.permission, permissionStr);
                                     String mt = (String) SPUtils.get(context, SPValue.permission, "");

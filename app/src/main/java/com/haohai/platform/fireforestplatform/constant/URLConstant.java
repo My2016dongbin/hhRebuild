@@ -99,6 +99,7 @@ public class URLConstant {
     public static final String GET_VIDEO_DH_SEARCH = BASE_PATH +"resource/api/camera";//检索大华设备
     public static final String POST_STREAM = BASE_PATH +"resource/api/mediaKit/streamNotFoundwebHookNew";//流媒体提前手动拉流
     public static final String GET_CONTROL = BASE_PATH +"resource/api/liveVideo/control";//视频设备控制
+    public static final String GET_CONTROL_GB = BASE_PATH +"resource/api/liveVideo/controlGB";//视频设备控制卡口
     public static final String POST_VIDEO_COLLECTION = BASE_PATH +"resource/api/cameraCollection";//收藏 /*PostStar(gridCamera.getId(),gridCamera.getName(),null,gridCamera.getMonitorId())*/
     public static final String DELETE_VIDEO_COLLECTION = BASE_PATH +"resource/api/cameraCollection";//取消收藏
 

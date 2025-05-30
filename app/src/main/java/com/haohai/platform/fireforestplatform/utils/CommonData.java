@@ -43,6 +43,7 @@ public class CommonData {
     public static int videoDeleteIndex = 0;
     public static String videoDeleteMonitorId = "";
     public static String videoDeleteChannelId = "";
+    public static String videoDeleteDeviceId = "";
     public static List<Integer> videoPlayingIndexList = new ArrayList<>();
     public static List<VideoDeleteModel> videoDeleteModelList = new ArrayList<>();
 

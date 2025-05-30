@@ -243,7 +243,7 @@ public class DialogTreeViewModel extends BaseViewModel {
         });
     }
 
-    public void getStream(String cameraId, String monitorId, String channelId, int cameraType) {
+    public void getStream(String cameraId, String monitorId, String channelId, int cameraType,String deviceId) {
         DialogHelper.getInstance().show(context, "获取中..");
         HhHttp.get().url(URLConstant.GET_VIDEO_LIVE_URL)
                             .addParams("cameraId", cameraId)
@@ -269,7 +269,8 @@ public class DialogTreeViewModel extends BaseViewModel {
                                             DialogHelper.getInstance().close();
                                             CommonData.videoDeleteMonitorId = monitorId;
                                             CommonData.videoDeleteChannelId = channelId;
-                                            parseVideoDeleteIds(new VideoDeleteModel(CommonData.videoAddingIndex, monitorId, channelId));
+                                            CommonData.videoDeleteDeviceId = deviceId;
+                                            parseVideoDeleteIds(new VideoDeleteModel(CommonData.videoAddingIndex, monitorId, channelId,deviceId));
                                             EventBus.getDefault().post(new VideoStream(url, true, CommonData.videoAddingIndex));
                                             EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(context, SPValue.videoIndex,1)));
                                         }

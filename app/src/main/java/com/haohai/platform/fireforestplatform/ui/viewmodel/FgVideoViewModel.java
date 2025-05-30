@@ -94,5 +94,68 @@ public class FgVideoViewModel extends BaseViewModel {
                         HhLog.e("GET_CONTROL e" + e.getMessage());
                     }
                 });
+        
+        
+        HhHttp.get()
+                .url(URLConstant.GET_CONTROL_GB)
+                .addParams("deviceId", CommonData.videoDeleteDeviceId)
+                .addParams("serial", CommonData.videoDeleteDeviceId)
+                .addParams("speed", stop==1?"1":speed+"")
+                .addParams("controlType", stop==1?"stop":parseType(type))
+                .build()
+                .execute(new LoggedInStringCallback(this,context) {
+                    @Override
+                    public void onSuccess(String response, int id) {
+                        HhLog.e("GET_CONTROL_GB " + URLConstant.GET_CONTROL_GB
+                                + "?deviceId=" +CommonData.videoDeleteDeviceId
+                                +"&serial=" +CommonData.videoDeleteDeviceId
+                                +"&speed=" +(stop==1?"1":speed+"")
+                                +"&controlType=" +(stop==1?"stop":parseType(type))
+                        );
+                        HhLog.e("GET_CONTROL_GB " + response);
+                        HhLog.e("GET_CONTROL_GB monitorId " + CommonData.videoDeleteDeviceId);
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Exception e, int id) {
+                        HhLog.e("GET_CONTROL e" + e.getMessage());
+                    }
+                });
+        
+    }
+
+    private String parseType(int type) {
+        String str = "left";
+        if(type == 21){
+            str = "up";
+        }
+        if(type == 26){
+            str = "upright";
+        }
+        if(type == 24){
+            str = "right";
+        }
+        if(type == 28){
+            str = "downright";
+        }
+        if(type == 22){
+            str = "down";
+        }
+        if(type == 27){
+            str = "downleft";
+        }
+        if(type == 23){
+            str = "left";
+        }
+        if(type == 25){
+            str = "upleft";
+        }
+        if(type == 11){
+            str = "zoomin";
+        }
+        if(type == 12){
+            str = "zoomout";
+        }
+        return str;
     }
 }

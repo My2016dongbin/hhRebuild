@@ -368,7 +368,7 @@ public class VideoTreeDialog extends Dialog implements GridTreesViewBinder.OnIte
         //获取流后跳转播放 monitorId->getVideoId channelId->getMonitorId
         //viewModel.getStream(gridCamera.getId(),  "be1d755c-ceab-46cc-b6dc-046c933d8360","89e8c6f4-8d0c-4415-9802-37c60f7cd9de",gridCamera.getControlDeviceId());
         HhLog.e("stream -- " + gridCamera.toString() + " , " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
-        viewModel.getStream(gridCamera.getId(), gridCamera.getMonitorId(), gridCamera.getId(),gridCamera.getCameraType());
+        viewModel.getStream(gridCamera.getId(), gridCamera.getMonitorId(), gridCamera.getId(),gridCamera.getCameraType(),gridCamera.getDeviceId());
         dialogListener.hideTreeDialog();
     }
 

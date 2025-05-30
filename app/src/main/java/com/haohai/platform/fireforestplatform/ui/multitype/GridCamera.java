@@ -131,7 +131,11 @@ public class GridCamera {
                 ", subRtspUrl='" + subRtspUrl + '\'' +
                 ", state='" + state + '\'' +
                 ", collectionState='" + collectionState + '\'' +
+                ", isOnLine='" + isOnLine + '\'' +
                 ", cameraType=" + cameraType +
+                ", deviceId='" + deviceId + '\'' +
+                ", mediaDeviceId='" + mediaDeviceId + '\'' +
+                ", controlDeviceId='" + controlDeviceId + '\'' +
                 ", status=" + status +
                 '}';
     }

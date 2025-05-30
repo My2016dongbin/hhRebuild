@@ -386,7 +386,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
                     .setOkButtonClickListener((dialog, v1) -> {
                         mainDeviceListDialog.cancel();
                         CommonData.videoAddingIndex = 1;
-                        obtainViewModel().getStream(dto_left.getId(),dto_left.getMonitorId(),dto_left.getId());
+                        obtainViewModel().getStream(dto_left.getId(),dto_left.getMonitorId(),dto_left.getId(),"deviceId");
                         return false;
                     })
                     .setCancelable(true);
@@ -406,13 +406,13 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
                     .setOkButtonClickListener((dialog, v1) -> {
                         mainDeviceListDialog.cancel();
                         CommonData.videoAddingIndex = 1;
-                        obtainViewModel().getStream(dto_left.getId(),dto_left.getMonitorId(),dto_left.getId());
+                        obtainViewModel().getStream(dto_left.getId(),dto_left.getMonitorId(),dto_left.getId(),"deviceId");
                         return false;
                     })
                     .setCancelButtonClickListener((dialog, v1) -> {
                         mainDeviceListDialog.cancel();
                         CommonData.videoAddingIndex = 1;
-                        obtainViewModel().getStream(dto_right.getId(),dto_right.getMonitorId(),dto_right.getId());
+                        obtainViewModel().getStream(dto_right.getId(),dto_right.getMonitorId(),dto_right.getId(),"deviceId");
                         return false;
                     })
                     .setCancelable(true);

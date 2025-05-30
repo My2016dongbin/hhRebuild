@@ -3,11 +3,13 @@ public class VideoDeleteModel {
     private int index;
     private String monitorId;
     private String channelId;
+    private String deviceId;
 
-    public VideoDeleteModel(int index, String monitorId, String channelId) {
+    public VideoDeleteModel(int index, String monitorId, String channelId, String deviceId) {
         this.index = index;
         this.monitorId = monitorId;
         this.channelId = channelId;
+        this.deviceId = deviceId;
     }
 
     public int getIndex() {
@@ -16,6 +18,14 @@ public class VideoDeleteModel {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getMonitorId() {

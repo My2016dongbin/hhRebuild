@@ -76,7 +76,25 @@ public class MainDevice {
         private String id;
         private String name;
         private String monitorId;
+        private String deviceId;
         private String controlDeviceId;
+        private int cameraType;
+
+        public int getCameraType() {
+            return cameraType;
+        }
+
+        public void setCameraType(int cameraType) {
+            this.cameraType = cameraType;
+        }
+
+        public String getDeviceId() {
+            return deviceId;
+        }
+
+        public void setDeviceId(String deviceId) {
+            this.deviceId = deviceId;
+        }
 
         public String getControlDeviceId() {
             return controlDeviceId;

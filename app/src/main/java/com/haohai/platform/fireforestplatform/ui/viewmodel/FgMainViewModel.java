@@ -138,14 +138,15 @@ public class FgMainViewModel extends BaseViewModel {
                 });
     }
 
-    public void getStream(String cameraId, String monitorId, String channelId, String deviceId) {
+    public void getStream(String cameraId, String monitorId, String channelId, int cameraType, String deviceId) {
         DialogHelper.getInstance().show(context, "获取中..");
         HhHttp.get().url(URLConstant.GET_VIDEO_LIVE_URL)
+//                .addParams("cameraId", cameraId)
+//                .addParams("protocolType", "http")
                 .addParams("cameraId", cameraId)
-                /*.addParams("manufacturer","2")//
-                .addParams("streamType","2")//
-                .addParams("protocol","RTSP")//*/
-                .addParams("protocolType", "http")
+                .addParams("manufacturer", cameraType==1||cameraType==2?"5":"4")//5    4
+                .addParams("streamType", "2")//2     2
+                .addParams("protocolType", cameraType==1||cameraType==2?"http":"rtsp")//http    rtsp
                 .build().execute(new LoggedInStringCallback(FgMainViewModel.this, context) {
             @Override
             public void onSuccess(String response, int id) {

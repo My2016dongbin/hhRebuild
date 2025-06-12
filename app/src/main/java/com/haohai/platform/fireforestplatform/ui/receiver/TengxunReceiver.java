@@ -177,7 +177,7 @@ public class TengxunReceiver extends XGPushBaseReceiver{
                 .setMargin(20,20,20,0)
                 .setRadius(40)
                 .setTitle(xgPushShowedResult.getTitle())
-                .autoDismiss(60000)
+                .autoDismiss(1000)
                 .setOnPopNotificationClickListener((dialog, v) -> {
                     new InputDialog(parseMessageType(finalType) + "通知", finalContent, "反馈", "取消", context.getString(R.string.feedback))
                             .setCancelable(false)

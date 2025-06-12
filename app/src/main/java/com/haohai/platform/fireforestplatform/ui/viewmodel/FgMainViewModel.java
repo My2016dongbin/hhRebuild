@@ -142,6 +142,7 @@ public class FgMainViewModel extends BaseViewModel {
         DialogHelper.getInstance().show(context, "获取中..");
         HhHttp.get().url(URLConstant.GET_VIDEO_LIVE_URL)
                 .addParams("cameraId", cameraId)
+                .addParams("manufacturer","4")
                 /*.addParams("manufacturer","2")//
                 .addParams("streamType","2")//
                 .addParams("protocol","RTSP")//*/
@@ -156,7 +157,7 @@ public class FgMainViewModel extends BaseViewModel {
                     JSONArray data = jsonObject.getJSONArray("data");
                     if (data.length() > 0) {
                         JSONObject obj = (JSONObject) data.get(0);
-                        String url = obj.getString("url");
+                        String url = obj.getString("url").replace("ws://","http://");
                         HhLog.e("getStream url " + url);
                         new Handler().postDelayed(new Runnable() {
                             @Override

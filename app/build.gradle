@@ -2,8 +2,8 @@ plugins {
     id 'com.android.application'
 }
 
-def VERSION_CODE = 211
-def VERSION_NAME = "2.1.1"
+def VERSION_CODE = 200
+def VERSION_NAME = "2.0.0"
 def keyfile = file('s.keystore.temp')
 ext{
     routerApiVersion = '1.5.0'
@@ -75,7 +75,7 @@ android {
             manifestPlaceholders = [
                     APP_ICON: "@drawable/ic_icon",//app图标
                     CHANNEL_NAME: "haohaiVersion",
-                    APP_NAME: "五位一体智慧管理平台",
+                    APP_NAME: "林海卫士",
                     AUTHORITIES: "com.haohai.platform.fireforestplatform.fileprovider",
             ]
             //buildConfigField("String", "NET_TYPE", "ONLINE")//网络
@@ -86,7 +86,7 @@ android {
             manifestPlaceholders = [
                     APP_ICON: "@drawable/ic_icon",//app图标
                     CHANNEL_NAME: "onceVersion",
-                    APP_NAME: "五位一体智慧管理平台临时测试版${defaultConfig.versionName}",
+                    APP_NAME: "林海卫士临时测试版${defaultConfig.versionName}",
                     AUTHORITIES: "com.haohai.platform.fireforestplatform.fileprovider",
             ]
         }

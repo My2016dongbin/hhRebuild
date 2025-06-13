@@ -1,5 +1,6 @@
 package com.haohai.platform.fireforestplatform.ui.cell;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +30,7 @@ import java.util.Date;
 public class SatelliteSearchAdvancedDialog extends Dialog implements DatePicker.OnDateChangedListener {
 
     private final Context context;
+    private final Activity activity;
     private SatelliteSearchAdvancedDialogListener dialogListener;
     private final DialogSatelliteSearchAdvancedBinding binding;
     private boolean isStart = false;
@@ -40,9 +42,10 @@ public class SatelliteSearchAdvancedDialog extends Dialog implements DatePicker.
     private StringBuffer date;
     private StringBuffer endDate;
 
-    public SatelliteSearchAdvancedDialog(@NonNull Context context, @StyleRes int themeResId) {
+    public SatelliteSearchAdvancedDialog(@NonNull Context context, @NonNull Activity activity, @StyleRes int themeResId) {
         super(context,themeResId);
         this.context = context;
+        this.activity = activity;
         binding = DataBindingUtil.inflate(LayoutInflater.from(getContext()), R.layout.dialog_satellite_search_advanced, null, false);
         setContentView(binding.getRoot());
     }
@@ -105,7 +108,7 @@ public class SatelliteSearchAdvancedDialog extends Dialog implements DatePicker.
      * 日期选择控件
      */
     private void showDataDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setPositiveButton("设置", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -155,7 +158,7 @@ public class SatelliteSearchAdvancedDialog extends Dialog implements DatePicker.
 
 
         final AlertDialog dialog = builder.create();
-        View dialogView = View.inflate(getContext(), R.layout.dialog_date, null);
+        View dialogView = View.inflate(activity, R.layout.dialog_date, null);
         final DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.datePicker);
         Calendar date = Calendar.getInstance();
         int year1 = date.get(Calendar.YEAR);
@@ -188,7 +191,7 @@ public class SatelliteSearchAdvancedDialog extends Dialog implements DatePicker.
      * 日期选择控件
      */
     private void showTimeDialog() {
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
         builder1.setPositiveButton("设置", new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -226,7 +229,7 @@ public class SatelliteSearchAdvancedDialog extends Dialog implements DatePicker.
 
 
         final AlertDialog timeDialog = builder1.create();
-        View dialogView = View.inflate(getContext(), R.layout.dialog_time, null);
+        View dialogView = View.inflate(activity, R.layout.dialog_time, null);
         final TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.timepicker);
         timePicker.setIs24HourView(true);   //设置时间显示为24小时
         Calendar date = Calendar.getInstance();

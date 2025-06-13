@@ -892,7 +892,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
     }
     private void initSatelliteSearchAdvancedDialog() {
-        satelliteSearchAdvancedDialog = new SatelliteSearchAdvancedDialog(requireActivity(), R.style.ActionSheetDialogStyle);
+        satelliteSearchAdvancedDialog = new SatelliteSearchAdvancedDialog(requireActivity(), requireActivity(), R.style.ActionSheetDialogStyle);
         Window dialogWindow = satelliteSearchAdvancedDialog.getWindow();
         dialogWindow.setGravity(Gravity.BOTTOM);
         satelliteSearchAdvancedDialog.setDialogListener(this);

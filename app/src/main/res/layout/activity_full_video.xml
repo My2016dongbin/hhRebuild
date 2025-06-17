@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.FullVideoActivity">
+    <FrameLayout
+        android:id="@+id/group_one"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+
+        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+            android:id="@+id/gsy_player_one1"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.haohai.platform.fireforestplatform.utils.MoveSurfaceView
+            android:id="@+id/sf_video_one1"
+            android:gravity="center"
+            android:layout_marginBottom="1dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <SurfaceView
+            android:id="@+id/sf_back"
+            android:gravity="center"
+            android:visibility="gone"
+            android:background="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <View
+            android:id="@+id/status_one1"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_gravity="bottom"
+            android:background="@color/blue"/>
+    </FrameLayout>
+    <SurfaceView
+        android:id="@+id/sf_back_all"
+        android:gravity="center"
+        android:visibility="gone"
+        android:background="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <FrameLayout
+        android:id="@+id/back_fl"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@drawable/ic_back_white"
+            android:scaleType="fitXY"
+            android:padding="8dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
+    </FrameLayout>
+
+
+    <ImageView
+        android:id="@+id/move_up"
+        android:visibility="gone"
+        android:src="@drawable/move_up"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitXY"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+    <ImageView
+        android:id="@+id/move_down"
+        android:visibility="gone"
+        android:src="@drawable/move_down"
+        android:layout_marginBottom="50dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:scaleType="fitXY"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+    <ImageView
+        android:id="@+id/move_left"
+        android:visibility="gone"
+        android:src="@drawable/move_left"
+        android:layout_marginStart="50dp"
+        android:layout_gravity="center_vertical"
+        android:scaleType="fitXY"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+    <ImageView
+        android:id="@+id/move_right"
+        android:visibility="gone"
+        android:src="@drawable/move_right"
+        android:layout_marginEnd="50dp"
+        android:layout_gravity="center_vertical|end"
+        android:scaleType="fitXY"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+</FrameLayout>

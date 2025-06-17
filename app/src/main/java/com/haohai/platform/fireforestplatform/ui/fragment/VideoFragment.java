@@ -2,6 +2,7 @@ package com.haohai.platform.fireforestplatform.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,12 +31,14 @@ import com.haohai.platform.fireforestplatform.event.LoadingEvent;
 import com.haohai.platform.fireforestplatform.event.MainTabChange;
 import com.haohai.platform.fireforestplatform.event.VideoStream;
 import com.haohai.platform.fireforestplatform.permission.CommonPermission;
+import com.haohai.platform.fireforestplatform.ui.activity.FullVideoActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.VideoDeleteModel;
 import com.haohai.platform.fireforestplatform.ui.cell.VideoTreeDialog;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.DialogTreeViewModel;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.FgVideoViewModel;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
+import com.haohai.platform.fireforestplatform.utils.HhSurfaceView;
 import com.lechange.common.log.Logger;
 import com.lechange.opensdk.api.InitParams;
 import com.lechange.opensdk.api.LCOpenSDK_Api;
@@ -189,101 +192,587 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         binding.videoMenu.setOnClickListener(v -> showTreeDialog());
         binding.videoAdd.setOnClickListener(v -> showTreeDialog());
 
-        binding.sfVideoOne1.setOnClickListener(v -> {
+        /*binding.sfVideoOne1.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 1;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusOne1.setVisibility(View.VISIBLE);
             binding.statusFour1.setVisibility(View.VISIBLE);
             binding.statusNine1.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoOne1.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 1;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusOne1.setVisibility(View.VISIBLE);
+                binding.statusFour1.setVisibility(View.VISIBLE);
+                binding.statusNine1.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 1;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusOne1.setVisibility(View.VISIBLE);
+                binding.statusFour1.setVisibility(View.VISIBLE);
+                binding.statusNine1.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url1);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoFour1.setOnClickListener(v -> {
+        /*binding.sfVideoFour1.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 1;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusOne1.setVisibility(View.VISIBLE);
             binding.statusFour1.setVisibility(View.VISIBLE);
             binding.statusNine1.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoFour1.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 1;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusOne1.setVisibility(View.VISIBLE);
+                binding.statusFour1.setVisibility(View.VISIBLE);
+                binding.statusNine1.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 1;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusOne1.setVisibility(View.VISIBLE);
+                binding.statusFour1.setVisibility(View.VISIBLE);
+                binding.statusNine1.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url1);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoFour2.setOnClickListener(v -> {
+        /*binding.sfVideoFour2.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 2;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusFour2.setVisibility(View.VISIBLE);
             binding.statusNine2.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoFour2.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 2;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour2.setVisibility(View.VISIBLE);
+                binding.statusNine2.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 2;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour2.setVisibility(View.VISIBLE);
+                binding.statusNine2.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url2);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoFour3.setOnClickListener(v -> {
+        /*binding.sfVideoFour3.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 3;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusFour3.setVisibility(View.VISIBLE);
             binding.statusNine3.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoFour3.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 3;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour3.setVisibility(View.VISIBLE);
+                binding.statusNine3.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 3;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour3.setVisibility(View.VISIBLE);
+                binding.statusNine3.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url3);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoFour4.setOnClickListener(v -> {
+        /*binding.sfVideoFour4.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 4;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusFour4.setVisibility(View.VISIBLE);
             binding.statusNine4.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoFour4.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 4;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour4.setVisibility(View.VISIBLE);
+                binding.statusNine4.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 4;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour4.setVisibility(View.VISIBLE);
+                binding.statusNine4.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url4);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoNine1.setOnClickListener(v -> {
+        /*binding.sfVideoNine1.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 1;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusOne1.setVisibility(View.VISIBLE);
             binding.statusFour1.setVisibility(View.VISIBLE);
             binding.statusNine1.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoNine1.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 1;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusOne1.setVisibility(View.VISIBLE);
+                binding.statusFour1.setVisibility(View.VISIBLE);
+                binding.statusNine1.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 1;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusOne1.setVisibility(View.VISIBLE);
+                binding.statusFour1.setVisibility(View.VISIBLE);
+                binding.statusNine1.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url1);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoNine2.setOnClickListener(v -> {
+        /*binding.sfVideoNine2.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 2;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusFour2.setVisibility(View.VISIBLE);
             binding.statusNine2.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoNine2.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 2;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour2.setVisibility(View.VISIBLE);
+                binding.statusNine2.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 2;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour2.setVisibility(View.VISIBLE);
+                binding.statusNine2.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url2);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoNine3.setOnClickListener(v -> {
+        /*binding.sfVideoNine3.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 3;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusFour3.setVisibility(View.VISIBLE);
             binding.statusNine3.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoNine3.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 3;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour3.setVisibility(View.VISIBLE);
+                binding.statusNine3.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 3;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour3.setVisibility(View.VISIBLE);
+                binding.statusNine3.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url3);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoNine4.setOnClickListener(v -> {
+        /*binding.sfVideoNine4.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 4;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusFour4.setVisibility(View.VISIBLE);
             binding.statusNine4.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoNine4.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 4;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour4.setVisibility(View.VISIBLE);
+                binding.statusNine4.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 4;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusFour4.setVisibility(View.VISIBLE);
+                binding.statusNine4.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url4);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoNine5.setOnClickListener(v -> {
+        /*binding.sfVideoNine5.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 5;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusNine5.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoNine5.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 5;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusNine5.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 5;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusNine5.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url5);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoNine6.setOnClickListener(v -> {
+        /*binding.sfVideoNine6.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 6;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusNine6.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoNine6.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 6;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusNine6.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 6;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusNine6.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url6);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoNine7.setOnClickListener(v -> {
+        /*binding.sfVideoNine7.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 7;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusNine7.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoNine7.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 7;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusNine7.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 7;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusNine7.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url7);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoNine8.setOnClickListener(v -> {
+        /*binding.sfVideoNine8.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 8;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusNine8.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoNine8.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 8;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusNine8.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 8;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusNine8.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url8);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
-        binding.sfVideoNine9.setOnClickListener(v -> {
+        /*binding.sfVideoNine9.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 9;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusNine9.setVisibility(View.VISIBLE);
+        });*/
+        binding.sfVideoNine9.setOnGestureListener(new HhSurfaceView.OnGestureListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                Log.e("外部监听", "单击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 9;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusNine9.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(float x, float y) {
+                Log.e("外部监听", "双击：" + x + ", " + y);
+                CommonData.videoDeleteIndex = 9;
+                parseVideoDeleteChanged(CommonData.videoDeleteIndex);
+                hideStatus();
+                binding.statusNine9.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(requireActivity(), FullVideoActivity.class);
+                intent.putExtra("url",url9);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onZoomIn(float scaleFactor) {
+                Log.e("外部监听", "放大：" + scaleFactor);
+            }
+
+            @Override
+            public void onZoomOut(float scaleFactor) {
+                Log.e("外部监听", "缩小：" + scaleFactor);
+            }
         });
 
         binding.viewZoomIn.setOnTouchListener((v, event) -> {
@@ -1777,8 +2266,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Four1.setScale(0f);
 
-        mediaPlayer_Four1.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Four1.setAspectRatio("${" + width + "}:${" + (int) (width * 0.5) + "}");//宽，高  画面大小
+        mediaPlayer_Four1.getVLCVout().setWindowSize((int) (width * 0.5), (int) (width * 0.5));//宽，高  播放窗口的大小
+        mediaPlayer_Four1.setAspectRatio("${" + (int) (width * 0.5) + "}:${" + (int) (width * 0.5) + "}");//宽，高  画面大小
 
         mediaPlayer_Four1.setVolume(0);
         ivlcVout_Four1 = mediaPlayer_Four1.getVLCVout();
@@ -1866,8 +2355,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Nine1.setScale(0f);
 
-        mediaPlayer_Nine1.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Nine1.setAspectRatio("${" + width + "}:${" + (int) (width * 0.3) + "}");//宽，高  画面大小
+        mediaPlayer_Nine1.getVLCVout().setWindowSize((int) (width * 0.33), (int) (width * 0.33));//宽，高  播放窗口的大小
+        mediaPlayer_Nine1.setAspectRatio("${" + (int) (width * 0.33) + "}:${" + (int) (width * 0.33) + "}");//宽，高  画面大小
 
         mediaPlayer_Nine1.setVolume(0);
         ivlcVout_Nine1 = mediaPlayer_Nine1.getVLCVout();
@@ -1955,8 +2444,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Four2.setScale(0f);
 
-        mediaPlayer_Four2.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Four2.setAspectRatio("${" + width + "}:${" + (int) (width * 0.5) + "}");//宽，高  画面大小
+        mediaPlayer_Four2.getVLCVout().setWindowSize((int) (width * 0.5), (int) (width * 0.5));//宽，高  播放窗口的大小
+        mediaPlayer_Four2.setAspectRatio("${" + (int) (width * 0.5) + "}:${" + (int) (width * 0.5) + "}");//宽，高  画面大小
 
         mediaPlayer_Four2.setVolume(0);
         ivlcVout_Four2 = mediaPlayer_Four2.getVLCVout();
@@ -2044,8 +2533,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Nine2.setScale(0f);
 
-        mediaPlayer_Nine2.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Nine2.setAspectRatio("${" + width + "}:${" + (int) (width * 0.3) + "}");//宽，高  画面大小
+        mediaPlayer_Nine2.getVLCVout().setWindowSize((int) (width * 0.33), (int) (width * 0.33));//宽，高  播放窗口的大小
+        mediaPlayer_Nine2.setAspectRatio("${" + (int) (width * 0.33) + "}:${" + (int) (width * 0.33) + "}");//宽，高  画面大小
 
         mediaPlayer_Nine2.setVolume(0);
         ivlcVout_Nine2 = mediaPlayer_Nine2.getVLCVout();
@@ -2133,8 +2622,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Four3.setScale(0f);
 
-        mediaPlayer_Four3.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Four3.setAspectRatio("${" + width + "}:${" + (int) (width * 0.5) + "}");//宽，高  画面大小
+        mediaPlayer_Four3.getVLCVout().setWindowSize((int) (width * 0.5), (int) (width * 0.5));//宽，高  播放窗口的大小
+        mediaPlayer_Four3.setAspectRatio("${" + (int) (width * 0.5) + "}:${" + (int) (width * 0.5) + "}");//宽，高  画面大小
 
         mediaPlayer_Four3.setVolume(0);
         ivlcVout_Four3 = mediaPlayer_Four3.getVLCVout();
@@ -2222,8 +2711,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Nine3.setScale(0f);
 
-        mediaPlayer_Nine3.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Nine3.setAspectRatio("${" + width + "}:${" + (int) (width * 0.3) + "}");//宽，高  画面大小
+        mediaPlayer_Nine3.getVLCVout().setWindowSize((int) (width * 0.33), (int) (width * 0.33));//宽，高  播放窗口的大小
+        mediaPlayer_Nine3.setAspectRatio("${" + (int) (width * 0.33) + "}:${" + (int) (width * 0.33) + "}");//宽，高  画面大小
 
         mediaPlayer_Nine3.setVolume(0);
         ivlcVout_Nine3 = mediaPlayer_Nine3.getVLCVout();
@@ -2311,8 +2800,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Four4.setScale(0f);
 
-        mediaPlayer_Four4.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Four4.setAspectRatio("${" + width + "}:${" + (int) (width * 0.8) + "}");//宽，高  画面大小
+        mediaPlayer_Four4.getVLCVout().setWindowSize((int) (width * 0.5), (int) (width * 0.5));//宽，高  播放窗口的大小
+        mediaPlayer_Four4.setAspectRatio("${" + (int) (width * 0.5) + "}:${" + (int) (width * 0.5) + "}");//宽，高  画面大小
 
         mediaPlayer_Four4.setVolume(0);
         ivlcVout_Four4 = mediaPlayer_Four4.getVLCVout();
@@ -2400,8 +2889,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Nine4.setScale(0f);
 
-        mediaPlayer_Nine4.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Nine4.setAspectRatio("${" + width + "}:${" + (int) (width * 0.3) + "}");//宽，高  画面大小
+        mediaPlayer_Nine4.getVLCVout().setWindowSize((int) (width * 0.33), (int) (width * 0.33));//宽，高  播放窗口的大小
+        mediaPlayer_Nine4.setAspectRatio("${" + (int) (width * 0.33) + "}:${" + (int) (width * 0.33) + "}");//宽，高  画面大小
 
         mediaPlayer_Nine4.setVolume(0);
         ivlcVout_Nine4 = mediaPlayer_Nine4.getVLCVout();
@@ -2489,8 +2978,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Nine5.setScale(0f);
 
-        mediaPlayer_Nine5.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Nine5.setAspectRatio("${" + width + "}:${" + (int) (width * 0.3) + "}");//宽，高  画面大小
+        mediaPlayer_Nine5.getVLCVout().setWindowSize((int) (width * 0.33), (int) (width * 0.33));//宽，高  播放窗口的大小
+        mediaPlayer_Nine5.setAspectRatio("${" + (int) (width * 0.33) + "}:${" + (int) (width * 0.33) + "}");//宽，高  画面大小
 
         mediaPlayer_Nine5.setVolume(0);
         ivlcVout_Nine5 = mediaPlayer_Nine5.getVLCVout();
@@ -2578,8 +3067,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Nine6.setScale(0f);
 
-        mediaPlayer_Nine6.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Nine6.setAspectRatio("${" + width + "}:${" + (int) (width * 0.3) + "}");//宽，高  画面大小
+        mediaPlayer_Nine6.getVLCVout().setWindowSize((int) (width * 0.33), (int) (width * 0.33));//宽，高  播放窗口的大小
+        mediaPlayer_Nine6.setAspectRatio("${" + (int) (width * 0.33) + "}:${" + (int) (width * 0.33) + "}");//宽，高  画面大小
 
         mediaPlayer_Nine6.setVolume(0);
         ivlcVout_Nine6 = mediaPlayer_Nine6.getVLCVout();
@@ -2667,8 +3156,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Nine7.setScale(0f);
 
-        mediaPlayer_Nine7.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Nine7.setAspectRatio("${" + width + "}:${" + (int) (width * 0.3) + "}");//宽，高  画面大小
+        mediaPlayer_Nine7.getVLCVout().setWindowSize((int) (width * 0.33), (int) (width * 0.33));//宽，高  播放窗口的大小
+        mediaPlayer_Nine7.setAspectRatio("${" + (int) (width * 0.33) + "}:${" + (int) (width * 0.33) + "}");//宽，高  画面大小
 
         mediaPlayer_Nine7.setVolume(0);
         ivlcVout_Nine7 = mediaPlayer_Nine7.getVLCVout();
@@ -2756,8 +3245,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Nine8.setScale(0f);
 
-        mediaPlayer_Nine8.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Nine8.setAspectRatio("${" + width + "}:${" + (int) (width * 0.3) + "}");//宽，高  画面大小
+        mediaPlayer_Nine8.getVLCVout().setWindowSize((int) (width * 0.33), (int) (width * 0.33));//宽，高  播放窗口的大小
+        mediaPlayer_Nine8.setAspectRatio("${" + (int) (width * 0.33) + "}:${" + (int) (width * 0.33) + "}");//宽，高  画面大小
 
         mediaPlayer_Nine8.setVolume(0);
         ivlcVout_Nine8 = mediaPlayer_Nine8.getVLCVout();
@@ -2845,8 +3334,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         //设置vlc视频铺满布局
         mediaPlayer_Nine9.setScale(0f);
 
-        mediaPlayer_Nine9.getVLCVout().setWindowSize(width, (int) (width * 0.8));//宽，高  播放窗口的大小
-        mediaPlayer_Nine9.setAspectRatio("${" + width + "}:${" + (int) (width * 0.3) + "}");//宽，高  画面大小
+        mediaPlayer_Nine9.getVLCVout().setWindowSize((int) (width * 0.33), (int) (width * 0.33));//宽，高  播放窗口的大小
+        mediaPlayer_Nine9.setAspectRatio("${" + (int) (width * 0.33) + "}:${" + (int) (width * 0.33) + "}");//宽，高  画面大小
 
         mediaPlayer_Nine9.setVolume(0);
         ivlcVout_Nine9 = mediaPlayer_Nine9.getVLCVout();

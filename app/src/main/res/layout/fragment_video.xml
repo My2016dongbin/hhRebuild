@@ -65,7 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <SurfaceView
+                <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                     android:id="@+id/sf_video_one1"
                     android:gravity="center"
                     android:layout_marginBottom="1dp"
@@ -121,7 +121,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_four1"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -162,7 +162,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_four2"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -208,7 +208,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_four3"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -249,7 +249,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_four4"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -304,7 +304,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_nine1"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -345,7 +345,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_nine2"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -386,7 +386,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_nine3"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -432,7 +432,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_nine4"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -473,7 +473,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_nine5"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -514,7 +514,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_nine6"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -560,7 +560,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_nine7"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -601,7 +601,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_nine8"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"
@@ -642,7 +642,7 @@
                             android:visibility="invisible"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <com.haohai.platform.fireforestplatform.utils.HhSurfaceView
                             android:id="@+id/sf_video_nine9"
                             android:layout_marginBottom="1dp"
                             android:layout_width="match_parent"

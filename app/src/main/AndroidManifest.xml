@@ -50,22 +50,23 @@
         android:icon="${APP_ICON}"
         android:label="${APP_NAME}"
         android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/ic_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        android:requestLegacyExternalStorage="true"
         tools:replace="android:label,android:icon,android:name">
+        <!-- targetVersion30-Failed resolution of: Lorg/apache/http/impl/client/DefaultHttpClient; -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
-        <!--targetVersion30-Failed resolution of: Lorg/apache/http/impl/client/DefaultHttpClient;-->
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
-
-        <activity android:name=".ui.activity.PhotoViewerActivity"/>
+        <activity android:name=".ui.activity.PhotoViewerActivity" />
 
         <service
             android:name="com.baidu.trace.LBSTraceService"
             android:enabled="true"
-            android:process=":remote"></service>
+            android:process=":remote" />
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
@@ -133,8 +134,7 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".ui.activity.LaunchActivity">
+        <activity android:name=".ui.activity.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -158,7 +158,16 @@
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:exported="true"
-            android:launchMode="singleTask"/> <!-- 高德地图的key 跟服务 -->
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.FullVideoActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape"/>
+
+        <!-- 高德地图的key 跟服务 -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="b5bdf64c41f0b28bfa36286e1fb46972" />

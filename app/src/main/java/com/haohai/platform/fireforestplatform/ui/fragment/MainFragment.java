@@ -386,7 +386,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
                     .setOkButtonClickListener((dialog, v1) -> {
                         mainDeviceListDialog.cancel();
                         CommonData.videoAddingIndex = 1;
-                        obtainViewModel().getStream(dto_left.getId(),dto_left.getMonitorId(),dto_left.getId(),dto_left.getCameraType(),dto_left.getDeviceId());
+                        obtainViewModel().getStream(dto_left.getId(),dto_left.getMonitorId(),dto_left.getId(),dto_left.getCameraType(),dto_left.getDeviceId(),dto_left.getSerial());
                         return false;
                     })
                     .setCancelable(true);
@@ -406,13 +406,13 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
                     .setOkButtonClickListener((dialog, v1) -> {
                         mainDeviceListDialog.cancel();
                         CommonData.videoAddingIndex = 1;
-                        obtainViewModel().getStream(dto_left.getId(),dto_left.getMonitorId(),dto_left.getId(),dto_left.getCameraType(),dto_left.getDeviceId());
+                        obtainViewModel().getStream(dto_left.getId(),dto_left.getMonitorId(),dto_left.getId(),dto_left.getCameraType(),dto_left.getDeviceId(),dto_left.getSerial());
                         return false;
                     })
                     .setCancelButtonClickListener((dialog, v1) -> {
                         mainDeviceListDialog.cancel();
                         CommonData.videoAddingIndex = 1;
-                        obtainViewModel().getStream(dto_right.getId(),dto_right.getMonitorId(),dto_right.getId(),dto_right.getCameraType(),dto_right.getDeviceId());
+                        obtainViewModel().getStream(dto_right.getId(),dto_right.getMonitorId(),dto_right.getId(),dto_right.getCameraType(),dto_right.getDeviceId(),dto_right.getSerial());
                         return false;
                     })
                     .setCancelable(true);

@@ -4,12 +4,22 @@ public class VideoDeleteModel {
     private String monitorId;
     private String channelId;
     private String deviceId;
+    private String serial;
 
-    public VideoDeleteModel(int index, String monitorId, String channelId, String deviceId) {
+    public VideoDeleteModel(int index, String monitorId, String channelId, String deviceId, String serial) {
         this.index = index;
         this.monitorId = monitorId;
         this.channelId = channelId;
         this.deviceId = deviceId;
+        this.serial = serial;
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
     }
 
     public int getIndex() {

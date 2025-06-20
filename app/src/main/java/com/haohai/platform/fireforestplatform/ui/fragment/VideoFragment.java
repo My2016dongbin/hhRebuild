@@ -1274,6 +1274,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
                 CommonData.videoDeleteMonitorId = model.getMonitorId();
                 CommonData.videoDeleteChannelId = model.getChannelId();
                 CommonData.videoDeleteDeviceId = model.getDeviceId();
+                CommonData.videoDeleteDeviceIdSerial = model.getSerial();
                 return;
             }
         }

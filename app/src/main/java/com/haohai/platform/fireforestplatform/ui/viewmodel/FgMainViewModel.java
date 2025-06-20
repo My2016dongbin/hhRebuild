@@ -138,7 +138,7 @@ public class FgMainViewModel extends BaseViewModel {
                 });
     }
 
-    public void getStream(String cameraId, String monitorId, String channelId, int cameraType, String deviceId) {
+    public void getStream(String cameraId, String monitorId, String channelId, int cameraType, String deviceId, String serial) {
         DialogHelper.getInstance().show(context, "获取中..");
         HhHttp.get().url(URLConstant.GET_VIDEO_LIVE_URL)
 //                .addParams("cameraId", cameraId)
@@ -166,7 +166,8 @@ public class FgMainViewModel extends BaseViewModel {
                                 CommonData.videoDeleteMonitorId = monitorId;
                                 CommonData.videoDeleteChannelId = channelId;
                                 CommonData.videoDeleteDeviceId = deviceId;
-                                parseVideoDeleteIds(new VideoDeleteModel(CommonData.videoAddingIndex, monitorId, channelId,deviceId));
+                                CommonData.videoDeleteDeviceIdSerial = serial;
+                                parseVideoDeleteIds(new VideoDeleteModel(CommonData.videoAddingIndex, monitorId, channelId,deviceId,serial));
                                 EventBus.getDefault().post(new VideoStream(url, true, CommonData.videoAddingIndex));
                                 EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(context,SPValue.videoIndex,1)));
                             }

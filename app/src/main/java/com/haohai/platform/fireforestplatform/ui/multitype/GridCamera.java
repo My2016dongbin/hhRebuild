@@ -12,8 +12,17 @@ public class GridCamera {
     int cameraType;
 
     String deviceId;
+    String serial;
     String mediaDeviceId;
     String controlDeviceId;
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
+    }
 
     public String getIsOnLine() {
         return isOnLine;
@@ -134,6 +143,7 @@ public class GridCamera {
                 ", isOnLine='" + isOnLine + '\'' +
                 ", cameraType=" + cameraType +
                 ", deviceId='" + deviceId + '\'' +
+                ", serial='" + serial + '\'' +
                 ", mediaDeviceId='" + mediaDeviceId + '\'' +
                 ", controlDeviceId='" + controlDeviceId + '\'' +
                 ", status=" + status +

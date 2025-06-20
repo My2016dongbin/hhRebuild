@@ -77,8 +77,17 @@ public class MainDevice {
         private String name;
         private String monitorId;
         private String deviceId;
+        private String serial;
         private String controlDeviceId;
         private int cameraType;
+
+        public String getSerial() {
+            return serial;
+        }
+
+        public void setSerial(String serial) {
+            this.serial = serial;
+        }
 
         public int getCameraType() {
             return cameraType;

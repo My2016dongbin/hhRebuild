@@ -99,7 +99,7 @@ public class FgVideoViewModel extends BaseViewModel {
         HhHttp.get()
                 .url(URLConstant.GET_CONTROL_GB)
                 .addParams("deviceId", CommonData.videoDeleteDeviceId)
-                .addParams("serial", CommonData.videoDeleteDeviceId)
+                .addParams("serial", CommonData.videoDeleteDeviceIdSerial)
                 .addParams("speed", stop==1?"1":speed+"")
                 .addParams("controlType", stop==1?"stop":parseType(type))
                 .build()
@@ -108,7 +108,7 @@ public class FgVideoViewModel extends BaseViewModel {
                     public void onSuccess(String response, int id) {
                         HhLog.e("GET_CONTROL_GB " + URLConstant.GET_CONTROL_GB
                                 + "?deviceId=" +CommonData.videoDeleteDeviceId
-                                +"&serial=" +CommonData.videoDeleteDeviceId
+                                +"&serial=" +CommonData.videoDeleteDeviceIdSerial
                                 +"&speed=" +(stop==1?"1":speed+"")
                                 +"&controlType=" +(stop==1?"stop":parseType(type))
                         );

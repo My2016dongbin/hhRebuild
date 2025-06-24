@@ -73,7 +73,7 @@
             android:process=":remote" /> <!-- 百度地图key ZtMu7Uh8tZuY3dNYdE8G99BlRe531Tbl   LlazIrOBf5f36FjHRGGzZeWHa2XNGM6q -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="ZtMu7Uh8tZuY3dNYdE8G99BlRe531Tbl" />
+            android:value="Jp3JUDsrHGmKe3ImBiui2Tk0zRHCKCfI" />
 
         <activity
             android:name=".ui.activity.LoginActivity"

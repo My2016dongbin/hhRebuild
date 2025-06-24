@@ -35,7 +35,6 @@ import com.haohai.platform.fireforestplatform.old.SignMonthActivity;
 import com.haohai.platform.fireforestplatform.old.WeatherActivity;
 import com.haohai.platform.fireforestplatform.old.WeatherShiBeiActivity;
 import com.haohai.platform.fireforestplatform.permission.CommonPermission;
-import com.haohai.platform.fireforestplatform.poc.activity.LoginActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.ContactsActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.NewsActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.NewsInfoActivity;
@@ -340,7 +339,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
                 requireActivity().startActivity(new Intent(requireActivity(), SignMonthActivity.class));
             }
             if(mainFgMenu.getTitle().equals("融合通信")){
-                requireActivity().startActivity(new Intent(requireActivity(), LoginActivity.class));
+                //requireActivity().startActivity(new Intent(requireActivity(), LoginActivity.class));
             }
             if(mainFgMenu.getTitle().equals("天气")){
                 requireActivity().startActivity(new Intent(requireActivity(), WeatherShiBeiActivity.class));

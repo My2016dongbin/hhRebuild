@@ -26,12 +26,6 @@ import com.github.piasy.biv.loader.glide.GlideImageLoader;
 import com.haohai.platform.fireforestplatform.ui.activity.LoginActivity;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.OkHttp3Connection;
-import com.huamai.poc.IPocEngineEventHandler;
-import com.huamai.poc.PocEngine;
-import com.huamai.poc.PocEngineFactory;
-import com.huamai.poc.chat.ChatMessageCategory;
-import com.huamai.poc.chat.ChatMessageStatus;
-import com.huamai.poc.greendao.ChatMessage;
 import com.kongzue.dialogx.DialogX;
 import com.kongzue.dialogx.style.IOSStyle;
 import com.kongzue.dialogx.style.MaterialStyle;
@@ -43,8 +37,6 @@ import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
 import com.tencent.smtt.export.external.TbsCoreSettings;
 import com.tencent.smtt.sdk.QbSdk;
-import com.unionbroad.app.eventbus.ChannelChangedEvent;
-import com.unionbroad.app.util.FileDownloadManager;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.https.HttpsUtils;
 
@@ -78,37 +70,6 @@ public class HhApplication extends Application {
     }
 
 
-    private PocEngine.Configure getConfig() {
-        PocEngine.Configure configure = PocEngineConfigureProducer.getConfig();
-        /** 可选配置 */
-        //定位模式
-        configure.gpsMode = IPocEngineEventHandler.GpsMode.NET_AND_GPS;
-        //位置上报时间间隔，单位秒
-        configure.gpsReportInterval = 300;
-        //联系人状态刷新时间间隔，单位秒
-        configure.statusUpdateInterval = 60;
-        //使用音乐通道
-        configure.useMusicStream = false;
-        //对讲录音
-        configure.pttPlayback = false;
-        //防杀服务
-        configure.keepLiveService = false;
-        //视频通话分辨率，需要和调度台中设置的值一样才能生效
-        configure.videoResolution = IPocEngineEventHandler.VideoResolution.RESOLUTION_640X480;
-        configure.disableInternalGpsFunc = true;
-        configure.hardwareEncode = false;
-        configure.videoRenderMode = IPocEngineEventHandler.VideoViewRenderMode.RENDER_MODE_ASPECT_FIT;
-        //禁用视频通话-画面时间水印
-        configure.videoTimeOsdEnable = false;
-
-        //缓存提供器，没特殊要求用不到
-        //configure.cacheFileSupplier = cacheFileSupplier;
-        //侧边功能键注册，一般都用不到
-        //configure.broadcastHotKeyActionSupplier = hotKeyActionSupplier;
-        //其它...
-        return configure;
-    }
-
     private SDKReceiver mReceiver;
 
     private void initBroadcast() {
@@ -134,183 +95,6 @@ public class HhApplication extends Application {
             }
         }
     }
-    /**
-     * 目前配置项较多，很多配置没有单独的设置接口，建议全局保持一个Configure，
-     * 确保每次 PocEngineFactory.get().config()时，设置进去的配置项都是有效值
-     */
-    public static class PocEngineConfigureProducer {
-
-        static PocEngine.Configure configure;
-
-        public static PocEngine.Configure getConfig() {
-            if (configure == null) {
-                configure = new PocEngine.Configure();
-                /** 必须设置 */
-                configure.ip = "123.57.6.84";
-                configure.port = "5060";
-                configure.httpPort = "80";
-
-                configure.ip = "39.106.29.203";
-                configure.port = "6050";
-                configure.httpPort = "80";
-            }
-            return configure;
-        }
-    }
-
-    private final IPocEngineEventHandler pocEventHandler = new IPocEngineEventHandler() {
-
-        @Override
-        public void onMessageReceived(long chatId, List<ChatMessage> messages) {
-            //收到新的消息
-            if (messages != null && messages.size() > 0) {
-                //仅为调试，只取出其中一条
-                ChatMessage message = messages.get(0);
-                //语音通话记录
-                if (message.getCategory() == ChatMessageCategory.AUDIO) {
-                    HhLog.e("==> 语音通话记录");
-                }
-                //视频通话记录
-                else if (message.getCategory() == ChatMessageCategory.VIDEO) {
-                    HhLog.e("==> 视频通话记录");
-                }
-                //语音广播
-                else if (message.getCategory() == ChatMessageCategory.AUDIO_BROADCAST) {
-                    HhLog.e("==> 语音广播");
-                }
-                //语音文件，类似微信的语音消息
-                else if (message.getCategory() == ChatMessageCategory.AUDIO_FILE) {
-                    HhLog.e("==> 语音消息");
-                }
-                //对讲录音，只有开启对讲回放功能，每次有人讲话时，才会把声音录制下来
-                else if (message.getCategory() == ChatMessageCategory.PTT_AUDIO_FILE) {
-                    HhLog.e("==> 对讲录音消息 " + message.getRemote_number() + " "
-                            + message.getRemote_name() + " isOut=" + message.getIs_out());
-                }
-                //视频消息，类似微信的视频消息
-                else if (message.getCategory() == ChatMessageCategory.VIDEO_FILE) {
-                    HhLog.e("==> 视频消息: " + message.getDownload_status());
-                    switch (message.getDownload_status()) {
-                        case ChatMessageStatus.File.DOWN_SUCCESSED:
-                            message.setDownload_status(ChatMessageStatus.File.DOWN_SUCCESSED);
-                            //play
-                            break;
-                        case ChatMessageStatus.File.DOWN_UNINIT:
-                            message.setDownload_status(ChatMessageStatus.File.DOWN_STARTING);
-                            FileDownloadManager.getInstance().startDownTask(message.getId(), message.getHttpFile(), message.getLocalFile());
-                            //使用EventBus监听ChatFileDownloadCompletedEvent，获取文件下载结果
-                            break;
-                    }
-                }
-                //图片消息
-                else if (message.getCategory() == ChatMessageCategory.IMAGE) {
-                    HhLog.e("==> 图片消息");
-                }
-                //位置消息
-                else if (message.getCategory() == ChatMessageCategory.LOCATION) {
-                    HhLog.e("==> 位置消息");
-                }
-                //文字消息
-                else if (message.getCategory() == ChatMessageCategory.TEXT) {
-                    HhLog.e("==> 文字消息: " + message.getText());
-                }
-
-                //================以下两种消息，如果业务需求，可以放到动态页中去=========================
-                //拍传@消息
-                else if (message.getCategory() == ChatMessageCategory.NOTIFICATION_REPORT) {
-                    HhLog.e("==> 拍传@消息");
-                }
-                //报警消息
-                else if (message.getCategory() == ChatMessageCategory.ALERT) {
-                    HhLog.e("==> 报警消息: " + message.getText());
-                }
-                //任务消息
-                else if (message.getCategory() == ChatMessageCategory.NOTIFICATION_TASK) {
-                    HhLog.e("==> 任务消息: " + message.getText());
-                }
-                //==================================================================================
-
-                //其它消息一般用不到
-                else {
-                    HhLog.e("==> 其它消息: " + message.getText());
-                }
-            }
-        }
-
-        @Override
-        public void onIncoming(IncomingInfo incomingInfo) {
-            HhLog.e("onIncoming-> sessionId=" + incomingInfo.sessionId + " type=" + incomingInfo.sessionType + " uid=" +
-                    incomingInfo.callerId + " name=" + incomingInfo.callerName + " level=" + incomingInfo.level +
-                    " extra=" + incomingInfo.extra);
-            Intent intent = new Intent(HhApplication.this, LoginActivity.class);//TODO AvActivity.class
-            intent.putExtra("sessionId", incomingInfo.sessionId);
-            intent.putExtra("callerId", incomingInfo.callerId);
-            intent.putExtra("callerName", incomingInfo.callerName);
-            intent.putExtra("type", incomingInfo.sessionType);
-            intent.putExtra("extra", incomingInfo.extra);
-            intent.putExtra("isIncomingCall", true);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            HhApplication.this.startActivity(intent);
-        }
-
-        @Override
-        public void onIgnoreIncoming(int sessionType, long callerId) {
-            super.onIgnoreIncoming(sessionType, callerId);
-        }
-
-        @Override
-        public void onChannelChangedEvent(ChannelChangedEvent event) {
-            Toast.makeText(getApplicationContext(), "onChannelChangedEvent", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public boolean onForcedOffline() {
-            //True: 响应了下线事件，False：没有响应，sdk内部会弹出对话框，禁止再操作
-            Toast.makeText(getApplicationContext(), "onForcedOffline", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        @Override
-        public void onBackstageMonitorAction(int action, long sessionId, String monitorUid, boolean isVideoMonitor) {
-            HhLog.e("onBackstageMonitorAction: action=" + action);
-        }
-
-        @Override
-        public void onReceiveLocation(double latitude, double longitude, String address) {
-            Toast.makeText(getApplicationContext(), "坐标变化(" + latitude + "," + longitude + ")", Toast.LENGTH_SHORT).show();
-        }
-
-
-        @Override
-        public void onRequestCamera() {
-            Toast.makeText(getApplicationContext(), "请求Camera", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onReleaseCamera() {
-            Toast.makeText(getApplicationContext(), "释放Camera", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onRequestMic() {
-            Toast.makeText(getApplicationContext(), "请求Mic", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onReleaseMic() {
-            Toast.makeText(getApplicationContext(), "释放Mic", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onVideoStreamTakePictureFinish(String filePath) {
-            Toast.makeText(getApplicationContext(), "已保存到: " + filePath, Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onCallConnected(long sessionId, String remoteId, int sessionType) {
-        }
-
-    };
     private String getProcessName(int pid) {
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> runningApps = am.getRunningAppProcesses();
@@ -331,14 +115,6 @@ public class HhApplication extends Application {
         super.onCreate();
         instance=this;
 
-
-        /** 防止反复初始化 */
-        if (getPackageName() != null && getPackageName().equals(getProcessName(android.os.Process.myPid()))) {
-            initBroadcast();
-            PocEngineFactory.initialize(this, getConfig());
-            //可以在Application中监听，也可以在Service中监听，主要希望全局监听来电和新消息
-            PocEngineFactory.get().addEventHandler(pocEventHandler);
-        }
 
         //ARouter.init(this); //ARouter初始化
 

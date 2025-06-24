@@ -312,7 +312,7 @@ public class HistoryLineActivity extends BaseActivity implements SensorEventList
         // 请求标识
         int tag = 1;
         // 轨迹服务ID
-        long serviceId = 235910;
+        long serviceId = 241948;
         // 设备标识
         String entityName = chooseUserId;
         // 创建历史轨迹请求实例

@@ -277,30 +277,30 @@ public class VideoTreeDialog extends Dialog implements GridTreesViewBinder.OnIte
         if(viewModel.tabStatus==0){
             int offset = binding.rlv.computeVerticalScrollOffset();
             viewModel.updateData();
-            new Handler().postDelayed(new Runnable() {
+            /*new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     binding.rlv.offsetChildrenVertical(-1*offset);
                 }
-            },2);
+            },2);*/
         }else if(viewModel.tabStatus==1){
             int offset = binding.rlvKk.computeVerticalScrollOffset();
             viewModel.updateDataKK();
-            new Handler().postDelayed(new Runnable() {
+            /*new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     binding.rlvKk.offsetChildrenVertical(-1*offset);
                 }
-            },2);
+            },2);*/
         }else if(viewModel.tabStatus==2){
             int offset = binding.rlvStar.computeVerticalScrollOffset();
             viewModel.updateDataStar();
-            new Handler().postDelayed(new Runnable() {
+            /*new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     binding.rlvStar.offsetChildrenVertical(-1*offset);
                 }
-            },2);
+            },2);*/
         }
     }
 
@@ -309,30 +309,30 @@ public class VideoTreeDialog extends Dialog implements GridTreesViewBinder.OnIte
         if(viewModel.tabStatus==0){
             int offset = binding.rlv.computeVerticalScrollOffset();
             viewModel.updateData();
-            new Handler().postDelayed(new Runnable() {
+            /*new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     binding.rlv.offsetChildrenVertical(-1*offset);
                 }
-            },2);
+            },2);*/
         }else if(viewModel.tabStatus==1){
             int offset = binding.rlvKk.computeVerticalScrollOffset();
             viewModel.updateDataKK();
-            new Handler().postDelayed(new Runnable() {
+            /*new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     binding.rlvKk.offsetChildrenVertical(-1*offset);
                 }
-            },2);
+            },2);*/
         }else if(viewModel.tabStatus==2){
             int offset = binding.rlvStar.computeVerticalScrollOffset();
             viewModel.updateDataStar();
-            new Handler().postDelayed(new Runnable() {
+            /*new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     binding.rlvStar.offsetChildrenVertical(-1*offset);
                 }
-            },2);
+            },2);*/
         }
     }
 
@@ -352,35 +352,35 @@ public class VideoTreeDialog extends Dialog implements GridTreesViewBinder.OnIte
             viewModel.getTreesDataStar(2);
             int offset = binding.rlv.computeVerticalScrollOffset();
             viewModel.updateData();
-            new Handler().postDelayed(new Runnable() {
+            /*new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     binding.rlv.offsetChildrenVertical(-1*offset);
                 }
-            },2);
+            },2);*/
         }else if(viewModel.tabStatus==1){
             //刷新收藏列表
             viewModel.getTreesDataStar(2);
             int offset = binding.rlvKk.computeVerticalScrollOffset();
             viewModel.updateDataKK();
-            new Handler().postDelayed(new Runnable() {
+            /*new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     binding.rlvKk.offsetChildrenVertical(-1*offset);
                 }
-            },2);
+            },2);*/
         }else if(viewModel.tabStatus==2){
             //刷新设备&&卡口列表
             viewModel.getTreesData(0);
             viewModel.getTreesDataKK(1);
             int offset = binding.rlvStar.computeVerticalScrollOffset();
             viewModel.updateDataStar();
-            new Handler().postDelayed(new Runnable() {
+            /*new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     binding.rlvStar.offsetChildrenVertical(-1*offset);
                 }
-            },2);
+            },2);*/
         }
     }
 

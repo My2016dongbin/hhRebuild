@@ -321,7 +321,7 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_CHOOSE) {
+        if (requestCode == REQUEST_CODE_CHOOSE && data!=null) {
             List<Uri> uriList = Matisse.obtainResult(data);
             //去掉重复图片
             List<CheckImage> list = Objects.requireNonNull(obtainViewModel().imageList.getValue());

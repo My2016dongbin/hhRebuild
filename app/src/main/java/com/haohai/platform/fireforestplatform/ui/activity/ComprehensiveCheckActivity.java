@@ -334,9 +334,9 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
 
         if (obtainViewModel().chooseHour < 10 && obtainViewModel().chooseMinute < 10) {
             binding.textTime.append("  0" + obtainViewModel().chooseHour + ":0" + obtainViewModel().chooseMinute + ":00");
-        } else if (obtainViewModel().chooseHour < 10 && obtainViewModel().chooseMinute > 10) {
+        } else if (obtainViewModel().chooseHour < 10 && obtainViewModel().chooseMinute >= 10) {
             binding.textTime.append("  0" + obtainViewModel().chooseHour + ":" + obtainViewModel().chooseMinute + ":00");
-        } else if (obtainViewModel().chooseHour > 10 && obtainViewModel().chooseMinute < 10) {
+        } else if (obtainViewModel().chooseHour >= 10 && obtainViewModel().chooseMinute < 10) {
             binding.textTime.append("  " + obtainViewModel().chooseHour + ":0" + obtainViewModel().chooseMinute + ":00");
         } else {
             binding.textTime.append("  " + obtainViewModel().chooseHour + ":" + obtainViewModel().chooseMinute + ":00");
@@ -356,9 +356,9 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
 
                 if (obtainViewModel().chooseHour < 10 && obtainViewModel().chooseMinute < 10) {
                     binding.textTime.append("  0" + obtainViewModel().chooseHour + ":0" + obtainViewModel().chooseMinute + ":00");
-                } else if (obtainViewModel().chooseHour < 10 && obtainViewModel().chooseMinute > 10) {
+                } else if (obtainViewModel().chooseHour < 10 && obtainViewModel().chooseMinute >= 10) {
                     binding.textTime.append("  0" + obtainViewModel().chooseHour + ":" + obtainViewModel().chooseMinute + ":00");
-                } else if (obtainViewModel().chooseHour > 10 && obtainViewModel().chooseMinute < 10) {
+                } else if (obtainViewModel().chooseHour >= 10 && obtainViewModel().chooseMinute < 10) {
                     binding.textTime.append("  " + obtainViewModel().chooseHour + ":0" + obtainViewModel().chooseMinute + ":00");
                 } else {
                     binding.textTime.append("  " + obtainViewModel().chooseHour + ":" + obtainViewModel().chooseMinute + ":00");

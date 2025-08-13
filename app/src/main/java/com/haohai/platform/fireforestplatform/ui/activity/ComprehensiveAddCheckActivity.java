@@ -158,7 +158,7 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
                 checkResource.setLongitude(Double.parseDouble(resInfo.getPosition().getLng()));
                 checkResource.setName(resInfo.getName());
                 checkResource.setResourceType(obtainViewModel().apiCode);
-                checkResource.setStatus(4);
+                checkResource.setStatus(obtainViewModel().pass?4:3);///3：不通过 4：通过
                 List<CheckResource.ImgsBean> images = new ArrayList<>();
                 checkResource.setImgs(images);
                 CommonData.checkResourceList.add(checkResource);

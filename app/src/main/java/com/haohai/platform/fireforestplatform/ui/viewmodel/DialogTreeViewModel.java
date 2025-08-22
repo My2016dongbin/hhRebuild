@@ -304,11 +304,14 @@ public class DialogTreeViewModel extends BaseViewModel {
                     if(data.length()!=0){
                         JSONObject obj = (JSONObject) data.get(0);
                         String serialNumber = obj.getString("serialNumber");
+                        //HhLog.e( "onSuccess: bingo CommonData.deviceSubList serialNumber " + serialNumber );
 
                         CommonData.subId = serialNumber;
                         for (int m = 0; m < CommonData.deviceSubList.length(); m++) {
+                            //HhLog.e( "onSuccess: bingo CommonData.deviceSubList " + CommonData.deviceSubList.get(m) );
                             JSONObject objModel = (JSONObject) CommonData.deviceSubList.get(m);
                             if(Objects.equals(objModel.getString("deviceId"), serialNumber)){
+                                //HhLog.e( "onSuccess: bingo CommonData.deviceSubList serialNumber2 " + serialNumber );
                                 CommonData.deviceSub = objModel;
                             }
                         }

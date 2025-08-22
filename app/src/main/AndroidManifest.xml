@@ -127,6 +127,7 @@
         <activity android:name=".old.linyi.FlamePlanActivity" />
         <activity android:name=".old.linyi.FlameAreaActivity" />
         <activity android:name=".old.linyi.FlameAddActivity" />
+        <activity android:name=".old.linyi.ResourceHistoryActivity" />
 
         <service
             android:name=".old.TrackService"

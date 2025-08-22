@@ -47,4 +47,14 @@ public class CheckImage {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "CheckImage{" +
+                "url='" + url + '\'' +
+                ", uri=" + uri +
+                ", id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

@@ -12,6 +12,7 @@ import com.haohai.platform.fireforestplatform.event.LoadingEvent;
 import com.haohai.platform.fireforestplatform.ui.activity.ComprehensiveDetailActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.CommonParams;
 import com.haohai.platform.fireforestplatform.ui.multitype.TaskList;
+import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
 
@@ -47,7 +48,7 @@ public class ComprehensiveDetailViewModel extends BaseViewModel {
                 .execute(new LoggedInStringCallback(this,context) {
                     @Override
                     public void onSuccess(String response, int id) {
-                        //HhLog.e(response);
+                        HhLog.e(response);
                         loading.setValue(new LoadingEvent(false));
                         try {
                             JSONObject jsonObject = new JSONObject(response);

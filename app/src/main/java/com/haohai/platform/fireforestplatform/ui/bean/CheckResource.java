@@ -117,5 +117,27 @@ public class CheckResource {
         public void setType(int type) {
             this.type = type;
         }
+
+        @Override
+        public String toString() {
+            return "ImgsBean{" +
+                    "img='" + img + '\'' +
+                    ", type=" + type +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "CheckResource{" +
+                "checkType=" + checkType +
+                ", description='" + description + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", name='" + name + '\'' +
+                ", resourceType='" + resourceType + '\'' +
+                ", status=" + status +
+                ", imgs=" + imgs +
+                '}';
     }
 }

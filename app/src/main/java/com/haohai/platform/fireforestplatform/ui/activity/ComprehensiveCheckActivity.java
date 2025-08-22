@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -188,6 +189,7 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
         binding.llResource.removeAllViews();
         for (int i = 0; i < checkResources.size(); i++) {
             CheckResource checkResource = checkResources.get(i);
+            HhLog.e("CheckResource "+checkResource.toString());
             View view = LayoutInflater.from(this).inflate(R.layout.check_resource_item, null);
             TextView title = view.findViewById(R.id.title);
             TextView content = view.findViewById(R.id.content);
@@ -200,7 +202,7 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
                 HhLog.e(e.toString());
             }
             Glide.with(ComprehensiveCheckActivity.this)
-                    .load(url)
+                    .load(Uri.parse(url))
                     .apply(RequestOptions.bitmapTransform(new GranularRoundedCorners(20,0,0,20)))
                     .into(icon);
             title.setText(checkResource.getName());

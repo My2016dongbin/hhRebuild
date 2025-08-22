@@ -160,6 +160,15 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
                 checkResource.setResourceType(obtainViewModel().apiCode);
                 checkResource.setStatus(obtainViewModel().pass?4:3);///3：不通过 4：通过
                 List<CheckResource.ImgsBean> images = new ArrayList<>();
+                List<CheckImage> checkImageList = obtainViewModel().imageList.getValue();
+                for (int i = 0; i < checkImageList.size(); i++) {
+                    CheckImage checkImage = checkImageList.get(i);
+                    HhLog.e("CheckImage " + checkImage.toString());
+                    CheckResource.ImgsBean bean = new CheckResource.ImgsBean();
+                    bean.setImg(checkImage.getUri()+"");
+                    images.add(bean);
+                }
+                //添加选择图片
                 checkResource.setImgs(images);
                 CommonData.checkResourceList.add(checkResource);
                 setResult(1);

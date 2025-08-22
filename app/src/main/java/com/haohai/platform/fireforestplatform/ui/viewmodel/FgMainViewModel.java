@@ -436,7 +436,7 @@ public class FgMainViewModel extends BaseViewModel {
         String gridNo = String.valueOf(SPUtils.get(context, SPValue.gridNo, "370214"));
         String leaderRoleId = "896049317960220672";
 
-        HhHttp.get()
+        /*HhHttp.get()
                 .url(URLConstant.GET_FIRE_COUNT_ROLE)
                 .build().execute(new LoggedInStringCallback(this,context) {
             @Override
@@ -563,6 +563,41 @@ public class FgMainViewModel extends BaseViewModel {
                         }
                     }
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Exception e, int id) {
+                handleData.postValue(handle);
+            }
+        });*/
+
+
+        //普通用户
+        //直接查询
+        HhHttp.get()
+                .url(URLConstant.GET_FIRE_COUNT)
+                .addParams("groupId", groupId)//"001021")
+                .addParams("provinceCode",gridNo)//"370214")
+                .addParams("ip","0")
+                .addParams("isAndroid","0")
+                .build().execute(new LoggedInStringCallback(FgMainViewModel.this,context) {
+            @Override
+            public void onSuccess(String response, int id) {
+                HhLog.e("GET_FIRE_COUNT USER groupId " + groupId + " ,gridNo " + gridNo + " ， " + response );
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONArray data = jsonObject.getJSONArray("data");
+                    if(data.length()>0){
+                        JSONObject obj = (JSONObject) data.get(0);
+                        int fireUntreatedCount = obj.getInt("fireUntreatedCount");
+                        int fireSrocessedCount = obj.getInt("fireSrocessedCount");
+                        handle = Float.parseFloat(fireSrocessedCount + "");
+                        noHandle = Float.parseFloat(fireUntreatedCount + "");
+                    }
+                    handleData.postValue(handle);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

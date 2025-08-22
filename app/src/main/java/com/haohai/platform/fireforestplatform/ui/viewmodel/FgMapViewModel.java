@@ -125,8 +125,9 @@ public class FgMapViewModel extends BaseViewModel {
             @Override
             public void onSuccess(String result) {
                 try {
-                    HhLog.e("grid " + result);
-                    JSONObject jsonObject1 = new JSONObject(result);
+//                    HhLog.e("grid " + result);
+                    JSONObject jsonObject1 = new
+                            JSONObject(result);
                     String code = jsonObject1.getString("code");
                     if (code.equals("200")){
                         JSONArray data = jsonObject1.getJSONArray("data");

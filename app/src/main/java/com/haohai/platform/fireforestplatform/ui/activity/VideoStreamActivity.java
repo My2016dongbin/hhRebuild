@@ -80,6 +80,7 @@ public class VideoStreamActivity extends BaseLiveActivity<ActivityVideoStreamBin
         final ArrayList<String> options = new ArrayList<>();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
+        int height = dm.heightPixels;
         releasePlayer();
         //options.add("--aout=opensles");//音频输出模块opensles模式
         //options.add(" --audio-time-stretch");
@@ -90,8 +91,12 @@ public class VideoStreamActivity extends BaseLiveActivity<ActivityVideoStreamBin
         //设置vlc视频铺满布局
         mediaPlayer.setScale(0f);
 
-        mediaPlayer.getVLCVout().setWindowSize(width, (int) (width * 1));//宽，高  播放窗口的大小
-        mediaPlayer.setAspectRatio("${" + width + "}:${" + (int) (width * 1) + "}");//宽，高  画面大小
+//        mediaPlayer.getVLCVout().setWindowSize((int) (width * 0.5), (int) (width * 0.5));//宽，高  播放窗口的大小
+//        mediaPlayer.setAspectRatio("${" + (int) (width * 0.5) + "}:${" + (int) (width * 0.5) + "}");//宽，高  画面大小
+
+
+        mediaPlayer.getVLCVout().setWindowSize(width, (int) (height * 1));//宽，高  播放窗口的大小
+        mediaPlayer.setAspectRatio("${" + width + "}:${" + (int) (height * 1) + "}");//宽，高  画面大小
         mediaPlayer.setVolume(0);
         ivlcVout = mediaPlayer.getVLCVout();
         ivlcVout.setVideoView(binding.sfVideo);

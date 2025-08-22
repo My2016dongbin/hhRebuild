@@ -160,8 +160,8 @@ public class MapSnapActivity extends BaseLiveActivity<ActivityMapSnapBinding, Ma
 
         //1.边界
         DistrictSearchOption districtSearchOption = new DistrictSearchOption();
-        districtSearchOption.cityName("青岛");//检索城市名称
-        districtSearchOption.districtName("城阳区");
+        districtSearchOption.cityName("西安");//检索城市名称
+        //districtSearchOption.districtName("城阳区");
         mDistrictSearch.searchDistrict(districtSearchOption);//请求行政区数据
         //2.标绘
         for (int i = 0; i < snapModels.size(); i++) {
@@ -183,7 +183,7 @@ public class MapSnapActivity extends BaseLiveActivity<ActivityMapSnapBinding, Ma
                     LatLng point = new LatLng(Double.parseDouble(coordinates.get(1).toString()),Double.parseDouble(coordinates.get(0).toString()));
                     drawPoint(point,properties);
                 }
-                flyBaiduMapZoom(36.292742,120.372336,12);
+                flyBaiduMapZoom(34.347269,108.946465,10);
             } catch (Exception e) {
                 e.printStackTrace();
             }

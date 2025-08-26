@@ -10,9 +10,9 @@
     {
       "type": "SINGLE",
       "filters": [],
-      "versionCode": 216,
-      "versionName": "2.1.6",
-      "outputFile": "fireRebuild-2.1.6.apk"
+      "versionCode": 217,
+      "versionName": "2.1.7",
+      "outputFile": "fireRebuild-2.1.7.apk"
     }
   ]
 }

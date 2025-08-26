@@ -505,7 +505,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
         CommonUtil.click(binding.moreWarn, new Action() {
             @Override
             public void click() {
-                EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"oneBody"));
+                EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"satellite"));
             }
         });
         //天气信息-查看更多

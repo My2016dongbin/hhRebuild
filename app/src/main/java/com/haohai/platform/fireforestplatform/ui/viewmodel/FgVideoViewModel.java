@@ -57,6 +57,9 @@ public class FgVideoViewModel extends BaseViewModel {
     public void nineClick(View view){
         viewCount.setValue(9);
     }
+    public void sixClick(View view){
+        viewCount.setValue(16);
+    }
 
     public void postMove(int type, int speed, int stop) {
         HhHttp.get()

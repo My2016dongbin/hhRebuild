@@ -886,6 +886,13 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             startPlayerSix16();
             binding.addSix16.setVisibility(View.GONE);
         }
+
+        ///录像选择-跳转
+        if (event.getIndex() == -1) {
+            url1 = event.getUrl();
+            obtainViewModel().viewCount.postValue(1);
+            treeDialog.dismiss();
+        }
     }
 
     ///Tab切换

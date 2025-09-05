@@ -103,6 +103,12 @@ public class HhHttp {
         params.setConnectTimeout(20000);
         x.http().post(params, callback);
     }
+    public static void postX2(RequestParams params,org.xutils.common.Callback.CommonCallback<String> callback){
+        params.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
+        //params.addHeader("NetworkType", "Internet");
+        params.setConnectTimeout(20000);
+        x.http().post(params, callback);
+    }
     public static void getX(RequestParams params,org.xutils.common.Callback.CommonCallback<String> callback){
         params.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         params.addHeader("NetworkType", "Internet");

@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.haohai.platform.fireforestplatform.HhApplication;
 import com.haohai.platform.fireforestplatform.base.BaseViewModel;
 import com.haohai.platform.fireforestplatform.base.LoggedInStringCallback;
 import com.haohai.platform.fireforestplatform.constant.HhHttp;
@@ -171,15 +172,17 @@ public class FgMapViewModel extends BaseViewModel {
             jsonObject.put("dto", dto);
             jsonObject.put("limit", 100);
             jsonObject.put("page", currentPage);
+            //jsonObject.put("isAndroid",0);
             //dto.put("isReal", isReal);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        HhLog.e("oneBody params " + jsonObject.toString());
+        HhLog.e("oneBody params " + URLConstant.POST_MAP_ONE_BODY+jsonObject.toString());
+        HhLog.e("oneBody params token " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         RequestParams params = new RequestParams(URLConstant.POST_MAP_ONE_BODY);
         params.setBodyContent(jsonObject.toString());
-        HhHttp.postX(params, new Callback.CommonCallback<String>() {
+        HhHttp.postX2(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 try {

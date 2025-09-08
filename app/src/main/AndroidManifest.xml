@@ -69,16 +69,17 @@
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote" /> <!-- 百度地图key 2qTEpaTdNSuRDOeUYvMZwAKnZgGsIO3A  ZtMu7Uh8tZuY3dNYdE8G99BlRe531Tbl   LlazIrOBf5f36FjHRGGzZeWHa2XNGM6q -->
+            android:process=":remote" /> <!-- 百度地图key ZtMu7Uh8tZuY3dNYdE8G99BlRe531Tbl   LlazIrOBf5f36FjHRGGzZeWHa2XNGM6q -->
+
+        <!-- 高德地图的key 跟服务 -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="cdc1e2a53e2ad60a59a04ed6cd6ac3bb" />
+
+        <!-- 百度地图key -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="I8J0fLJ4R1gi5ZZ7dvcIpJ2gfukj2WOF" />
-        <meta-data
-            android:name="design_width_in_dp"
-            android:value="1125" />
-        <meta-data
-            android:name="design_height_in_dp"
-            android:value="2436" /> <!-- targetVersion30-Failed resolution of: Lorg/apache/http/impl/client/DefaultHttpClient; -->
+            android:value="ZtMu7Uh8tZuY3dNYdE8G99BlRe531Tbl" />
 
         <activity
             android:name=".ui.activity.LoginActivity"
@@ -166,11 +167,9 @@
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:exported="true"
-            android:launchMode="singleTask"/> <!-- 高德地图的key 跟服务 -->
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="b5bdf64c41f0b28bfa36286e1fb46972" />
+            android:launchMode="singleTask"/>
 
+        <!-- 高德地图的key 跟服务 -->
         <service android:name="com.amap.api.location.APSService" />
 
         <activity

@@ -5,6 +5,7 @@ import static me.drakeet.multitype.MultiTypeAsserts.assertAllRegistered;
 import static me.drakeet.multitype.MultiTypeAsserts.assertHasTheSameAdapter;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -90,7 +91,6 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
         initDateTime();
         updateData();
         obtainViewModel().getGridData();
-        initGeo();
     }
 
     private String latitude;
@@ -103,112 +103,6 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
     private String town;
     private String street;
     private int adcode;
-    private void initGeo() {
-        //创建新的地理编码检索实例；
-        GeoCoder geoCoder = GeoCoder.newInstance();
-
-        //创建地理编码检索监听者；
-        OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
-            @Override
-            public void onGetGeoCodeResult(GeoCodeResult result) {
-                if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-                    //没有检索到结果
-                }
-
-                //获取地理编码结果
-            }
-
-            @Override
-            public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
-                if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-                    //没有找到检索结果
-                }
-                try{
-                    countryName = result.getAddressDetail().countryName;
-                    province = result.getAddressDetail().province;
-                    city = result.getAddressDetail().city;
-                    district = result.getAddressDetail().district;
-                    town = result.getAddressDetail().town;
-                    street = result.getAddressDetail().street;
-                    adcode = result.getAddressDetail().adcode;
-
-                    List<PoiInfo> poiList = result.getPoiList();
-                    if(poiList!=null && !poiList.isEmpty()){
-                        PoiInfo poiInfo = poiList.get(0);
-                        cityAddress = poiInfo.address + poiInfo.name;
-                    }
-
-                    //处理显示数据
-                    obtainViewModel().longitude = longitude;
-                    obtainViewModel().latitude = latitude;
-                    obtainViewModel().cityAddress = cityAddress;
-                    obtainViewModel().currentCity = city;
-                    obtainViewModel().currentQu = district;
-                    LatLngChangeNew latLngChangeNew = new LatLngChangeNew();
-                    double[] doubles = LatLngChangeNew.calBD09toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
-                    if (!obtainViewModel().currentCity.isEmpty()) {
-                        String currentCiryParentId = "";
-                        String currentCiryId = "";
-
-                        String currentPro = "";
-                        String currentProId = "";
-
-                        String currentQuId = "";
-                        for (int i = 0; i < obtainViewModel().allAreaList.size(); i++) {
-                            if (obtainViewModel().allAreaList.get(i).getName().equals(obtainViewModel().currentCity)) {
-                                currentCiryParentId = obtainViewModel().allAreaList.get(i).getParentId();
-                                currentCiryId = obtainViewModel().allAreaList.get(i).getId();
-                            }
-                        }
-                        for (int i = 0; i < obtainViewModel().allAreaList.size(); i++) {
-                            if (obtainViewModel().allAreaList.get(i).getName().equals(obtainViewModel().currentQu)) {
-                                currentQuId = obtainViewModel().allAreaList.get(i).getId();
-                            }
-                        }
-
-                        for (int i = 0; i < obtainViewModel().allAreaList.size(); i++) {
-                            if (obtainViewModel().allAreaList.get(i).getId().equals(currentCiryParentId)) {
-                                currentPro = obtainViewModel().allAreaList.get(i).getName();
-                                currentProId = obtainViewModel().allAreaList.get(i).getId();
-                            }
-                        }
-                        obtainViewModel().shengStrList.add(currentPro);
-                        obtainViewModel().shiStrList.add(obtainViewModel().currentCity);
-                        obtainViewModel().isChooseSheng = true;
-
-                        binding.shengAddFireText.setText(currentPro);
-                        binding.shiAddFireText.setText(obtainViewModel().currentCity);
-                        binding.quText.setText(obtainViewModel().currentQu);
-
-                        obtainViewModel().fromMap = true;
-                        initAreaById(currentPro);
-                        initShiByShiId(currentProId, currentCiryId);
-                        initQuByQuId(currentCiryId, currentQuId);
-                        obtainViewModel().currentChooseSheng = currentPro;
-                        obtainViewModel().currentChooseShi = obtainViewModel().currentCity;
-                        obtainViewModel().currentChooseQu = obtainViewModel().currentQu;
-                        obtainViewModel().shengId = currentProId;
-                        obtainViewModel().shiId = currentCiryId;
-                        obtainViewModel().quId = currentQuId;
-                    }
-
-                    binding.addressView.setText(obtainViewModel().cityAddress);
-                    binding.jingduView.setText(doubles[1] + "");
-                    binding.weiduView.setText(doubles[0] + "");
-                }catch (Exception e){
-                    HhLog.e(e.getMessage());
-                }
-
-            }
-        };
-        //设置地理编码检索监听者；
-        geoCoder.setOnGetGeoCodeResultListener(listener);
-
-        //发起地理编码检索；
-        geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(new LatLng(CommonData.lat,CommonData.lng)));
-        latitude = CommonData.lat+"";
-        longitude = CommonData.lng+"";
-    }
 
     private void init_() {
         binding.topBar.title.setText("火情上报");
@@ -755,6 +649,7 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
     }
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -810,8 +705,7 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
             obtainViewModel().cityAddress = data.getStringExtra("cityAddress");
             obtainViewModel().currentCity = data.getStringExtra("city");
             obtainViewModel().currentQu = data.getStringExtra("district");
-            LatLngChangeNew latLngChangeNew = new LatLngChangeNew();
-            double[] doubles = LatLngChangeNew.calBD09toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
+            double[] doubles = LatLngChangeNew.calGCJ02toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
             if (!obtainViewModel().currentCity.isEmpty()) {
                 String currentCiryParentId = "";
                 String currentCiryId = "";
@@ -861,24 +755,7 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
             binding.addressView.setText(obtainViewModel().cityAddress);
             binding.jingduView.setText(doubles[1] + "");
             binding.weiduView.setText(doubles[0] + "");
-        }/*else if (requestCode == REQUEST_CODE_VIDEO && resultCode == RESULT_OK && null != data) {//插件选择视频有问题
-            List<Uri> uriList = Matisse.obtainResult(data);
-            Uri selectedVideo;
-            if(uriList!=null && !uriList.isEmpty()){
-                selectedVideo = uriList.get(0);
-                String[] filePathColumn = {MediaStore.Video.Media.DATA};
-
-                Cursor cursor = getContentResolver().query(selectedVideo,
-                        filePathColumn, null, null, null);
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                obtainViewModel().videoPath = cursor.getString(columnIndex);
-                cursor.close();
-                Log.e("TAG", "onActivityResult: " + obtainViewModel().videoPath);
-                binding.shipinView.setText("重新选择视频");
-            }
-        }*/ else if (requestCode == REQUEST_CODE_VIDEO && resultCode == RESULT_OK && null != data) {//选择视频
+        }else if (requestCode == REQUEST_CODE_VIDEO && resultCode == RESULT_OK && null != data) {//选择视频
             Uri selectedVideo = data.getData();
             String[] filePathColumn = {MediaStore.Video.Media.DATA};
 

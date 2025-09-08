@@ -41,6 +41,15 @@ import java.util.Objects;
 
 public class CommonUtil {
 
+    public static String parsePointSplit(String value, int number) {
+        try{
+            int index = value.indexOf(".");
+            return value.substring(0,index+1+number);
+        }catch (Exception e){
+            return value;
+        }
+    }
+
 
 
     public static String getMD5(String info) {

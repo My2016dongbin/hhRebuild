@@ -71,12 +71,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.baidu.mapapi.map.MapView
-            android:id="@+id/bmapView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_above="@+id/ll_map_bottom"
-            android:clickable="true" />
+        <com.amap.api.maps.MapView
+            android:id="@+id/aMapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
         <LinearLayout
             android:id="@+id/ll_map_bottom"
@@ -119,7 +117,7 @@
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/bg_button_little"
                 android:gravity="center"
-                android:onClick="mapclick"
+                android:onClick="mapClick"
                 android:clickable="true"
                 android:text="确认选择"
                 android:textColor="#ffffff"

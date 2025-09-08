@@ -411,7 +411,7 @@
                                 android:paddingLeft="5dp"
                                 android:paddingRight="5dp"
                                 android:paddingTop="5dp"
-                                android:maxLength="10"
+                                android:maxLength="9"
                                 android:textColor="@color/c5"
                                 android:textColorHint="@color/c4"
                                 android:textCursorDrawable="@drawable/edit_reg_cursor_color"

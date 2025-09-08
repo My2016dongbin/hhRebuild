@@ -37,6 +37,43 @@ import java.util.Objects;
 
 public class CommonUtil {
 
+    public static String parsePointSplit(String value, int number) {
+        try{
+            int index = value.indexOf(".");
+            return value.substring(0,index+1+number);
+        }catch (Exception e){
+            return value;
+        }
+    }
+
+    /**
+     * 权限判断
+     * @param context 上下文
+     * @param permissionCode 权限编码
+     * @return
+     */
+    public static boolean hasPermission(Context context , String permissionCode){
+        String permissions = (String) SPUtils.get(context,SPValue.permission,"");
+        //HhLog.e("hasPermission: " + permissions );
+        if(permissions == null){
+            return false;
+        }
+
+        return permissions.contains(permissionCode+"_");
+    }
+
+    public static String parseContent(String content){
+        if(content!=null) {
+            StringBuilder buffer = new StringBuilder();
+            String[] split = content.split("\\\\n");
+            for (int i = 0; i < split.length; i++) {
+                buffer.append(split[i]).append("\n");
+            }
+            return buffer.toString();
+        }else{
+            return "";
+        }
+    }
     public static String parseZero(int num){
         if(num > 9){
             return num +"";

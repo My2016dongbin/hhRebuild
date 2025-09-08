@@ -49,6 +49,13 @@
                 android:layout_marginStart="10dp"
                 android:layout_width="20dp"
                 android:layout_height="20dp"/>
+            <ImageView
+                android:id="@+id/video"
+                android:src="@drawable/ic_luxiang2"
+                android:visibility="visible"
+                android:layout_marginStart="20dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"/>
         </LinearLayout>
 
     </LinearLayout>

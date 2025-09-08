@@ -50,30 +50,35 @@
         android:icon="${APP_ICON}"
         android:label="${APP_NAME}"
         android:largeHeap="true"
-        android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/ic_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:replace="android:label,android:icon,android:name">
-        <!-- targetVersion30-Failed resolution of: Lorg/apache/http/impl/client/DefaultHttpClient; -->
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
 
-        <activity android:name=".ui.activity.PhotoViewerActivity" />
+        <!--targetVersion30-Failed resolution of: Lorg/apache/http/impl/client/DefaultHttpClient;-->
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+
+        <activity android:name=".ui.activity.PhotoViewerActivity"/>
 
         <service
             android:name="com.baidu.trace.LBSTraceService"
             android:enabled="true"
-            android:process=":remote" />
+            android:process=":remote"></service>
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" /> <!-- 百度地图key ZtMu7Uh8tZuY3dNYdE8G99BlRe531Tbl   LlazIrOBf5f36FjHRGGzZeWHa2XNGM6q -->
+
+        <!-- 高德地图的key 跟服务 -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="cdc1e2a53e2ad60a59a04ed6cd6ac3bb" />
+
+        <!-- 百度地图key -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="Jp3JUDsrHGmKe3ImBiui2Tk0zRHCKCfI" />
+            android:value="ZtMu7Uh8tZuY3dNYdE8G99BlRe531Tbl" />
 
         <activity
             android:name=".ui.activity.LoginActivity"
@@ -134,7 +139,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.activity.LaunchActivity">
+        <activity
+            android:name=".ui.activity.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -158,20 +164,9 @@
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.activity.FullVideoActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:screenOrientation="landscape"/>
+            android:launchMode="singleTask"/>
 
         <!-- 高德地图的key 跟服务 -->
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="b5bdf64c41f0b28bfa36286e1fb46972" />
-
         <service android:name="com.amap.api.location.APSService" />
 
         <activity

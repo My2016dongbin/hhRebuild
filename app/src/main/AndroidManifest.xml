@@ -169,12 +169,6 @@
             android:exported="true"
             android:launchMode="singleTask"/>
         <!-- 高德地图的key 跟服务 -->
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="b5bdf64c41f0b28bfa36286e1fb46972" />
-            android:launchMode="singleTask"/>
-
-        <!-- 高德地图的key 跟服务 -->
         <service android:name="com.amap.api.location.APSService" />
 
         <activity

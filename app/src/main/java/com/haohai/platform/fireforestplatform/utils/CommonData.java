@@ -1,6 +1,5 @@
 package com.haohai.platform.fireforestplatform.utils;
 
-import com.baidu.trace.LBSTraceClient;
 import com.haohai.platform.fireforestplatform.ui.bean.VideoDeleteModel;
 import com.haohai.platform.fireforestplatform.ui.multitype.Suggestion;
 
@@ -13,6 +12,8 @@ import java.util.List;
  * Copyright © 2018 青岛浩海网络科技股份有限公司 版权所有
  */
 public class CommonData {
+    public static String pushFlag = "wwyt";//对应平台配置项目标签 http://192.168.1.88:8082/#/resource/appVersion
+
     public static String token = "";
     public static double lat = 0;
     public static double lng = 0;
@@ -42,8 +43,9 @@ public class CommonData {
     public static List<Integer> videoPlayingIndexList = new ArrayList<>();
     public static List<VideoDeleteModel> videoDeleteModelList = new ArrayList<>();
 
-    //百度鹰眼轨迹
-    public static LBSTraceClient mTraceClient;
+    public static double lngAdding = 0;
+    public static double latAdding = 0;
+    public static long longAdding = 0;
 
     public static int mainTabIndex = 0;
     public static String search;

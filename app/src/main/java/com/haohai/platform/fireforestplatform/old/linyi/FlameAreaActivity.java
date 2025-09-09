@@ -250,7 +250,7 @@ public class FlameAreaActivity extends HhBaseActivity implements SensorEventList
                     for (int i = 0; i < points.length; i++) {
                         String po = points[i];
                         String[] p_ = po.split(" ");
-                        double[] calWGS84toBD09 = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(p_[1]),Double.parseDouble(p_[0]));
+                        double[] calWGS84toBD09 = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(p_[1]),Double.parseDouble(p_[0]));
                         if(i==0){
                             Log.e("TAG", "run: flyBaiduMap" + calWGS84toBD09[1] + "," + calWGS84toBD09[0] );
                             flyBaiduMap(calWGS84toBD09[0],calWGS84toBD09[1]);

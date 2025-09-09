@@ -1805,7 +1805,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
             try {
                 double lat_ = Double.parseDouble(latEdit.getText().toString());
                 double lng_ = Double.parseDouble(lngEdit.getText().toString());
-                double[] doubles = LatLngChangeNew.calBD09toWGS84(lat_, lng_);
+                double[] doubles = LatLngChangeNew.calBD09toGCJ02(lat_, lng_);
                 postsion.put("lat", Double.parseDouble(parseDoubleCount(doubles[0]+"")));
                 postsion.put("lng", Double.parseDouble(parseDoubleCount(doubles[1]+"")));
             } catch (Exception e) {

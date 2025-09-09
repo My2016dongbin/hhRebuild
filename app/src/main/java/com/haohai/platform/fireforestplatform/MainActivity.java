@@ -27,9 +27,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.ashokvarma.bottomnavigation.TextBadgeItem;
-import com.baidu.trace.LBSTraceClient;
-import com.baidu.trace.model.OnTraceListener;
-import com.baidu.trace.model.PushMessage;
 import com.cretin.www.cretinautoupdatelibrary.interfaces.AppDownloadListener;
 import com.cretin.www.cretinautoupdatelibrary.interfaces.MD5CheckListener;
 import com.cretin.www.cretinautoupdatelibrary.model.DownloadInfo;
@@ -88,86 +85,8 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
 
 
 
-    private LBSTraceClient mTraceClient;
-    private com.baidu.trace.Trace mTrace;
     private BottomNavigationItem messageBottomNavigationItem;
 
-    private void initBDTrace() {
-        // 轨迹服务ID
-        long serviceId = 235910;
-        // 设备标识
-        String entityName = (String) SPUtils.get(this, SPValue.id,"10000000001");//"10000000001";
-        // 是否需要对象存储服务，默认为：false，关闭对象存储服务。注：鹰眼 Android SDK v3.0以上版本支持随轨迹上传图像等对象数据，若需使用此功能，该参数需设为 true，且需导入bos-android-sdk-1.0.2.jar。
-        boolean isNeedObjectStorage = false;
-        // 初始化轨迹服务
-        mTrace = new com.baidu.trace.Trace(serviceId, entityName, isNeedObjectStorage);
-        //同意隐私政策
-        LBSTraceClient.setAgreePrivacy(this, true);
-        // 初始化轨迹服务客户端
-        try {
-            mTraceClient = new LBSTraceClient(getApplicationContext());
-            CommonData.mTraceClient = mTraceClient;
-            // 定位周期(单位:秒)
-            int gatherInterval = 5;
-            // 打包回传周期(单位:秒)
-            int packInterval = 10;
-            // 设置定位和打包周期
-            mTraceClient.setInterval(gatherInterval, packInterval);
-            // 开启服务
-            mTraceClient.startTrace(mTrace, mTraceListener);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("TAG", "initBDTrace: BDTrace" + e.toString() );
-        }
-    }
-
-    // 初始化轨迹服务监听器
-    OnTraceListener mTraceListener = new OnTraceListener() {
-        @Override
-        public void onBindServiceCallback(int i, String s) {
-            Log.e("TAG", "BDTrace onBindServiceCallback: " + i + s );
-        }
-
-        // 开启服务回调
-        @Override
-        public void onStartTraceCallback(int status, String message) {
-            Log.e("TAG", "BDTrace onStartTraceCallback: " + status + message );
-            if(status == 0){
-                // 开启采集
-                mTraceClient.startGather(mTraceListener);
-            }
-        }
-        // 停止服务回调
-        @Override
-        public void onStopTraceCallback(int status, String message) {
-            Log.e("TAG", "BDTrace onStopTraceCallback: " + message );
-        }
-        // 开启采集回调
-        @Override
-        public void onStartGatherCallback(int status, String message) {
-            Log.e("TAG", "BDTrace onStartGatherCallback: " + status +message );
-        }
-        // 停止采集回调
-        @Override
-        public void onStopGatherCallback(int status, String message) {
-            Log.e("TAG", "BDTrace onStopGatherCallback: " +message );
-        }
-        // 推送回调
-        @Override
-        public void onPushCallback(byte messageNo, PushMessage message) {
-            Log.e("TAG", "BDTrace onPushCallback: " );
-        }
-
-        @Override
-        public void onInitBOSCallback(int i, String s) {
-            Log.e("TAG", "BDTrace onInitBOSCallback: " );
-        }
-
-        @Override
-        public void onTraceDataUploadCallBack(int i, String s, int i1, int i2) {
-            Log.e("TAG", "BDTrace onTraceDataUploadCallBack: " );
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,7 +95,6 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         EventBus.getDefault().register(this);
-        initBDTrace();
 
         initBottomBar();
 

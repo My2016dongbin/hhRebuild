@@ -149,7 +149,7 @@ public class HiddenDangerActivity extends BaseLiveActivity<ActivityHiddenDangerB
                     obtainViewModel().cityAddress = cityAddress;
                     obtainViewModel().currentCity = city;
                     LatLngChangeNew latLngChangeNew = new LatLngChangeNew();
-                    double[] doubles = LatLngChangeNew.calBD09toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
+                    double[] doubles = LatLngChangeNew.calGCJ02toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
                     if (!obtainViewModel().currentCity.isEmpty()) {
                         String currentCiryParentId = "";
                         String currentCiryId = "";
@@ -618,7 +618,7 @@ public class HiddenDangerActivity extends BaseLiveActivity<ActivityHiddenDangerB
             obtainViewModel().cityAddress = data.getStringExtra("cityAddress");
             obtainViewModel().currentCity = data.getStringExtra("city");
             LatLngChangeNew latLngChangeNew = new LatLngChangeNew();
-            double[] doubles = LatLngChangeNew.calBD09toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
+            double[] doubles = LatLngChangeNew.calGCJ02toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
             if (!obtainViewModel().currentCity.isEmpty()) {
                 String currentCiryParentId = "";
                 String currentCiryId = "";

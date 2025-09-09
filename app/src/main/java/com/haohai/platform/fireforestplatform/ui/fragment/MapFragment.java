@@ -393,7 +393,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try{
             OneBodyFire oneBody = oneBodyFires.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(oneBody.getAlarmLatitude()), Double.parseDouble(oneBody.getAlarmLongitude()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBody.getAlarmLatitude()), Double.parseDouble(oneBody.getAlarmLongitude()));
             flyBaiduMapZoom(doubles[0],doubles[1], 14);
         }catch (Exception e){
             Log.e(TAG, "oneBodyFireChanged: " + e.getMessage() );
@@ -462,7 +462,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_red_fire2);
             double latitude = Double.parseDouble(obtainViewModel().oneBodyFire.getAlarmLatitude());
             double longitude = Double.parseDouble(obtainViewModel().oneBodyFire.getAlarmLongitude());
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(latitude, longitude);
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(latitude, longitude);
             LatLng point = new LatLng(doubles[0], doubles[1]);
 
             MarkerOptions option = new MarkerOptions()
@@ -483,7 +483,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_fire2);
             double latitude = Double.parseDouble(obtainViewModel().satelliteFire.getLatitude());
             double longitude = Double.parseDouble(obtainViewModel().satelliteFire.getLongitude());
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(latitude, longitude);
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(latitude, longitude);
             LatLng point = new LatLng(doubles[0], doubles[1]);
 
 
@@ -511,7 +511,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try{
             SatelliteFire satellite = satelliteFires.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(satellite.getLatitude()), Double.parseDouble(satellite.getLongitude()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(satellite.getLatitude()), Double.parseDouble(satellite.getLongitude()));
             flyBaiduMapZoom(doubles[0],doubles[1], 14);
         }catch (Exception e){
             Log.e(TAG, "oneBodyFireChanged: " + e.getMessage() );
@@ -524,7 +524,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try{
             Resource resource = resources.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(resource.getPosition().getLat()), Double.parseDouble(resource.getPosition().getLng()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(resource.getPosition().getLat()), Double.parseDouble(resource.getPosition().getLng()));
             flyBaiduMapZoom(doubles[0],doubles[1], 14);
         }catch (Exception e){
             Log.e(TAG, "resourceChanged: " + e.getMessage() );

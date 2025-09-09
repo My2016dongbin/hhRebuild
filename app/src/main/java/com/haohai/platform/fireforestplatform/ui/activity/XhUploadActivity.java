@@ -140,7 +140,7 @@ public class XhUploadActivity extends BaseLiveActivity<ActivityXhUploadBinding, 
                     obtainViewModel().cityAddress = cityAddress;
                     obtainViewModel().currentCity = city;
                     obtainViewModel().currentQu = district;
-                    double[] doubles = LatLngChangeNew.calBD09toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
+                    double[] doubles = LatLngChangeNew.calGCJ02toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
                     if (!obtainViewModel().currentCity.isEmpty()) {
                         //
                     }
@@ -564,7 +564,7 @@ public class XhUploadActivity extends BaseLiveActivity<ActivityXhUploadBinding, 
             obtainViewModel().cityAddress = data.getStringExtra("cityAddress");
             obtainViewModel().currentCity = data.getStringExtra("city");
             obtainViewModel().currentQu = data.getStringExtra("district");
-            double[] doubles = LatLngChangeNew.calBD09toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
+            double[] doubles = LatLngChangeNew.calGCJ02toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
             if (!obtainViewModel().currentCity.isEmpty()) {
                 obtainViewModel().fromMap = true;
             }

@@ -490,7 +490,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try {
             OneBodyFire oneBody = oneBodyFires.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(oneBody.getAlarmLatitude()), Double.parseDouble(oneBody.getAlarmLongitude()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBody.getAlarmLatitude()), Double.parseDouble(oneBody.getAlarmLongitude()));
             flyBaiduMapZoom(doubles[0], doubles[1], 14);
         } catch (Exception e) {
             Log.e(TAG, "oneBodyFireChanged: " + e.getMessage());
@@ -567,32 +567,43 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_red_fire2);
             double latitude = Double.parseDouble(obtainViewModel().oneBodyFire.getAlarmLatitude());
             double longitude = Double.parseDouble(obtainViewModel().oneBodyFire.getAlarmLongitude());
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(latitude, longitude);
-            com.baidu.mapapi.model.LatLng point = new com.baidu.mapapi.model.LatLng(doubles[0], doubles[1]);
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(latitude, longitude);
+            LatLng point = new LatLng(doubles[0], doubles[1]);
+
+            MarkerOptions option = new MarkerOptions()
+                    .position(point)
+                    .icon(btm);
+            Marker marker = aMap.addMarker(option);
             Bundle bundle = new Bundle();
             bundle.putString("id", obtainViewModel().oneBodyFire.getId());
             bundle.putInt("type", obtainViewModel().ONE_BODY);
-            OverlayOptions option = new MarkerOptions()
-                    .position(point)
-                    .extraInfo(bundle)
-                    .icon(btm);
-            mBaiduMap.addOverlay(option);
+            try{
+                marker.setObject(bundle);
+            }catch (Exception e){
+                //
+            }
         }
         //选中卫星火点
         if(obtainViewModel().satelliteFire!=null){
             BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_fire2);
             double latitude = Double.parseDouble(obtainViewModel().satelliteFire.getLatitude());
             double longitude = Double.parseDouble(obtainViewModel().satelliteFire.getLongitude());
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(latitude, longitude);
-            com.baidu.mapapi.model.LatLng point = new com.baidu.mapapi.model.LatLng(doubles[0], doubles[1]);
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(latitude, longitude);
+            LatLng point = new LatLng(doubles[0], doubles[1]);
+
+
+            MarkerOptions option = new MarkerOptions()
+                    .position(point)
+                    .icon(btm);
+            Marker marker = aMap.addMarker(option);
             Bundle bundle = new Bundle();
             bundle.putString("id", obtainViewModel().satelliteFire.getId());
             bundle.putInt("type", obtainViewModel().SATELLITE);
-            OverlayOptions option = new MarkerOptions()
-                    .position(point)
-                    .extraInfo(bundle)
-                    .icon(btm);
-            mBaiduMap.addOverlay(option);
+            try{
+                marker.setObject(bundle);
+            }catch (Exception e){
+                //
+            }
         }
     }
 
@@ -605,7 +616,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try {
             SatelliteFire satellite = satelliteFires.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(satellite.getLatitude()), Double.parseDouble(satellite.getLongitude()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(satellite.getLatitude()), Double.parseDouble(satellite.getLongitude()));
             flyBaiduMapZoom(doubles[0], doubles[1], 14);
         } catch (Exception e) {
             Log.e(TAG, "oneBodyFireChanged: " + e.getMessage());
@@ -619,7 +630,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try {
             Resource resource = resources.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(resource.getPosition().getLat()), Double.parseDouble(resource.getPosition().getLng()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(resource.getPosition().getLat()), Double.parseDouble(resource.getPosition().getLng()));
             flyBaiduMapZoom(doubles[0], doubles[1], 14);
         } catch (Exception e) {
             Log.e(TAG, "resourceChanged: " + e.getMessage());
@@ -644,13 +655,13 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
     private void gridCurrentChanged(List<ArrayList<Double>> points) {
         //更新地图图层数据
-        mBaiduMap.clear();
+        aMap.clear();
         updateMarkers();
     }
 
     private void multiGridCurrentChanged(List<List<ArrayList<Double>>> points) {
         //更新地图图层数据
-        mBaiduMap.clear();
+        aMap.clear();
         updateMarkers();
     }
 
@@ -732,13 +743,13 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
         if(points.size()>2){
             //构造PolygonOptions
-            PolygonOptions mPolygonOptions = new PolygonOptions()
-                    .points(points)
-                    .fillColor(0x66f28f25) //填充颜色
-                    .stroke(new Stroke(2, 0x66f28f25)); //边框宽度和颜色
-
-            //在地图上显示多边形
-            mBaiduMap.addOverlay(mPolygonOptions);
+            PolygonOptions polygonOptions = new PolygonOptions();
+            // 添加 多边形的每个顶点（顺序添加）
+            polygonOptions.addAll(points);
+            polygonOptions.strokeWidth(15) // 多边形的边框
+                    .strokeColor(Color.parseColor("#66f28f25"))// 边框颜色
+                    .fillColor(Color.parseColor("#66f28f25"));   // 多边形的填充色
+            aMap.addPolygon(polygonOptions);
         }
 
         //跳转到第一个点
@@ -759,14 +770,13 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             Log.e(TAG, "updateMarkers: enter -- " + lines);
 
             if(points.size()>2){
-                //构造PolygonOptions
-                PolygonOptions mPolygonOptions = new PolygonOptions()
-                        .points(points)
-                        .fillColor(0x66f28f2f) //填充颜色
-                        .stroke(new Stroke(2, 0x66f28f2f)); //边框宽度和颜色
-
-                //在地图上显示多边形
-                mBaiduMap.addOverlay(mPolygonOptions);
+                PolygonOptions polygonOptions = new PolygonOptions();
+                // 添加 多边形的每个顶点（顺序添加）
+                polygonOptions.addAll(points);
+                polygonOptions.strokeWidth(15) // 多边形的边框
+                        .strokeColor(Color.parseColor("#66f28f2f"))// 边框颜色
+                        .fillColor(Color.parseColor("#66f28f2f"));   // 多边形的填充色
+                aMap.addPolygon(polygonOptions);
             }
         }
 
@@ -1138,7 +1148,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void starMarker() {
-        mBaiduMap.clear();
+        aMap.clear();
 
         updateMarkers();
     }

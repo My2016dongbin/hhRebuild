@@ -359,7 +359,7 @@ public class TrackService extends Service implements SensorEventListener {
             Location location = locationManager.getLastKnownLocation(provider);
             try {
                 Log.e(TAG, "getLocation: 84 " + location.getLongitude() + "," + location.getLatitude());
-                double[] doubles = LatLngChangeNew.calWGS84toBD09(location.getLatitude(), location.getLongitude());
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(location.getLatitude(), location.getLongitude());
                 CommonData.lng = doubles[1];
                 CommonData.lat = doubles[0];
                 Log.e(TAG, "getLocation: bd09 " + doubles[1] + "," + doubles[0]);
@@ -410,7 +410,7 @@ public class TrackService extends Service implements SensorEventListener {
 
                 }
 
-                double[] doubles = LatLngChangeNew.calWGS84toBD09(latitude, longitude);
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(latitude, longitude);
                 CommonData.lng_old = CommonData.lng;
                 CommonData.lat_old = CommonData.lat;
                 CommonData.lng = doubles[1];
@@ -467,7 +467,7 @@ public class TrackService extends Service implements SensorEventListener {
         try {
             longitude = location.getLongitude();
             latitude = location.getLatitude();
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(location.getLatitude(), location.getLongitude());
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(location.getLatitude(), location.getLongitude());
             CommonData.lng = doubles[1];
             CommonData.lat = doubles[0];
             Log.e(TAG, "getLocation: --" + CommonData.lng);

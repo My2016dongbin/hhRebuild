@@ -96,7 +96,6 @@ import java.util.Objects;
 public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements OneBodyListDialog.OneBodyDialogListener, SatelliteListDialog.SatelliteDialogListener, OneBodyDetailDialog.OneBodyDetailDialogListener, SatelliteDetailDialog.SatelliteDetailDialogListener, ResourceDetailDialog.ResourceDetailDialogListener, ResourceListDialog.ResourceDialogListener, SatelliteSearchDialog.SatelliteSearchDialogListener, SatelliteSearchAdvancedDialog.SatelliteSearchAdvancedDialogListener, SheQuListDialog.SheQuDialogListener {
 
     private final String TAG = MapFragment.class.getSimpleName();
-    private BaiduMap mBaiduMap;
     private OneBodyListDialog oneBodyListDialog;
     private SatelliteListDialog satelliteListDialog;
     private OneBodyDetailDialog oneBodyDetailDialog;
@@ -394,53 +393,10 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //runCurrentLocation();
         flyBaiduMapZoom(36.114968, 120.394231, 14);//市北应急局
 
-
-        //绘制区域边界
-        OnGetDistricSearchResultListener listener = new OnGetDistricSearchResultListener() {
-
-            @Override
-            public void onGetDistrictResult(DistrictResult districtResult) {
-                districtResult.getCenterPt();//获取行政区中心坐标点
-                districtResult.getCityName();//获取行政区域名称
-                List<List<com.baidu.mapapi.model.LatLng>> polyLines = districtResult.getPolylines();//获取行政区域边界坐标点
-                //边界就是坐标点的集合，在地图上画出来就是多边形图层。有的行政区可能有多个区域，所以会有多个点集合。
-                if (polyLines == null) {
-                    return;
-                }
-                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
-                for (List<com.baidu.mapapi.model.LatLng> polyline : polyLines) {
-                    OverlayOptions ooPolyline11 = new PolylineOptions().width(10)
-                            .points(polyline).dottedLine(false).color(Color.BLUE);
-                    mBaiduMap.addOverlay(ooPolyline11);
-                    for (com.baidu.mapapi.model.LatLng latLng : polyline) {
-                        builder.include(latLng);
-                    }
-                }
-            }
-
-        };
-        mDistrictSearch = DistrictSearch.newInstance();
-        mDistrictSearch.setOnDistrictSearchListener(listener);//设置回调监听
-
         //区域边界
-        //initAreaLine();
         initAreaLineLocal();
     }
 
-
-    private DistrictSearch mDistrictSearch;
-
-    /**
-     * 绘制区域边界
-     */
-    private void initAreaLine() {
-        DistrictSearchOption districtSearchOption = new DistrictSearchOption();
-        districtSearchOption.cityName("青岛市");//检索城市名称
-        districtSearchOption.districtName("市北区");
-        mDistrictSearch.searchDistrict(districtSearchOption);//请求行政区数据
-
-    }
 
     private void runCurrentLocation() {
         new Handler().postDelayed(() -> {
@@ -509,7 +465,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try {
             OneBodyFire oneBody = oneBodyFires.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(oneBody.getEmergIncidentVersion().getLatitude()), Double.parseDouble(oneBody.getEmergIncidentVersion().getLongtitude()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBody.getEmergIncidentVersion().getLatitude()), Double.parseDouble(oneBody.getEmergIncidentVersion().getLongtitude()));
             flyBaiduMapZoom(doubles[0], doubles[1], 14);
         } catch (Exception e) {
             Log.e(TAG, "oneBodyFireChanged: " + e.getMessage());
@@ -552,15 +508,20 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             JSONObject jsonObject = new JSONObject(new GetJsonDataUtil().getJson(requireActivity(), "shibei.json"));
             JSONArray coordinates = jsonObject.getJSONArray("coordinates");
             if (coordinates.length() > 0) {
-                List<com.baidu.mapapi.model.LatLng> polyline = new ArrayList<>();
+                List<LatLng> polyline = new ArrayList<>();
                 for (int m = 0; m < coordinates.length(); m++) {
                     JSONArray list = (JSONArray) coordinates.get(m);
-                    double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(list.get(1).toString()), Double.parseDouble(list.get(0).toString()));
-                    polyline.add(new com.baidu.mapapi.model.LatLng(doubles[0], doubles[1]));
+                    double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(list.get(1).toString()), Double.parseDouble(list.get(0).toString()));
+                    polyline.add(new LatLng(doubles[0], doubles[1]));
                 }
-                OverlayOptions ooPolyline1 = new PolylineOptions().width(10)
-                        .points(polyline).dottedLine(false).color(Color.BLUE);
-                mBaiduMap.addOverlay(ooPolyline1);
+
+                PolygonOptions polygonOptions = new PolygonOptions();
+                // 添加 多边形的每个顶点（顺序添加）
+                polygonOptions.addAll(polyline);
+                polygonOptions.strokeWidth(10) // 多边形的边框
+                        .strokeColor(Color.parseColor("#660000ff"))// 边框颜色
+                        .fillColor(Color.parseColor("#00f28f2f"));   // 多边形的填充色
+                aMap.addPolygon(polygonOptions);
             }
 
         } catch (JSONException e) {
@@ -578,7 +539,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try {
             SatelliteFire satellite = satelliteFires.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(satellite.getLatitude()), Double.parseDouble(satellite.getLongitude()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(satellite.getLatitude()), Double.parseDouble(satellite.getLongitude()));
             flyBaiduMapZoom(doubles[0], doubles[1], 14);
         } catch (Exception e) {
             Log.e(TAG, "oneBodyFireChanged: " + e.getMessage());
@@ -592,7 +553,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try {
             Resource resource = resources.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(resource.getLatitude()), Double.parseDouble(resource.getLongitude()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(resource.getLatitude()), Double.parseDouble(resource.getLongitude()));
             flyBaiduMapZoom(doubles[0], doubles[1], 14);
         } catch (Exception e) {
             Log.e(TAG, "resourceChanged: " + e.getMessage());

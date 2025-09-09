@@ -266,7 +266,7 @@ public class AddingDangerActivity extends BaseLiveActivity<ActivityAddingDangerB
                 obtainViewModel().cityAddress = data.getStringExtra("cityAddress");
                 obtainViewModel().currentCity = data.getStringExtra("city");
                 obtainViewModel().currentQu = data.getStringExtra("district");
-                double[] doubles = LatLngChangeNew.calBD09toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
+                double[] doubles = LatLngChangeNew.calGCJ02toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
 
                 binding.editAddress.setText(obtainViewModel().cityAddress);
             }
@@ -843,7 +843,7 @@ public class AddingDangerActivity extends BaseLiveActivity<ActivityAddingDangerB
                         String lat = obtainViewModel().latitude;
                         String lng = obtainViewModel().longitude;
                         try{
-                            double[] doubles = LatLngChangeNew.calBD09toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
+                            double[] doubles = LatLngChangeNew.calGCJ02toWGS84(Double.parseDouble(obtainViewModel().latitude), Double.parseDouble(obtainViewModel().longitude));
                             lat = doubles[0]+"";
                             lng = doubles[1]+"";
                         }catch(Exception e){

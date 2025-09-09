@@ -259,7 +259,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             @Override
             public void run() {
                 try{
-                    double[] doubles = LatLngChangeNew.calWGS84toBD09(event.getLat(), event.getLng());
+                    double[] doubles = LatLngChangeNew.calWGS84toGCJ02(event.getLat(), event.getLng());
                     flyBaiduMapZoom(doubles[0],doubles[1], 14);
                 }catch (Exception e){
                     Log.e(TAG, "oneBodyFireChanged: " + e.getMessage() );
@@ -453,7 +453,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try{
             OneBodyFire oneBody = oneBodyFires.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(oneBody.getAlarmLatitude()), Double.parseDouble(oneBody.getAlarmLongitude()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBody.getAlarmLatitude()), Double.parseDouble(oneBody.getAlarmLongitude()));
             flyBaiduMapZoom(doubles[0],doubles[1], 14);
         }catch (Exception e){
             Log.e(TAG, "oneBodyFireChanged: " + e.getMessage() );
@@ -526,7 +526,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try{
             SatelliteFire satellite = satelliteFires.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(satellite.getLatitude()), Double.parseDouble(satellite.getLongitude()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(satellite.getLatitude()), Double.parseDouble(satellite.getLongitude()));
             flyBaiduMapZoom(doubles[0],doubles[1], 14);
         }catch (Exception e){
             Log.e(TAG, "oneBodyFireChanged: " + e.getMessage() );
@@ -541,7 +541,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         if(now - CommonData.longAdding < 5000){
             //新添加了资源
             try{
-                double[] doubles = LatLngChangeNew.calWGS84toBD09(CommonData.latAdding, CommonData.lngAdding);
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(CommonData.latAdding, CommonData.lngAdding);
                 flyBaiduMapZoom(doubles[0],doubles[1], 14);
             }catch (Exception e){
                 Log.e(TAG, "resourceChanged: " + e.getMessage() );
@@ -550,7 +550,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             //跳转第一个资源点
             try{
                 Resource resource = resources.get(0);
-                double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(resource.getPosition().getLat()), Double.parseDouble(resource.getPosition().getLng()));
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(resource.getPosition().getLat()), Double.parseDouble(resource.getPosition().getLng()));
                 flyBaiduMapZoom(doubles[0],doubles[1], 14);
             }catch (Exception e){
                 Log.e(TAG, "resourceChanged: " + e.getMessage() );

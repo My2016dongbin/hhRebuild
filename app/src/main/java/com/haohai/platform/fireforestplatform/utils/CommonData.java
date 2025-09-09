@@ -1,6 +1,5 @@
 package com.haohai.platform.fireforestplatform.utils;
 
-import com.baidu.trace.LBSTraceClient;
 import com.haohai.platform.fireforestplatform.ui.bean.VideoDeleteModel;
 import com.haohai.platform.fireforestplatform.ui.multitype.Alarm;
 import com.haohai.platform.fireforestplatform.ui.multitype.Danger;
@@ -49,9 +48,6 @@ public class CommonData {
     public static String videoDeleteChannelId = "";
     public static List<Integer> videoPlayingIndexList = new ArrayList<>();
     public static List<VideoDeleteModel> videoDeleteModelList = new ArrayList<>();
-
-    //百度鹰眼轨迹
-    public static LBSTraceClient mTraceClient;
 
     public static int mainTabIndex = 0;
     public static String search;

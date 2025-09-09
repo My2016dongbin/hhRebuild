@@ -56,6 +56,7 @@ public class URLConstant {
     //public static final String GET_USER_INFO = BASE_PATH + "auth/api/auth/user/get/userinfo";//个人信息
     
     public static final String GET_VERSION = BASE_PATH + "auth/api/androidUpgrade/getCurrent";//版本信息
+    public static final String HISTORY_LINE = BASE_PATH + "oa/api/trajectory/userTrajectoryByTime/";//查询轨迹
     //地图相关
     public static final String POST_MAP_ONE_BODY = BASE_PATH + "fire/api/monitorFirealarm/page?type=appInternet";//一体机报警数据
     public static final String GET_MAP_FIRE_VIDEO_URL = BASE_PATH + "fire/api/monitorFirealarm/getMonitorAlarmById?type=appInternet";//一体机报警详情

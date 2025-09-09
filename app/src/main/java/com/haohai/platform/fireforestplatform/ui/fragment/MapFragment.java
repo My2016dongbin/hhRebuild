@@ -25,29 +25,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapPoi;
-import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.OverlayOptions;
-import com.baidu.mapapi.map.PolygonOptions;
-import com.baidu.mapapi.map.PolylineOptions;
-import com.baidu.mapapi.map.Stroke;
-import com.baidu.mapapi.map.offline.MKOLSearchRecord;
-import com.baidu.mapapi.map.offline.MKOLUpdateElement;
-import com.baidu.mapapi.map.offline.MKOfflineMap;
-import com.baidu.mapapi.map.offline.MKOfflineMapListener;
-import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.model.LatLngBounds;
-import com.baidu.mapapi.search.district.DistrictResult;
-import com.baidu.mapapi.search.district.DistrictSearch;
-import com.baidu.mapapi.search.district.DistrictSearchOption;
-import com.baidu.mapapi.search.district.OnGetDistricSearchResultListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.model.BitmapDescriptor;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.PolygonOptions;
+import com.amap.api.navi.NaviSetting;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.base.BaseFragment;
 import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
@@ -105,6 +93,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private ResourceListDialog resourceListDialog;
     private SheQuListDialog sheQuListDialog;
     private ResourceDetailDialog resourceDetailDialog;
+    private AMap aMap;
 
     public static MapFragment newInstance(String param1) {
         Bundle args = new Bundle();
@@ -119,6 +108,12 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         EventBus.getDefault().register(this);
+
+        NaviSetting.updatePrivacyShow(getActivity(), true, true);
+        NaviSetting.updatePrivacyAgree(getActivity(), true);
+        binding.aMapView.onCreate(savedInstanceState);
+        aMap = binding.aMapView.getMap();
+        aMap.setMapType(AMap.MAP_TYPE_SATELLITE);
 
         init_();
         bind_();
@@ -278,31 +273,16 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             binding.viewTask.setVisibility(View.GONE);
         }
 
-        //baiduMap
-        mBaiduMap = binding.baiduMapview.getMap();
-        //显示卫星图层
-        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_SATELLITE);
-        mBaiduMap.setMyLocationEnabled(true);
-        binding.baiduMapview.showZoomControls(false);
 
-        //只显示道路 不显示其他标注
-        mBaiduMap.showMapPoi(true);
-        //设置最大最小缩放等级
-        mBaiduMap.setMaxAndMinZoomLevel(18, 5);
-        //flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
-        mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+        flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
+        aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 closeInput(binding.editFind);
             }
-
-            @Override
-            public void onMapPoiClick(MapPoi mapPoi) {
-                return;
-            }
         });
-        mBaiduMap.setOnMarkerClickListener(marker -> {
-            Bundle extraInfo = marker.getExtraInfo();
+        aMap.setOnMarkerClickListener(marker -> {
+            Bundle extraInfo = (Bundle) marker.getObject();
             String markerId = extraInfo.getString("id");
             int markerType = extraInfo.getInt("type");
             OneBodyFire oneBodyFire = new OneBodyFire();
@@ -339,36 +319,6 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
             return false;
         });
-        //初始化离线地图
-        MKOfflineMap mOffline = new MKOfflineMap();
-        // 传入MKOfflineMapListener，离线地图状态发生改变时会触发该回调
-        mOffline.init(new MKOfflineMapListener() {
-            @Override
-            public void onGetOfflineMapState(int i, int i1) {
-                Log.e("MapFg", "onGetOfflineMapState: Downloading " + i + "," + i1);
-            }
-        });
-        int cityId = 0;
-        ArrayList<MKOLSearchRecord> records = mOffline.searchCity("青岛市");
-        if (records != null && records.size() == 1) {
-            cityId = records.get(0).cityID;
-        }
-        ArrayList<MKOLUpdateElement> updateInfo = mOffline.getAllUpdateInfo();
-        if (updateInfo != null && updateInfo.size() > 0) {
-            MKOLUpdateElement updateElement = updateInfo.get(0);
-            if (updateElement.update) {
-                //更新下载
-                mOffline.update(cityId);
-                Log.e("MapFg", "init_: update");
-            } else {
-                Log.e("MapFg", "init_: do nothing");
-            }
-        } else {
-            // 开始下载离线地图
-            // cityID 城市的数字标识
-            mOffline.start(cityId);
-            Log.e("MapFg", "init_: download");
-        }
 
         //一体机报警列表Dialog
         initOneBodyListDialog();
@@ -410,33 +360,33 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
     private void flyBaiduMapZoom(double lat, double lng, int zoom) {
         //飞到精确点上
-        com.baidu.mapapi.model.LatLng ll = new com.baidu.mapapi.model.LatLng(
-                lat, lng);
-        MapStatus.Builder builder = new MapStatus.Builder();
-        builder.target(ll).zoom(zoom);
-        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-
+        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.amap.api.maps.model.LatLng(lat, lng),zoom));
     }
 
     @Override
     public void onResume() {
         super.onResume();
         //在activity执行onResume时必须调用mMapView. onResume ()
-        binding.baiduMapview.onResume();
+        binding.aMapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        binding.baiduMapview.onPause();
+        binding.aMapView.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mBaiduMap.clear();
-        binding.baiduMapview.onDestroy();
+        binding.aMapView.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        binding.aMapView.onSaveInstanceState(outState);
     }
 
     @Override
@@ -457,7 +407,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void oneBodyFireChanged(List<OneBodyFire> oneBodyFires) {
-        mBaiduMap.clear();
+        aMap.clear();
         //更新Dialog列表数据
         oneBodyListDialog.setOneBodyFireList(oneBodyFires, obtainViewModel().currentPage);
         //更新所有Marker
@@ -531,7 +481,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void satelliteFireChanged(List<SatelliteFire> satelliteFires) {
-        mBaiduMap.clear();
+        aMap.clear();
         //更新Dialog列表数据
         satelliteListDialog.setSatelliteFireList(satelliteFires);
         //更新所有Marker
@@ -547,7 +497,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void resourceChanged(List<Resource> resources) {
-        mBaiduMap.clear();
+        aMap.clear();
         //更新所有Marker
         updateMarkers();
         //跳转第一火点
@@ -567,7 +517,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
     private void sheQuCurrentChanged(List<ArrayList<Double>> points) {
         //更新地图图层数据
-        mBaiduMap.clear();
+        aMap.clear();
         updateMarkers();
     }
 
@@ -577,18 +527,14 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void oneBodyMarker(List<OneBodyFire> oneBodyFires) {
-        List<OverlayOptions> options = new ArrayList<>();
+        ArrayList<MarkerOptions> options = new ArrayList<>();
         BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_red_fire);//默认森林防火
         for (int i = 0; i < oneBodyFires.size(); i++) {
             try {
-                double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(oneBodyFires.get(i).getEmergIncidentVersion().getLatitude()), Double.parseDouble(oneBodyFires.get(i).getEmergIncidentVersion().getLongtitude()));
-                com.baidu.mapapi.model.LatLng point = new com.baidu.mapapi.model.LatLng(doubles[0], doubles[1]);
-                Bundle bundle = new Bundle();
-                bundle.putString("id", oneBodyFires.get(i).getId());
-                bundle.putInt("type", obtainViewModel().ONE_BODY);
-                OverlayOptions option = new MarkerOptions()
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBodyFires.get(i).getLatitude()), Double.parseDouble(oneBodyFires.get(i).getLongtitude()));
+                LatLng point = new LatLng(doubles[0], doubles[1]);
+                MarkerOptions option = new MarkerOptions()
                         .position(point)
-                        .extraInfo(bundle)
                         .icon(btm);
                 options.add(i, option);
             } catch (Exception e) {
@@ -596,7 +542,18 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 continue;
             }
         }
-        mBaiduMap.addOverlays(options);
+        List<Marker> markers = aMap.addMarkers(options, false);
+
+        try{
+            for (int i = 0; i < markers.size(); i++) {
+                Bundle bundle = new Bundle();
+                bundle.putString("id", oneBodyFires.get(i).getId());
+                bundle.putInt("type", obtainViewModel().ONE_BODY);
+                markers.get(i).setObject(bundle);
+            }
+        }catch (Exception e){
+            //
+        }
     }
 
     private void sheQuMarker(List<ArrayList<Double>> lines) {
@@ -607,14 +564,14 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
         Log.e(TAG, "updateMarkers: enter -- " + lines);
 
-        //构造PolygonOptions
-        PolygonOptions mPolygonOptions = new PolygonOptions()
-                .points(points)
-                .fillColor(0xAAf28f25) //填充颜色
-                .stroke(new Stroke(2, 0xAAf28f25)); //边框宽度和颜色
-
-        //在地图上显示多边形
-        mBaiduMap.addOverlay(mPolygonOptions);
+        // 声明 多边形参数对象
+        PolygonOptions polygonOptions = new PolygonOptions();
+        // 添加 多边形的每个顶点（顺序添加）
+        polygonOptions.addAll(points);
+        polygonOptions.strokeWidth(15) // 多边形的边框
+                .strokeColor(Color.parseColor("#AAf28f25"))// 边框颜色
+                .fillColor(Color.parseColor("#AAf28f25"));   // 多边形的填充色
+        aMap.addPolygon(polygonOptions);
 
         //跳转到第一个点
         LatLng latLng = points.get(0);
@@ -624,18 +581,14 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void satelliteMarker(List<SatelliteFire> satelliteFires) {
-        List<OverlayOptions> options = new ArrayList<>();
+        ArrayList<MarkerOptions> options = new ArrayList<>();
         BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_fire);
         for (int i = 0; i < satelliteFires.size(); i++) {
             try {
-                double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(satelliteFires.get(i).getLatitude()), Double.parseDouble(satelliteFires.get(i).getLongitude()));
-                com.baidu.mapapi.model.LatLng point = new com.baidu.mapapi.model.LatLng(doubles[0], doubles[1]);
-                Bundle bundle = new Bundle();
-                bundle.putString("id", satelliteFires.get(i).getId());
-                bundle.putInt("type", obtainViewModel().SATELLITE);
-                OverlayOptions option = new MarkerOptions()
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(satelliteFires.get(i).getLatitude()), Double.parseDouble(satelliteFires.get(i).getLongitude()));
+                LatLng point = new LatLng(doubles[0], doubles[1]);
+                MarkerOptions option = new MarkerOptions()
                         .position(point)
-                        .extraInfo(bundle)
                         .icon(btm);
                 options.add(i, option);
             } catch (Exception e) {
@@ -643,12 +596,23 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 continue;
             }
         }
-        mBaiduMap.addOverlays(options);
+        List<Marker> markers = aMap.addMarkers(options, false);
+
+        try{
+            for (int i = 0; i < markers.size(); i++) {
+                Bundle bundle = new Bundle();
+                bundle.putString("id", satelliteFires.get(i).getId());
+                bundle.putInt("type", obtainViewModel().SATELLITE);
+                markers.get(i).setObject(bundle);
+            }
+        }catch (Exception e){
+            //
+        }
     }
 
     private void resourceMarker(List<Resource> resources) {
-        List<OverlayOptions> options = new ArrayList<>();
-        BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.check);
+        ArrayList<MarkerOptions> options = new ArrayList<>();
+        BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_fire);
         for (int i = 0; i < resources.size(); i++) {
             //TODO 需后端配置后自动获取类型图标
             if (Objects.equals(resources.get(i).getResourceType(), "checkStation")) {//防火检查站
@@ -789,14 +753,10 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
 
             try {
-                double[] doubles = LatLngChangeNew.calWGS84toBD09(Double.parseDouble(resources.get(i).getLatitude()), Double.parseDouble(resources.get(i).getLongitude()));
-                com.baidu.mapapi.model.LatLng point = new com.baidu.mapapi.model.LatLng(doubles[0], doubles[1]);
-                Bundle bundle = new Bundle();
-                bundle.putString("id", resources.get(i).getResourceType() + resources.get(i).getId());
-                bundle.putInt("type", obtainViewModel().RESOURCE);
-                OverlayOptions option = new MarkerOptions()
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(resources.get(i).getLatitude()), Double.parseDouble(resources.get(i).getLongitude()));
+                LatLng point = new LatLng(doubles[0], doubles[1]);
+                MarkerOptions option = new MarkerOptions()
                         .position(point)
-                        .extraInfo(bundle)
                         .icon(btm);
                 options.add(i, option);
             } catch (Exception e) {
@@ -804,20 +764,31 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 continue;
             }
         }
-        mBaiduMap.addOverlays(options);
+        List<Marker> markers = aMap.addMarkers(options, false);
+
+        try{
+            for (int i = 0; i < markers.size(); i++) {
+                Bundle bundle = new Bundle();
+                bundle.putString("id", resources.get(i).getId());
+                bundle.putInt("type", obtainViewModel().RESOURCE);
+                markers.get(i).setObject(bundle);
+            }
+        }catch (Exception e){
+            //
+        }
     }
 
-    private void userLocationMarker() {
+    private void userLocationMarker(){
         BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.user);
-        com.baidu.mapapi.model.LatLng point = new com.baidu.mapapi.model.LatLng(CommonData.lat, CommonData.lng);
+        LatLng point = new LatLng(CommonData.lat, CommonData.lng);
+        MarkerOptions option = new MarkerOptions()
+                .position(point)
+                .icon(btm);
+        Marker marker = aMap.addMarker(option);
         Bundle bundle = new Bundle();
         bundle.putString("id", "userLocation");
         bundle.putInt("type", obtainViewModel().USER_LOCATION);
-        OverlayOptions option = new MarkerOptions()
-                .position(point)
-                .extraInfo(bundle)
-                .icon(btm);
-        mBaiduMap.addOverlay(option);
+        marker.setObject(bundle);
     }
 
 

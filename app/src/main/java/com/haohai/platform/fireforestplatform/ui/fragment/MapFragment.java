@@ -463,15 +463,20 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             double latitude = Double.parseDouble(obtainViewModel().oneBodyFire.getAlarmLatitude());
             double longitude = Double.parseDouble(obtainViewModel().oneBodyFire.getAlarmLongitude());
             double[] doubles = LatLngChangeNew.calWGS84toBD09(latitude, longitude);
-            com.baidu.mapapi.model.LatLng point = new com.baidu.mapapi.model.LatLng(doubles[0], doubles[1]);
+            LatLng point = new LatLng(doubles[0], doubles[1]);
+
+            MarkerOptions option = new MarkerOptions()
+                    .position(point)
+                    .icon(btm);
+            Marker marker = aMap.addMarker(option);
             Bundle bundle = new Bundle();
             bundle.putString("id", obtainViewModel().oneBodyFire.getId());
             bundle.putInt("type", obtainViewModel().ONE_BODY);
-            OverlayOptions option = new MarkerOptions()
-                    .position(point)
-                    .extraInfo(bundle)
-                    .icon(btm);
-            mBaiduMap.addOverlay(option);
+            try{
+                marker.setObject(bundle);
+            }catch (Exception e){
+                //
+            }
         }
         //选中卫星火点
         if(obtainViewModel().satelliteFire!=null){
@@ -479,15 +484,21 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             double latitude = Double.parseDouble(obtainViewModel().satelliteFire.getLatitude());
             double longitude = Double.parseDouble(obtainViewModel().satelliteFire.getLongitude());
             double[] doubles = LatLngChangeNew.calWGS84toBD09(latitude, longitude);
-            com.baidu.mapapi.model.LatLng point = new com.baidu.mapapi.model.LatLng(doubles[0], doubles[1]);
+            LatLng point = new LatLng(doubles[0], doubles[1]);
+
+
+            MarkerOptions option = new MarkerOptions()
+                    .position(point)
+                    .icon(btm);
+            Marker marker = aMap.addMarker(option);
             Bundle bundle = new Bundle();
             bundle.putString("id", obtainViewModel().satelliteFire.getId());
             bundle.putInt("type", obtainViewModel().SATELLITE);
-            OverlayOptions option = new MarkerOptions()
-                    .position(point)
-                    .extraInfo(bundle)
-                    .icon(btm);
-            mBaiduMap.addOverlay(option);
+            try{
+                marker.setObject(bundle);
+            }catch (Exception e){
+                //
+            }
         }
     }
 
@@ -945,7 +956,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void starMarker() {
-        mBaiduMap.clear();
+        aMap.clear();
 
         updateMarkers();
     }

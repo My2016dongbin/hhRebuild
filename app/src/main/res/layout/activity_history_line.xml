@@ -40,51 +40,10 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.baidu.mapapi.map.MapView
-            android:id="@+id/baidu_mapview"
+        <com.amap.api.maps.MapView
+            android:id="@+id/aMapView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true" />
-        <!--轨迹拖动条-->
-        <FrameLayout
-            android:id="@+id/fl_bar"
-            android:visibility="gone"
-            android:orientation="horizontal"
-            android:layout_margin="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:src="@drawable/ic_zhong"
-                android:layout_marginBottom="7dp"
-                android:layout_marginEnd="5dp"
-                android:layout_gravity="right|bottom"
-                android:layout_width="20dp"
-                android:layout_height="20dp"/>
-            <com.warkiz.widget.IndicatorStayLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <!--your layout-->
-                <com.warkiz.widget.IndicatorSeekBar
-                    android:id="@+id/bar"
-                    app:isb_thumb_color="@color/theme_primary"
-                    app:isb_indicator_color="@color/theme_primary"
-                    app:isb_track_progress_color="@color/theme_primary"
-                    android:background="@color/transparent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:isb_track_progress_size="5dp"
-                    app:isb_track_background_size="3dp"
-                    app:isb_show_indicator="rectangle"/>
-                <!--your layout-->
-            </com.warkiz.widget.IndicatorStayLayout>
-            <ImageView
-                android:src="@drawable/ic_qi"
-                android:layout_marginBottom="7dp"
-                android:layout_marginStart="5dp"
-                android:layout_width="20dp"
-                android:layout_gravity="bottom"
-                android:layout_height="20dp"/>
-        </FrameLayout>
+            android:layout_height="match_parent"/>
         <LinearLayout
             android:id="@+id/ll_bitmaps"
             android:visibility="gone"

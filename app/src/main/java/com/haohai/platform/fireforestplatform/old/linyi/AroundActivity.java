@@ -573,7 +573,7 @@ public class AroundActivity extends BaseActivity implements AroundViewBinder.Aro
                     JSONObject position = res.getJSONObject("position");
                     String lat = position.getString("lat");
                     String lng = position.getString("lng");
-                    double[] doubles = com.haohai.platform.fireforestplatform.utils.LatLngChangeNew.calWGS84toBD09(Double.parseDouble(lat), Double.parseDouble(lng));
+                    double[] doubles = com.haohai.platform.fireforestplatform.utils.LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(lat), Double.parseDouble(lng));
                     com.baidu.mapapi.model.LatLng point = new com.baidu.mapapi.model.LatLng(doubles[0], doubles[1]);
                     Bundle bundle = new Bundle();
                     bundle.putString("id", res.getString("id"));
@@ -636,7 +636,7 @@ public class AroundActivity extends BaseActivity implements AroundViewBinder.Aro
             e.printStackTrace();
         }
         Log.i("GPSposition", jsonObject.toString());
-        double[] doubles = com.haohai.platform.fireforestplatform.utils.LatLngChangeNew.calWGS84toBD09(currentAround.getPosition().getLat(), currentAround.getPosition().getLng());
+        double[] doubles = com.haohai.platform.fireforestplatform.utils.LatLngChangeNew.calWGS84toGCJ02(currentAround.getPosition().getLat(), currentAround.getPosition().getLng());
         com.baidu.mapapi.model.LatLng point = new com.baidu.mapapi.model.LatLng(doubles[0], doubles[1]);
         flyBaiduMapZoom(doubles[0],doubles[1],17);
     }

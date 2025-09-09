@@ -215,7 +215,7 @@ public class HistoryLineActivity extends BaseActivity implements DatePicker.OnDa
                         JSONObject obj = (JSONObject) data.get(i);
                         JSONObject position = obj.getJSONObject("position");
 
-                        double[] doubles = LatLngChangeNew.calWGS84toBD09(position.getDouble("lat"), position.getDouble("lng"));
+                        double[] doubles = LatLngChangeNew.calWGS84toGCJ02(position.getDouble("lat"), position.getDouble("lng"));
                         LatLng latLng = new LatLng(doubles[0],doubles[1]);
                         list.add(latLng);
                         allList.add(latLng);

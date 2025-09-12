@@ -463,7 +463,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
         binding.btnMessage.setOnClickListener(v -> {
             EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.messageIndex,2)));
         });
-        //监控设备
+        /*//监控设备
         binding.deviceMonitorView.setOnClickListener(v -> {
             obtainViewModel().mainDeviceStatus = "";
             obtainViewModel().getMainDeviceData();
@@ -480,7 +480,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
             obtainViewModel().mainDeviceStatus = "0";
             obtainViewModel().getMainDeviceData();
             mainDeviceListDialog.show();
-        });
+        });*/
         //报警信息-查看更多
         binding.moreWarn.setOnClickListener(v -> {
             EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"oneBody"));

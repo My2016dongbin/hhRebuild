@@ -384,7 +384,7 @@ public class FgMapViewModel extends BaseViewModel {
                     @Override
                     public void onFailure(Call call, Exception e, int id) {
                         HhLog.e("onFailure: " + e.toString());
-                        msg.setValue(e.getMessage());
+                        //msg.setValue(e.getMessage());
                     }
                 });
     }

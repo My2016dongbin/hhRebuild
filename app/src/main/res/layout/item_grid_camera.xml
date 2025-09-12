@@ -45,6 +45,7 @@
                 android:textColor="@color/text_color3"/>
             <ImageView
                 android:id="@+id/star"
+                android:visibility="gone"
                 android:src="@drawable/star_un"
                 android:layout_marginStart="10dp"
                 android:layout_width="20dp"

@@ -293,6 +293,7 @@
         <!--社区网格相关功能-->
         <LinearLayout
             android:id="@+id/view_grid_all"
+            android:visibility="gone"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:layout_gravity="right"

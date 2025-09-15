@@ -3,6 +3,7 @@ package com.haohai.platform.fireforestplatform.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.haohai.platform.fireforestplatform.BuildConfig;
 import com.haohai.platform.fireforestplatform.helper.Constants;
 
 import static android.util.Log.ERROR;
@@ -40,7 +41,7 @@ public class HhLog {
     }
 
     private static void log(int type, String tag, String message) {
-        if (!Constants.LOG_ENABLE) {
+        if (!BuildConfig.DEBUG) {
             return;
         }
         if (TextUtils.isEmpty(tag) || TextUtils.isEmpty(message)) {

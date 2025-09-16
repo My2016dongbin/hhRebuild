@@ -67,14 +67,23 @@ public class FgVideoViewModel extends BaseViewModel {
                 .addParams("stop", stop+"")
                 //.addParams("controlId", CommonData.videoDeleteControlId)
                 .addParams("controlType", type+"")
-                //.addParams("gridNo", (String) SPUtils.get(context, SPValue.gridNo,"370214"))
-                //.addParams("groupId", (String) SPUtils.get(context, SPValue.groupId,"001021"))
-                .addParams("gridNo", "370214")
+                .addParams("gridNo", (String) SPUtils.get(context, SPValue.gridNo,"370214"))
+                .addParams("groupId", (String) SPUtils.get(context, SPValue.groupId,"001021"))
+//                .addParams("gridNo", "370214")
                 //.addParams("groupId", "001021")
                 .build()
                 .execute(new LoggedInStringCallback(this,context) {
                     @Override
                     public void onSuccess(String response, int id) {
+                        HhLog.e("GET_CONTROL " + URLConstant.GET_CONTROL
+                                +"?monitorId="+CommonData.videoDeleteMonitorId
+                                +"&channelId="+CommonData.videoDeleteChannelId
+                                +"&speed="+speed
+                                +"&stop="+stop
+                                +"&controlType="+type
+                                +"&gridNo="+(String) SPUtils.get(context, SPValue.gridNo,"370214")
+                                +"&groupId="+(String) SPUtils.get(context, SPValue.groupId,"001021")
+                        );
                         HhLog.e("GET_CONTROL " + response);
                         HhLog.e("GET_CONTROL monitorId " + CommonData.videoDeleteMonitorId);
                         HhLog.e("GET_CONTROL channelId " + CommonData.videoDeleteChannelId);

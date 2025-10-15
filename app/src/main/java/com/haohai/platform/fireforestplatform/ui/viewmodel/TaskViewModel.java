@@ -65,6 +65,8 @@ public class TaskViewModel extends BaseViewModel {
                 .execute(new LoggedInStringCallback(this,context) {
                     @Override
                     public void onSuccess(String response, int id) {
+                        //HhLog.e("taskList param " + URLConstant.POST_TASK_LIST + " , " + content);
+                        //HhLog.e("taskList response " + response);
                         loading.setValue(new LoadingEvent(false));
                         try {
                             JSONObject jsonObject = new JSONObject(response);

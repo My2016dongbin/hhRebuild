@@ -32,6 +32,7 @@ public class URLConstant {
     public static final String HISTORY_LINE = BASE_PATH + "oa/api/trajectory/userTrajectoryByTime/";//查询轨迹
     //地图相关
     public static final String POST_MAP_ONE_BODY = BASE_PATH + "fire/api/monitorFirealarm/page?type=appInternet";//一体机报警数据
+    public static final String GET_MAP_ONE_BODY_DETAIL = BASE_PATH + "fire/api/monitorFirealarm/get";//一体机报警数据详情
     public static final String GET_MAP_FIRE_VIDEO_URL = BASE_PATH + "fire/api/monitorFirealarm/getMonitorAlarmById?type=appInternet";//一体机报警详情
 //    public static final String POST_MAP_SATELLITE = BASE_PATH + "fire/api/satelliteFirealarm/list";//卫星报警数据
     public static final String POST_MAP_SATELLITE = BASE_PATH + "fire/api/satelliteFirealarm/getFirePage?fireIds=&gridNo=370214";//卫星报警数据NEW

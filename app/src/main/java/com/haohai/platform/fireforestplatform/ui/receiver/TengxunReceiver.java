@@ -1,29 +1,39 @@
 package com.haohai.platform.fireforestplatform.ui.receiver;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.haohai.platform.fireforestplatform.HhApplication;
 import com.haohai.platform.fireforestplatform.R;
+import com.haohai.platform.fireforestplatform.base.LoggedInStringCallback;
 import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.constant.URLConstant;
 import com.haohai.platform.fireforestplatform.event.DoUpdate;
+import com.haohai.platform.fireforestplatform.event.LoadingEvent;
 import com.haohai.platform.fireforestplatform.event.MainTabChange;
 import com.haohai.platform.fireforestplatform.event.MessageRefresh;
 import com.haohai.platform.fireforestplatform.old.BackgroundMp3Service;
 import com.haohai.platform.fireforestplatform.ui.activity.NewsActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.CommonParams;
 import com.haohai.platform.fireforestplatform.ui.bean.MainNews;
+import com.haohai.platform.fireforestplatform.ui.multitype.OneBodyFire;
+import com.haohai.platform.fireforestplatform.ui.multitype.TaskList;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
+import com.haohai.platform.fireforestplatform.utils.CommonUtil;
+import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
 import com.kongzue.dialogx.dialogs.InputDialog;
 import com.kongzue.dialogx.dialogs.MessageDialog;
 import com.kongzue.dialogx.dialogs.PopNotification;
+import com.kongzue.dialogx.interfaces.OnBindView;
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener;
 import com.tencent.android.tpush.NotificationAction;
 import com.tencent.android.tpush.XGPushBaseReceiver;
@@ -34,6 +44,7 @@ import com.tencent.android.tpush.XGPushTextMessage;
 import com.zhy.http.okhttp.callback.Callback;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -171,29 +182,137 @@ public class TengxunReceiver extends XGPushBaseReceiver{
         String finalType = type;
         String finalContent = content;
         String finalId = id;
-        PopNotification.build()
-                .setIconResId(R.drawable.ic_icon)
-                .setMessage(xgPushShowedResult.getContent())
-                .setMargin(20,20,20,0)
-                .setRadius(40)
-                .setTitle(xgPushShowedResult.getTitle())
-                .autoDismiss(60000)
-                .setOnPopNotificationClickListener((dialog, v) -> {
-                    new InputDialog(parseMessageType(finalType) + "通知", finalContent, "反馈", "取消", context.getString(R.string.feedback))
-                            .setCancelable(false)
-                            .setOkButton((baseDialog, v2, inputStr) -> {
-                                if(inputStr.isEmpty() /*|| Objects.equals(inputStr, context.getString(R.string.feedback))*/) {
-                                    Toast.makeText(context, "请输入反馈信息", Toast.LENGTH_SHORT).show();
-                                    return true;
-                                }else{
-                                    postFeedBack(finalId, inputStr);
+
+        if("12".equals(finalType)){
+            HhHttp.get()
+                    .url(URLConstant.GET_MAP_ONE_BODY_DETAIL)
+                    .addParams("id", id)
+                    .build()
+                    .connTimeOut(10000)
+                    .execute(new LoggedInStringCallback(null, context) {
+                        @Override
+                        public void onSuccess(String response, int id) {
+                            HhLog.e("OneBodyInfo - postData " + id);
+                            HhLog.e("OneBodyInfo - postData " + response);
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                String code = jsonObject.getString("code");
+                                if (Objects.equals(code, "200")) {
+                                    JSONObject data = (JSONObject) jsonObject.getJSONArray("data").get(0);
+                                    OneBodyFire oneBodyFire = new Gson().fromJson(String.valueOf(data), OneBodyFire.class);
+                                    PopNotification.build()
+                                            .setIconResId(R.drawable.ic_icon)
+                                            .setMessage(xgPushShowedResult.getContent())
+                                            .setMargin(20,20,20,0)
+                                            .setRadius(40)
+                                            .setTitle(xgPushShowedResult.getTitle())
+                                            .autoDismiss(60000)
+                                            .setOnPopNotificationClickListener((dialog, v) -> {
+                                                new InputDialog(parseMessageType(finalType) + "通知",
+                                                        "报警内容："+oneBodyFire.getAddress()+oneBodyFire.getAlarmType()
+                                                                + "\n报警时间："
+                                                                + CommonUtil.parse19String(oneBodyFire.getAlarmDatetime(),"")
+                                                                + "\n经纬度："
+                                                                + oneBodyFire.getAlarmLongitude() + "," + oneBodyFire.getAlarmLatitude(),
+                                                        "反馈", "取消", context.getString(R.string.feedback))
+                                                        .setCancelable(false)
+                                                        .setOkButton((baseDialog, v2, inputStr) -> {
+                                                            if(inputStr.isEmpty() /*|| Objects.equals(inputStr, context.getString(R.string.feedback))*/) {
+                                                                Toast.makeText(context, "请输入反馈信息", Toast.LENGTH_SHORT).show();
+                                                                return true;
+                                                            }else{
+                                                                postFeedBack(finalId, inputStr);
+                                                            }
+                                                            return false;
+                                                        })
+                                                        .show();
+                                                return false;
+                                            })
+                                            .show();
+                                } else {
+
                                 }
-                                return false;
-                            })
-                            .show();
-                    return false;
-                })
-                .show();
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call call, Exception e, int id) {
+
+                        }
+                    });
+        } else{
+            HhHttp.get()
+                    .url(URLConstant.GET_TASK_INFO)
+                    .addParams("id", id)
+                    .build()
+                    .connTimeOut(10000)
+                    .execute(new LoggedInStringCallback(null, context) {
+                        @Override
+                        public void onSuccess(String response, int id) {
+                            HhLog.e("TaskListInfo - postData " + id);
+                            HhLog.e("TaskListInfo - postData " + response);
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                String code = jsonObject.getString("code");
+                                if (Objects.equals(code, "200")) {
+                                    JSONObject data = jsonObject.getJSONObject("data");
+                                    TaskList taskList = new Gson().fromJson(String.valueOf(data), TaskList.class);
+                                    PopNotification.build()
+                                            .setIconResId(R.drawable.ic_icon)
+                                            .setMessage(xgPushShowedResult.getContent())
+                                            .setMargin(20,20,20,0)
+                                            .setRadius(40)
+                                            .setTitle(xgPushShowedResult.getTitle())
+                                            .autoDismiss(60000)
+                                            .setOnPopNotificationClickListener((dialog, v) -> {
+                                                new InputDialog(parseMessageType(finalType) + "通知",
+                                                        "任务内容:" + taskList.getTaskContent()
+                                                                + "\n任务截止时间："
+                                                                + taskList.getTaskEndTime()
+                                                                + "\n经纬度："
+                                                                + taskList.getPosition().getLng() + "," + taskList.getPosition().getLat(),
+                                                        "反馈", "取消", context.getString(R.string.feedback))
+                                                        /*.setCustomView(new OnBindView(R.layout.dialog_header_layout) {
+                                                            @Override
+                                                            public void onBind(Object dialog, View v) {
+                                                                TextView task_time = v.findViewById(R.id.task_time);
+                                                                TextView task_lat_lng = v.findViewById(R.id.task_lat_lng);
+                                                                task_time.setText("任务截止时间：2025-10-31 23:59:59");
+                                                                task_lat_lng.setText("经纬度：132.324231,32.432533");
+                                                            }
+                                                        })*/
+                                                        .setCancelable(false)
+                                                        .setOkButton((baseDialog, v2, inputStr) -> {
+                                                            if(inputStr.isEmpty() /*|| Objects.equals(inputStr, context.getString(R.string.feedback))*/) {
+                                                                Toast.makeText(context, "请输入反馈信息", Toast.LENGTH_SHORT).show();
+                                                                return true;
+                                                            }else{
+                                                                postFeedBack(finalId, inputStr);
+                                                            }
+                                                            return false;
+                                                        })
+                                                        .show();
+                                                return false;
+                                            })
+                                            .show();
+                                } else {
+
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call call, Exception e, int id) {
+
+                        }
+                    });
+        }
     }
 
     private String parseMessageType(String finalType) {

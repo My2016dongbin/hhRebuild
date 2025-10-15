@@ -324,6 +324,12 @@ public class TrackService extends Service implements SensorEventListener {
         option.setNeedNewVersionRgc(true);
         //可选，设置是否需要最新版本的地址信息。默认需要，即参数为true
 
+        // 8. 过滤无效点
+        option.setIsNeedLocationDescribe(true);
+        option.setIsNeedLocationPoiList(true);
+        // 9. 忽略缓存定位结果
+        option.disableCache(true);
+
         mLocationClient.setLocOption(option);
         //mLocationClient为第二步初始化过的LocationClient对象
         //需将配置好的LocationClientOption对象，通过setLocOption方法传递给LocationClient对象使用

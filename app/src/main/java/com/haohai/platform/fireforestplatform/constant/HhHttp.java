@@ -42,6 +42,7 @@ public class HhHttp {
         PostFormBuilder postFormBuilder = OkHttpUtils.post();
         postFormBuilder.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         postFormBuilder.addHeader("NetworkType", "Internet");
+        postFormBuilder.addHeader("User-Agent", "App");
 
         return postFormBuilder;
     }
@@ -50,6 +51,7 @@ public class HhHttp {
         GetBuilder getBuilder = OkHttpUtils.get();
         getBuilder.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         getBuilder.addHeader("NetworkType", "Internet");
+        getBuilder.addHeader("User-Agent", "App");
         //getBuilder.addHeader("NetworkType", "Internet");
 
         return getBuilder;
@@ -58,6 +60,7 @@ public class HhHttp {
         OtherRequestBuilder builder = OkHttpUtils.put();
         builder.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         builder.addHeader("NetworkType", "Internet");
+        builder.addHeader("User-Agent", "App");
         //builder.mediaType(MediaType.parse("application/json; charset=utf-8"));
 
         return builder;
@@ -68,6 +71,7 @@ public class HhHttp {
         postStringBuilder.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         postStringBuilder.mediaType(MediaType.parse("application/json; charset=utf-8"));
         postStringBuilder.addHeader("NetworkType", "Internet");
+        postStringBuilder.addHeader("User-Agent", "App");
 
         return postStringBuilder;
     }
@@ -76,6 +80,7 @@ public class HhHttp {
         PostFileBuilder postFileBuilder = OkHttpUtils.postFile();
         postFileBuilder.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         postFileBuilder.addHeader("NetworkType", "Internet");
+        postFileBuilder.addHeader("User-Agent", "App");
         postFileBuilder.mediaType(MediaType.parse("multipart/form-data"));
 
         return postFileBuilder;
@@ -88,6 +93,7 @@ public class HhHttp {
         builder.method(method, RequestBody.create(MediaType.parse("application/json; charset=utf-8"), content));
         builder.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         builder.addHeader("NetworkType", "Internet");
+        builder.addHeader("User-Agent", "App");
         okHttpClient.newCall(builder.build()).enqueue(callback);
     }
 
@@ -100,18 +106,21 @@ public class HhHttp {
     public static void postX(RequestParams params,org.xutils.common.Callback.CommonCallback<String> callback){
         params.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         params.addHeader("NetworkType", "Internet");
+        params.addHeader("User-Agent", "App");
         params.setConnectTimeout(20000);
         x.http().post(params, callback);
     }
     public static void getX(RequestParams params,org.xutils.common.Callback.CommonCallback<String> callback){
         params.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         params.addHeader("NetworkType", "Internet");
+        params.addHeader("User-Agent", "App");
         params.setConnectTimeout(20000);
         x.http().get(params, callback);
     }
     public static void methodX(HttpMethod method, RequestParams params, org.xutils.common.Callback.CommonCallback<String> callback){
         params.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
         params.addHeader("NetworkType", "Internet");
+        params.addHeader("User-Agent", "App");
         params.setConnectTimeout(20000);
         x.http().request(method,params, callback);
     }

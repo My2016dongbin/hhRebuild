@@ -3,11 +3,11 @@ package com.haohai.platform.fireforestplatform.constant;
 public class URLConstant {
 
 //    public static final String BASE_PATH = "http://192.168.1.34:8012/";//Release 本地
-    public static final String BASE_PATH = "http://192.168.1.192:30055/";//"http://192.168.1.88:8444/";//Release-穿透 //平台8081
+    public static final String BASE_PATH = "http://36.138.129.90:48011/";//"http://192.168.1.88:8444/";//Release-穿透 //平台8081
 //    public static final String BASE_PATH = "http://192.168.1.40:8011/";//Release web
 
-    public static final String SATELLITE_IMAGE = "http://web.ehaohai.com:2018";//卫星图片前缀
-    public static final String COMMON_VERSION = "http://192.168.1.88:8082/auth/api/androidUpgrade/page";
+    public static final String SATELLITE_IMAGE = "http://36.138.129.90:48011";//"http://web.ehaohai.com:2018";//卫星图片前缀
+    public static final String COMMON_VERSION = BASE_PATH + "auth/api/androidUpgrade/page";
 
 
     public static final String PERMISSION_MAIN = BASE_PATH + "auth/api/auth/auth/user/auth";

@@ -67,9 +67,9 @@ public class FgVideoViewModel extends BaseViewModel {
                 .addParams("stop", stop+"")
                 //.addParams("controlId", CommonData.videoDeleteControlId)
                 .addParams("controlType", type+"")
-                //.addParams("gridNo", (String) SPUtils.get(context, SPValue.gridNo,"370214"))
+                .addParams("gridNo", (String) SPUtils.get(context, SPValue.gridNo,"370214"))
                 //.addParams("groupId", (String) SPUtils.get(context, SPValue.groupId,"001021"))
-                .addParams("gridNo", "370214")
+//                .addParams("gridNo", "370214")
                 //.addParams("groupId", "001021")
                 .build()
                 .execute(new LoggedInStringCallback(this,context) {

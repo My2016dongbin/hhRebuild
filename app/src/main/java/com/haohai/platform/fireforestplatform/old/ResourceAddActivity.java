@@ -336,6 +336,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
         params = new RequestParams(URLConstant.BASE_PATH + "resource/api/" + resourceType);
         params.setAsJsonContent(true);
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         Log.e(TAG, "getDetail:-- params.toString()--" + params);
         params.setConnectTimeout(10000);
 
@@ -894,6 +895,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
         params.setBodyContent(jsonObject.toString());
         Log.e(TAG, "getDataFromService: " + jsonObject.toString());
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         Log.e(TAG, "resource: --" + params);
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
@@ -1510,6 +1512,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
         }
 
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
 
         x.http().post(params, new Callback.CommonCallback<String>() {
 
@@ -1600,6 +1603,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
         // params.setBodyContent(jsonObject.toString());
         params.addBodyParameter("file", new File(pic1), null, pic1);
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         Log.e(TAG, "postPicToService: " + params);
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
@@ -2046,6 +2050,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
         Log.e(TAG, "pic: 5");
         params.setAsJsonContent(true);
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         Log.e(TAG, "postData:-- jsonObject.toString()--" + jsonObject.toString());
         Log.e(TAG, "postData:-- jsonObject.toString()--" + params);
         params.setConnectTimeout(10000);

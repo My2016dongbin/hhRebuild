@@ -150,6 +150,7 @@ public class LiveUploadViewModel extends BaseViewModel {
         params.setMultipart(true);
         params.setConnectTimeout(60000);
         params.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
+        params.addHeader("User-Agent", "App");
         params.addHeader("NetworkType", "Internet");
         loading.setValue(new LoadingEvent(true,"正在提交.."));
         x.http().post(params, new Callback.CommonCallback<String>() {

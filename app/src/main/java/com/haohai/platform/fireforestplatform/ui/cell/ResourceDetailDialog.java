@@ -174,6 +174,7 @@ public class ResourceDetailDialog extends Dialog implements INaviInfoCallback {
         params.setAsJsonContent(true);
         params.setBodyContent(resObj.toString());
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         String finalType = tp;
         HhLog.e("params " + params.toString());
         HhLog.e("params " + resObj.toString());

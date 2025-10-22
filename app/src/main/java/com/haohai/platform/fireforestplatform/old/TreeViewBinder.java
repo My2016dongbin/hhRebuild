@@ -120,6 +120,7 @@ public class TreeViewBinder extends ItemViewProvider<Tree, TreeViewBinder.ViewHo
         //RequestParams params = new RequestParams(RequestUtils.REQUEST_URL + "auth/api/auth/user/list");//所有权限
         RequestParams params = new RequestParams(URLConstant.BASE_PATH + "auth/api/auth/user/listByGrid");//下属权限
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         params.setBodyContent(object.toString());
         Log.e("TAG", "postPerson: postPerson params " + params );
         Log.e("TAG", "postPerson: postPerson params " + object.toString() );

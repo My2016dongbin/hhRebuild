@@ -121,6 +121,7 @@ public class FgMapViewModel extends BaseViewModel {
         params.setConnectTimeout(20000);
         params.setBodyContent(jsonObject.toString());
         params.addHeader("Authorization","bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {

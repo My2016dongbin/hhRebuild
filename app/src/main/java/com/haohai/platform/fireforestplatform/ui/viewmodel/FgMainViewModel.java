@@ -206,6 +206,7 @@ public class FgMainViewModel extends BaseViewModel {
         params.setBodyContent(jsonObject.toString());
         params.addBodyParameter("time",formatter.format(curDate));
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
@@ -287,6 +288,7 @@ public class FgMainViewModel extends BaseViewModel {
         String format = simpleDateFormat.format(new Date());
         RequestParams params = new RequestParams(URLConstant.GET_USER_DISTANCE);
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         params.addParameter("time",format);
         params.addParameter("userId",SPUtils.get(context, SPValue.id,""));
         Log.e("TAG", "onSuccess: bingo params = walkInfo " +  params.toString());
@@ -334,7 +336,7 @@ public class FgMainViewModel extends BaseViewModel {
         if(CommonPermission.hasPermission(context,CommonPermission.APP_BANNER)){
             List<BannerBean> bannerListTest = new ArrayList<>();
             bannerListTest.add(new BannerBean("","市园林和林业局局长到市属公园进行调研",".html","https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AAOEcdM.img","/bannerDetail?id=123456"));
-            bannerListTest.add(new BannerBean("","青岛浩海网络科技股份有限公司提供技术支持欢迎加入浩海大家庭",".html","https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AAOEhRG.img","/bannerDetail?id=123456789"));
+            //bannerListTest.add(new BannerBean("","青岛浩海网络科技股份有限公司提供技术支持欢迎加入浩海大家庭",".html","https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AAOEhRG.img","/bannerDetail?id=123456789"));
             bannerList.setValue(bannerListTest);
             postNews();
         }

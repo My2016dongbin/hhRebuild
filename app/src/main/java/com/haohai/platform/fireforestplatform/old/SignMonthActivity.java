@@ -137,6 +137,7 @@ public class SignMonthActivity extends BaseActivity implements
         String format = simpleDateFormat.format(new Date());
         RequestParams params = new RequestParams(URLConstant.GET_USER_DISTANCE);
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         params.addParameter("time",format);
         params.addParameter("userId",SPUtils.get(this, SPValue.id,""));
         Log.e(TAG, "onSuccess: bingo params = walkInfo " +  params.toString());
@@ -194,6 +195,7 @@ public class SignMonthActivity extends BaseActivity implements
         RequestParams params = new RequestParams(URLConstant.BASE_PATH + "oa/api/attendance/earlySign");
         params.setBodyContent(new Gson().toJson(signModel));
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         Log.e(TAG, "onSuccess: bingo params = " +  params.toString());
         Log.e(TAG, "onSuccess: bingo new Gson().toJson(signModel) = " +  new Gson().toJson(signModel));
         showDY3();
@@ -259,6 +261,7 @@ public class SignMonthActivity extends BaseActivity implements
         RequestParams params = new RequestParams(URLConstant.BASE_PATH + "oa/api/attendance/nightSign");
         params.setBodyContent(new Gson().toJson(signModel));
         params.addHeader("Authorization", "bearer "  + CommonData.token);
+        params.addHeader("User-Agent", "App");
         Log.e(TAG, "onSuccess: bingo params = " +  params.toString());
         Log.e(TAG, "onSuccess: bingo new Gson().toJson(signModel) = " +  new Gson().toJson(signModel));
         showDY3();
@@ -383,6 +386,7 @@ public class SignMonthActivity extends BaseActivity implements
         params.setBodyContent(jsonObject.toString());
         params.addBodyParameter("time",formatter.format(curDate));
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         Log.e(TAG, "onSuccess: bingo params = " +  params.toString());
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
@@ -686,6 +690,7 @@ public class SignMonthActivity extends BaseActivity implements
         params.addParameter("month",date);
         params.addParameter("userId", id==null?SPUtils.get(this, SPValue.id,""):id);
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         showDY3();
         Log.e(TAG, "postData: params = " + params );
         x.http().get(params, new Callback.CommonCallback<String>() {

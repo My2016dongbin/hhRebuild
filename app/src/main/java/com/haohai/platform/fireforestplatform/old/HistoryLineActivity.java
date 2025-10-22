@@ -148,6 +148,7 @@ public class HistoryLineActivity extends BaseActivity implements DatePicker.OnDa
     private void initTree() {
         RequestParams params = new RequestParams(URLConstant.GET_GRID_TREES);
         params.addHeader("Authorization", "bearer " + CommonData.token);
+        params.addHeader("User-Agent", "App");
         x.http().get(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {

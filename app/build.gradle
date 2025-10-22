@@ -75,7 +75,7 @@ android {
             manifestPlaceholders = [
                     APP_ICON: "@drawable/ic_icon",//app图标
                     CHANNEL_NAME: "haohaiVersion",
-                    APP_NAME: "牡丹江智慧林业平台",
+                    APP_NAME: "铜仁智慧林业平台",
                     AUTHORITIES: "com.haohai.platform.fireforestplatform.fileprovider",
             ]
             //buildConfigField("String", "NET_TYPE", "ONLINE")//网络
@@ -86,7 +86,7 @@ android {
             manifestPlaceholders = [
                     APP_ICON: "@drawable/ic_icon",//app图标
                     CHANNEL_NAME: "onceVersion",
-                    APP_NAME: "牡丹江智慧林业平台临时测试版${defaultConfig.versionName}",
+                    APP_NAME: "铜仁智慧林业平台临时测试版${defaultConfig.versionName}",
                     AUTHORITIES: "com.haohai.platform.fireforestplatform.fileprovider",
             ]
         }

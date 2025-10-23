@@ -539,7 +539,7 @@ public class FgMainViewModel extends BaseViewModel {
                                     .build().execute(new LoggedInStringCallback(FgMainViewModel.this,context) {
                                 @Override
                                 public void onSuccess(String response, int id) {
-                                    HhLog.e("GET_FIRE_COUNT USER groupId " + groupId + " ,gridNo " + gridNo + " ， " + response );
+                                    HhLog.e("GET_FIRE_COUNT USER groupId - " + groupId + " ,gridNo " + gridNo + " ， " + response );
                                     try {
                                         JSONObject jsonObject = new JSONObject(response);
                                         JSONArray data = jsonObject.getJSONArray("data");

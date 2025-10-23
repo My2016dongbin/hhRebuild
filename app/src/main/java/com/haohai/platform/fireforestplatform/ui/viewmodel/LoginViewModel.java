@@ -151,12 +151,10 @@ public class LoginViewModel extends BaseViewModel {
                                 SPUtils.put(HhApplication.getInstance(), SPValue.login, true);
 
                                 Set<String> tagSet = new LinkedHashSet<>();
-                                tagSet.add(userJsonObj.getString("id"));
-                                tagSet.add(userJsonObj.getString("gridNo"));
-                                //tagSet.add(userJsonObj.getString("groupId"));
-                                tagSet.add("mdj_" + userJsonObj.getString("groupId"));
-                                //tagSet.add(CommonData.pushFlag);
-                                tagSet.add("mdj_20251016");
+                                tagSet.add("mdjlh_" + userJsonObj.getString("id"));
+                                tagSet.add("mdjlh_" + userJsonObj.getString("gridNo"));
+                                tagSet.add("mdjlh_" + userJsonObj.getString("groupId"));
+                                tagSet.add("mdjlh_20251016");
                                 XGPushManager.setTags(context, "setTag", tagSet);
 
 

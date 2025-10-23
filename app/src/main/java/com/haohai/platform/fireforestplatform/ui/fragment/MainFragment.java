@@ -199,10 +199,11 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
                 14));
 
         int handle_percent = 0;
+        int no_handle_percent = 0;
         if(obtainViewModel().handle+obtainViewModel().noHandle != 0){
             handle_percent = parsePercent(obtainViewModel().handle/(obtainViewModel().handle+obtainViewModel().noHandle));
+            no_handle_percent = 100 - handle_percent;
         }
-        int no_handle_percent = 100 - handle_percent;
         binding.chart2.setPieChartData(data);
         binding.warnCount.setText(String.valueOf((int)(obtainViewModel().handle+obtainViewModel().noHandle)));
         binding.handleCount.setText(String.valueOf((int)(obtainViewModel().handle)));

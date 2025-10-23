@@ -280,10 +280,10 @@ public class TaskListInfoActivity extends BaseLiveActivity<ActivityTaskListInfoB
 
     private String parseState(String status) {
         if(Objects.equals(status, "0")){
-            return "未开始";
+            return "开始执行";
         }
         if(Objects.equals(status, "1")){
-            return "执行中";
+            return "结束执行";
         }
         if(Objects.equals(status, "2")){
             return "已结束";

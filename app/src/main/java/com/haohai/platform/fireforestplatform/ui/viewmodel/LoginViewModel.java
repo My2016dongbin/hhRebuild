@@ -298,6 +298,7 @@ public class LoginViewModel extends BaseViewModel {
                     @Override
                     public void onSuccess(String response, int id) {
                         Log.e("TAG", "onSuccess: PERMISSION_PER = " + response);
+                        //Log.e("TAG", "onSuccess: PERMISSION_PER = " + code + " , " + (String) SPUtils.get(context, SPValue.token, ""));
                         try {
                             JSONObject object = new JSONObject(response);
                             JSONArray dataList = object.getJSONArray("data");

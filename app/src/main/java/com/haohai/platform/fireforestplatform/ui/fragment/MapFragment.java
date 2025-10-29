@@ -291,7 +291,6 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
 
 
-        flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
         aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -355,8 +354,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
         //跳转当前位置
         new Handler().postDelayed(() -> {
-            if(CommonData.lat!=0 && (obtainViewModel().oneBodyList.getValue()==null||obtainViewModel().oneBodyList.getValue().isEmpty())) {
-                flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
+            if((obtainViewModel().oneBodyList.getValue()==null||obtainViewModel().oneBodyList.getValue().isEmpty())) {
+                flyBaiduMapZoom(27.7139418347,109.173521141, 10);
             }
         }, 3000);
     }

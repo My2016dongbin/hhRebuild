@@ -80,7 +80,8 @@ public class LoginViewModel extends BaseViewModel {
 
     public void login(String userName, String password) {
         loading.setValue(new LoadingEvent(true, "登录中.."));
-        HhHttp.get()
+        Log.e("TAG", "onSuccess: login = " + URLConstant.GET_LOGIN);
+        HhHttp.get2()
                 .url(URLConstant.GET_LOGIN)
                 .addParams("username", userName)
                 .addParams("password", password)

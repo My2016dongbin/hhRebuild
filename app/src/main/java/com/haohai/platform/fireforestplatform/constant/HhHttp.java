@@ -54,6 +54,12 @@ public class HhHttp {
 
         return getBuilder;
     }
+
+    public static GetBuilder get2() {
+        GetBuilder getBuilder = OkHttpUtils.get();
+
+        return getBuilder;
+    }
     public static OtherRequestBuilder put() {
         OtherRequestBuilder builder = OkHttpUtils.put();
         builder.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));

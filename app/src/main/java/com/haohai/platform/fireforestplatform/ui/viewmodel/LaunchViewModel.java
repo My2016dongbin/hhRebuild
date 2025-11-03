@@ -34,7 +34,7 @@ public class LaunchViewModel extends BaseViewModel {
 
     public void login(String userName, String password) {
         loading.setValue(new LoadingEvent(true, "自动登录中.."));
-        HhHttp.get()
+        HhHttp.get2()
                 .url(URLConstant.GET_LOGIN)
                 .addParams("username", userName)
                 .addParams("password", password)

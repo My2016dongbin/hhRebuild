@@ -49,7 +49,16 @@ public class HhHttp {
     public static GetBuilder get() {
         GetBuilder getBuilder = OkHttpUtils.get();
         getBuilder.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
-        getBuilder.addHeader("NetworkType", "Internet");
+//        getBuilder.addHeader("NetworkType", "Internet");
+        //getBuilder.addHeader("NetworkType", "Internet");
+
+        return getBuilder;
+    }
+
+    public static GetBuilder getLogin() {
+        GetBuilder getBuilder = OkHttpUtils.get();
+        //getBuilder.addHeader("Authorization", "Bearer " + SPUtils.get(HhApplication.getInstance(), SPValue.token, ""));
+//        getBuilder.addHeader("NetworkType", "Internet");
         //getBuilder.addHeader("NetworkType", "Internet");
 
         return getBuilder;

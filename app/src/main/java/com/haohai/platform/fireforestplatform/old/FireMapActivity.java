@@ -224,7 +224,7 @@ public class FireMapActivity extends BaseActivity {
                     intent.putExtra("town", town);
                     intent.putExtra("street", street);
                     intent.putExtra("adcode", adcode);
-                    FireMapActivity.this.setResult(MAP_REUEST_CODE, intent);
+                    FireMapActivity.this.setResult(RESULT_OK, intent);
                     finish();
                 }
 

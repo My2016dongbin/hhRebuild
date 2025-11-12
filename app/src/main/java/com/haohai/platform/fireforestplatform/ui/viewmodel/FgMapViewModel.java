@@ -186,7 +186,7 @@ public class FgMapViewModel extends BaseViewModel {
             @Override
             public void onSuccess(String result) {
                 try {
-                    HhLog.e("POST_MAP_ONE_BODY" + currentPage + " , " + result);
+                    //HhLog.e("POST_MAP_ONE_BODY" + currentPage + " , " + result);
                     loading.postValue(new LoadingEvent(false, ""));
                     JSONObject jsonObject = new JSONObject(result);
                     JSONArray data = jsonObject.getJSONArray("data");

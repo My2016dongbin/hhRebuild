@@ -84,6 +84,7 @@ public class TaskListInfoViewModel extends BaseViewModel {
                                     if(taskList.getId()==null){
                                         Toast.makeText(context, "该任务已删除", Toast.LENGTH_SHORT).show();
                                         ((TaskListInfoActivity) context).finish();
+                                        return;
                                     }
                                     taskLists.postValue(taskList);
 
@@ -123,6 +124,11 @@ public class TaskListInfoViewModel extends BaseViewModel {
                                     loading.postValue(new LoadingEvent(false));
                                     JSONObject data = jsonObject.getJSONObject("data");
                                     taskList = new Gson().fromJson(String.valueOf(data), TaskList.class);
+                                    if(taskList.getId()==null){
+                                        Toast.makeText(context, "该任务已删除", Toast.LENGTH_SHORT).show();
+                                        ((TaskListInfoActivity) context).finish();
+                                        return;
+                                    }
                                     taskLists.postValue(taskList);
                                 } else {
                                     error();

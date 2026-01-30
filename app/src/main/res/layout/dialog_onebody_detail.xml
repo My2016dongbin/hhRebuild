@@ -177,7 +177,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="13sp"
-                    android:text="是否真实:"
+                    android:text="火情研判:"
                     android:layout_marginStart="15dp"
                     android:textColor="@color/text_color3"/>
 
@@ -191,24 +191,55 @@
                     android:layout_marginEnd="15dp"
                     android:textColor="@color/text_color3"/>
                 <TextView
-                    android:id="@+id/yes"
-                    android:layout_width="80dp"
+                    android:id="@+id/real_btn_up"
+                    android:layout_width="60dp"
                     android:layout_height="32dp"
+                    android:visibility="gone"
                     android:textSize="13sp"
-                    android:text="真实"
+                    android:text="升级"
                     android:gravity="center"
                     android:background="@drawable/bg_three"
                     android:layout_marginStart="20dp"
-                    android:layout_marginEnd="15dp"
+                    android:textColor="@color/white"/>
+                <TextView
+                    android:id="@+id/real_btn_down"
+                    android:layout_width="60dp"
+                    android:layout_height="32dp"
+                    android:visibility="gone"
+                    android:textSize="13sp"
+                    android:text="降级"
+                    android:gravity="center"
+                    android:background="@drawable/bg_two"
+                    android:layout_marginStart="20dp"
                     android:textColor="@color/white"/>
                 <TextView
                     android:id="@+id/no"
-                    android:layout_width="80dp"
+                    android:layout_width="60dp"
                     android:layout_height="32dp"
                     android:textSize="13sp"
-                    android:text="疑似火情"
+                    android:text="误报"
                     android:gravity="center"
                     android:background="@drawable/bg_two"
+                    android:layout_marginStart="20dp"
+                    android:textColor="@color/white"/>
+                <TextView
+                    android:id="@+id/mid"
+                    android:layout_width="75dp"
+                    android:layout_height="32dp"
+                    android:textSize="13sp"
+                    android:text="违规用火"
+                    android:gravity="center"
+                    android:background="@drawable/bg_one"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/white"/>
+                <TextView
+                    android:id="@+id/yes"
+                    android:layout_width="75dp"
+                    android:layout_height="32dp"
+                    android:textSize="13sp"
+                    android:text="真实火情"
+                    android:gravity="center"
+                    android:background="@drawable/bg_three"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="15dp"
                     android:textColor="@color/white"/>

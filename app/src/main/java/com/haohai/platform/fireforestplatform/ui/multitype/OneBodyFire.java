@@ -61,6 +61,8 @@ public class OneBodyFire {
     private String address;
     //("alarmDatetime")
     private String alarmDatetime;
+    //("illegallyFireType")
+    private String illegallyFireType;
     //("findType")
     private String findType;
     //("picPath1")
@@ -123,6 +125,8 @@ public class OneBodyFire {
     private String trueAlarmType;
     //("isTrueNote")
     private String isTrueNote;
+    //("fireNote")
+    private String fireNote;
     //("isPutOutNote")
     private String isPutOutNote;
     //("editLongitude")
@@ -173,6 +177,22 @@ public class OneBodyFire {
     private String pwidth;
 
     public OneBodyFire() {
+    }
+
+    public String getFireNote() {
+        return fireNote;
+    }
+
+    public String getIllegallyFireType() {
+        return illegallyFireType;
+    }
+
+    public void setIllegallyFireType(String illegallyFireType) {
+        this.illegallyFireType = illegallyFireType;
+    }
+
+    public void setFireNote(String fireNote) {
+        this.fireNote = fireNote;
     }
 
     public String getCreateUser() {

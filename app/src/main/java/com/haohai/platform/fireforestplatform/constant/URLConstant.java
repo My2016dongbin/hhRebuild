@@ -127,8 +127,15 @@ public class URLConstant {
     public static final String GET_TASK_SNAP = BASE_PATH +"resource/api/meeting/room/plot/snap";//任务-根据房间id查询标绘
     public static final String POST_LIVE_UPLOAD = BASE_PATH +"oa/api/taskDetail";//现场上报
     public static final String POST_ONE_BODY_IS_REAL = BASE_PATH +"fire/api/monitorFirealarm/realOrError";//处理一体机火警
+    public static final String GET_FIRE_HANDLE_REAL = BASE_PATH +"fire/api/monitorFirealarm/realOrErrorForIllegallyFire";//地图-处理火情-真实
+    public static final String GET_FIRE_HANDLE_WEI_GUI = BASE_PATH +"fire/api/monitorFirealarm/realOrErrorForIllegallyFire";//地图-处理火情-违规用火
+    public static final String PUT_UPDATE_FIRE_LEVEL = BASE_PATH +"fire/api/monitorFirealarm/updateAlarmFireType";//地图-处理火情-违规用火升级&&降级
+    public static final String PUT_FIRE_HANDLE_WU_BAO = BASE_PATH +"fire/api/monitorFirealarm/updateMonitorFireStates";//地图-处理火情-误报
+    public static final String PUT_FIRE_HANDLE_UPDATE = BASE_PATH +"fire/api/monitorFirealarm/update";//地图-处理火情-更新火警信息
+    public static final String POST_ONE_BODY_IS_REAL_REASON_LIST = BASE_PATH +"auth/api/publicCode/subList";//处理一体机火警类型列表
 
     public static final String POST_PUSH_FEEDBACK = BASE_PATH +"resource/api/dispatchCommand/receiveFeedback";//推送反馈
+
 
 
 

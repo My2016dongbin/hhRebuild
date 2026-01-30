@@ -1159,6 +1159,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     @Override
     public void onOneBodyDetailDialogRefresh() {
         //处理火警后回调
+        obtainViewModel().currentPage = 1;
         obtainViewModel().getOneBodyData();
     }
 

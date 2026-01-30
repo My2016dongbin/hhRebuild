@@ -101,6 +101,11 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
                     filterList.add(oneBodyFire);
                 }
             }
+            if(filterState == 4){
+                if(Objects.equals(oneBodyFire.getIsReal(), "2")){
+                    filterList.add(oneBodyFire);
+                }
+            }
         }
 
         updateData();
@@ -139,10 +144,12 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
                         TextView real;
                         TextView noHandle;
                         TextView fake;
+                        TextView illegally;
                         all = v.findViewById(R.id.all);
                         real = v.findViewById(R.id.real);
                         noHandle = v.findViewById(R.id.no_handle);
                         fake = v.findViewById(R.id.fake);
+                        illegally = v.findViewById(R.id.illegally);
                         all.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -183,6 +190,17 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
                                 filterState = 3;
                                 updateFilterState();
                                 dialogListener.onOneBodyDialogFilterState(3);
+                                filterData();
+                                dialog.dismiss();
+                            }
+                        });
+                        illegally.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                show();
+                                filterState = 4;
+                                updateFilterState();
+                                dialogListener.onOneBodyDialogFilterState(4);
                                 filterData();
                                 dialog.dismiss();
                             }
@@ -243,7 +261,10 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
             binding.filterText.setText("真实火点");
         }
         if(filterState == 3){
-            binding.filterText.setText("疑似火点");
+            binding.filterText.setText("误报");
+        }
+        if(filterState == 4){
+            binding.filterText.setText("违规用火");
         }
     }
 

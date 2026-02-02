@@ -895,7 +895,7 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
             quList = db.selector(Grid.class)
                     .where("state", "=", "ACTIVE")
                     .and("level", "=", "2")
-                    .and("gridno", "like", "3702%")
+                    .and("gridno", "like", "3713%")
                     .findAll();
 
             quStrList.clear();

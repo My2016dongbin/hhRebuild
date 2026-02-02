@@ -1928,7 +1928,7 @@ public class ResourceSearchActivity extends HhBaseActivity implements INaviInfoC
             case "直升机机降点":
                 initHelicopterPointIntoDb();
                 break;
-            case "物资储备库":
+            case "物资库":
                 initMaterialRepositoryIntoDb();
                 break;
             case "墓地":
@@ -1960,6 +1960,9 @@ public class ResourceSearchActivity extends HhBaseActivity implements INaviInfoC
                 break;
             case "森林防火监测中心":
                 initFireCommandIntoDb();
+                break;
+            default:
+                initData();
                 break;
         }
         resourceTypeList.clear();
@@ -2255,7 +2258,7 @@ public class ResourceSearchActivity extends HhBaseActivity implements INaviInfoC
             quList = db.selector(Grid.class)
                     .where("state", "=", "ACTIVE")
                     .and("level", "=", "2")
-                    .and("gridno", "like", "3702%")
+                    .and("gridno", "like", "3713%")
                     .findAll();
 
             quStrList.clear();
@@ -2417,6 +2420,7 @@ public class ResourceSearchActivity extends HhBaseActivity implements INaviInfoC
     @Override
     public void onItemCheckClickListener(Resource resource) {
         Intent intent = new Intent(getApplicationContext(), ResourceCheckActivity.class);
+        intent.putExtra("id", resource.getId());
         intent.putExtra("resourceID", resource.getId());
         intent.putExtra("resourceName", resource.getName());
         intent.putExtra("planResourceType", resourceType);

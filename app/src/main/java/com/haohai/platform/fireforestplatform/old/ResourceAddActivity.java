@@ -759,8 +759,9 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
 
             DbManager db = new DbConfig(getApplicationContext()).getDbManager();
             quList = db.selector(Grid.class)
-                    .where("level", "=", "0")
-                    //.and("groupid", "like", "001003%")
+                    .where("state", "=", "ACTIVE")
+                    .and("level", "=", "2")
+                    .and("gridno", "like", "3713%")
                     .findAll();
 
             String districtNo = resourceObj.getString("districtNo");
@@ -2129,8 +2130,9 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
         DbManager db = new DbConfig(getApplicationContext()).getDbManager();
         try {
             quList = db.selector(Grid.class)
-                    .where("parentName", "=", "ROOT")
-//                    .and("parentName", "==", "青岛")
+                    .where("state", "=", "ACTIVE")
+                    .and("level", "=", "2")
+                    .and("gridno", "like", "3713%")
                     .findAll();
 
             quStrList.clear();

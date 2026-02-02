@@ -82,7 +82,7 @@ public class ComprehensiveCheckViewModel extends BaseViewModel {
             gridList = new DbConfig(context).getDbManager().selector(Grid.class)
                     .where("state", "=", "ACTIVE")
                     .and("level", "=", "2")
-                    .and("gridno", "like", "3702%")
+                    .and("gridno", "like", "3713%")
                     .findAll();
         } catch (DbException e) {
             e.printStackTrace();

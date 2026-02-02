@@ -776,7 +776,7 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
         obtainViewModel().shengList.clear();
         obtainViewModel().shengStrList.add("请选择省");
         for (int i = 0; i < obtainViewModel().allAreaList.size(); i++) {
-            if ("1".equals(obtainViewModel().allAreaList.get(i).getAreaLevel())) {
+            if ("1".equals(obtainViewModel().allAreaList.get(i).getLevel())) {
                 obtainViewModel().shengList.add(obtainViewModel().allAreaList.get(i));
                 obtainViewModel().shengStrList.add(obtainViewModel().allAreaList.get(i).getName());
             }

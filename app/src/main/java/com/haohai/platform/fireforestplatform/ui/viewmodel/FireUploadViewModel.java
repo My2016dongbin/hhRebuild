@@ -116,6 +116,7 @@ public class FireUploadViewModel extends BaseViewModel {
         DbConfig dbConfig = new DbConfig(context);
         allAreaList = dbConfig.getGridList();
         if(allAreaList!=null){
+//        if(false){
             initArea();
         }else{
             loading.setValue(new LoadingEvent(true, "数据加载中.."));
@@ -126,6 +127,9 @@ public class FireUploadViewModel extends BaseViewModel {
                     .execute(new LoggedInStringCallback(this, context) {
                         @Override
                         public void onSuccess(String response, int id) {
+                            HhLog.e("getGridData: " + URLConstant.GET_GRID);
+                            HhLog.e("getGridData: " + CommonData.token);
+                            HhLog.e("getGridData: " + response);
                             loading.setValue(new LoadingEvent(false, ""));
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
@@ -161,7 +165,7 @@ public class FireUploadViewModel extends BaseViewModel {
         shengList.clear();
         shengStrList.add("请选择省");
         for (int i = 0; i < allAreaList.size(); i++) {
-            if ("1".equals(allAreaList.get(i).getAreaLevel())) {
+            if ("1".equals(allAreaList.get(i).getLevel())) {
                 shengList.add(allAreaList.get(i));
                 shengStrList.add(allAreaList.get(i).getName());
             }

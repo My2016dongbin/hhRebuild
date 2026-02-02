@@ -199,6 +199,7 @@
                             android:id="@+id/jiedao_layout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:visibility="gone"
                             android:layout_marginLeft="3dp"
                             android:background="@drawable/bg_choose_hui"
                             android:gravity="center_vertical"

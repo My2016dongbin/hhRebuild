@@ -90,6 +90,7 @@
                             <TextView
                                 android:id="@+id/device_number"
                                 android:layout_marginTop="5dp"
+                                android:text="0"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/white"
@@ -115,6 +116,7 @@
                             <TextView
                                 android:id="@+id/device_online"
                                 android:layout_marginTop="5dp"
+                                android:text="0"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/white"
@@ -141,6 +143,7 @@
                             <TextView
                                 android:id="@+id/device_offline"
                                 android:layout_marginTop="5dp"
+                                android:text="0"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/white"

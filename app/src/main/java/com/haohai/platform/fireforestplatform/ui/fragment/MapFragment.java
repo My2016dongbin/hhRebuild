@@ -297,6 +297,15 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 oneBodyDetailDialog.setOneBodyFire(oneBodyFire);
                 delayDialog(oneBodyDetailDialog);
             }else if(markerType == obtainViewModel().SATELLITE){
+                SatelliteFire satellite = new SatelliteFire();
+                List<SatelliteFire> satelliteFires = obtainViewModel().satelliteList.getValue();
+                assert satelliteFires != null;
+                for (SatelliteFire values:satelliteFires) {
+                    if(Objects.equals(values.getId(), markerId)){
+                        satellite = values;
+                    }
+                }
+                satelliteDetailDialog.setSatelliteFire(satellite);
                 delayDialog(satelliteDetailDialog);
             }else if(markerType == obtainViewModel().RESOURCE){
                 for (Resource res: Objects.requireNonNull(obtainViewModel().resourceList.getValue())) {

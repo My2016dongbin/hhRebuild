@@ -415,7 +415,7 @@ public class FgMainViewModel extends BaseViewModel {
         if(CommonPermission.hasPermission(context,CommonPermission.APP_WEATHER)){menu_.add(new MainFgMenu("","weather","天气","",R.drawable.icon_weather,"/weather",index));}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_CHECK)){menu_.add(new MainFgMenu("","check","综合检查","",R.drawable.comprehensive,"/check",index));}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_DAILY_CHECK)){menu_.add(new MainFgMenu("","daily","隐患排查","",R.drawable.daily,"/daily",index));}
-        if(CommonPermission.hasPermission(context,CommonPermission.APP_RESOURCE_SEARCH)){menu_.add(new MainFgMenu("","search","资源检索","",R.drawable.search_check,"/search",index));}
+//        if(CommonPermission.hasPermission(context,CommonPermission.APP_RESOURCE_SEARCH)){menu_.add(new MainFgMenu("","search","资源检索","",R.drawable.search_check,"/search",index));}
         menus = new ArrayList<>(menu_);
         menuList.setValue(menus);
 

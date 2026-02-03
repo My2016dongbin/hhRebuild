@@ -784,12 +784,13 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
     private void getPerpleListFromService1() {
         JSONObject jsonObject = new JSONObject();
         try {
-            if(cityRoot){
+            /*if(cityRoot){
                 jsonObject.put("gridNo", (currentStreeNo==null||currentStreeNo.equals(""))?currentQuNo:currentStreeNo);
             }else{
                 jsonObject.put("gridNo", currentStreeNo);
             }
-            Log.e(TAG, "bingo currentQuId = : " + currentQuId + "currentStreeNo = " +currentStreeNo );
+            Log.e(TAG, "bingo currentQuId = : " + currentQuId + "currentStreeNo = " +currentStreeNo );*/
+            jsonObject.put("gridNo", "");
         } catch (JSONException e) {
         }
         RequestParams params = new RequestParams(URLConstant.BASE_PATH + "auth/api/auth/user/list");

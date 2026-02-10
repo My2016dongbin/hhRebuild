@@ -379,7 +379,7 @@ public class FgMainViewModel extends BaseViewModel {
 
             @Override
             public void onFailure(Call call, Exception e, int id) {
-
+                HhLog.e("POST_MONITOR_COUNT onFailure" + e.toString());
             }
         });
         HhHttp.postString()
@@ -388,6 +388,7 @@ public class FgMainViewModel extends BaseViewModel {
                 .build().execute(new LoggedInStringCallback(this,context) {
             @Override
             public void onSuccess(String response, int id) {
+                HhLog.e("POST_KK_COUNT" + response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     JSONArray data = jsonObject.getJSONArray("data");
@@ -403,7 +404,7 @@ public class FgMainViewModel extends BaseViewModel {
 
             @Override
             public void onFailure(Call call, Exception e, int id) {
-
+                HhLog.e("POST_KK_COUNT onFailure" + e.toString());
             }
         });
         //getMainDeviceData();
@@ -412,6 +413,7 @@ public class FgMainViewModel extends BaseViewModel {
                 .build().execute(new LoggedInStringCallback(this,context) {
             @Override
             public void onSuccess(String response, int id) {
+                HhLog.e("GET_MONITOR_ONLINE_COUNT" + response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     JSONArray data = jsonObject.getJSONArray("data");
@@ -429,7 +431,7 @@ public class FgMainViewModel extends BaseViewModel {
 
             @Override
             public void onFailure(Call call, Exception e, int id) {
-
+                HhLog.e("GET_MONITOR_ONLINE_COUNT onFailure" + e.toString());
             }
         });
         String groupId = String.valueOf(SPUtils.get(context, SPValue.groupId, "001021"));

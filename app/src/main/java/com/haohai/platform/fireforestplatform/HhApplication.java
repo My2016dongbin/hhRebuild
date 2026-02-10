@@ -70,8 +70,8 @@ public class HhApplication extends Application {
         x.Ext.init(this);
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(10000L, TimeUnit.MILLISECONDS)
-                .readTimeout(10000L, TimeUnit.MILLISECONDS)
+                .connectTimeout(30000L, TimeUnit.MILLISECONDS)
+                .readTimeout(30000L, TimeUnit.MILLISECONDS)
                 //其他配置
                 .build();
 

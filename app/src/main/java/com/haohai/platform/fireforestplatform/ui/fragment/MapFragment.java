@@ -282,10 +282,10 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_SATELLITE_SETTING) && !CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_SATELLITE_LIST) && !CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_SATELLITE_SEARCH)){
             binding.viewSatellite.setVisibility(View.GONE);
         }
-        if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_Grid_COMMUNITY)){
+        /*if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_Grid_COMMUNITY)){*/
             binding.viewGridShequ.setVisibility(View.GONE);
             binding.viewGridAll.setVisibility(View.GONE);
-        }
+        /*}*/
         if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_TASK)){
             binding.viewTask.setVisibility(View.GONE);
         }

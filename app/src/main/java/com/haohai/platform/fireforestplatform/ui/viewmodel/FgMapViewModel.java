@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.haohai.platform.fireforestplatform.HhApplication;
 import com.haohai.platform.fireforestplatform.base.BaseViewModel;
 import com.haohai.platform.fireforestplatform.base.LoggedInStringCallback;
 import com.haohai.platform.fireforestplatform.constant.HhHttp;
@@ -358,7 +359,7 @@ public class FgMapViewModel extends BaseViewModel {
         satelliteParams.setPage(1);
         satelliteParams.setDto(new SatelliteParams.DTO("","","","","",endTimeStr,startTimeStr,""));
         HhHttp.postString()
-                .url(URLConstant.POST_MAP_SATELLITE)
+                .url(URLConstant.POST_MAP_SATELLITE+SPUtils.get(HhApplication.getInstance(), SPValue.gridNo, ""))
                 .content(gson.toJson(satelliteParams))
                 .build()
                 .connTimeOut(10000)

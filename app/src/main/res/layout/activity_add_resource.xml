@@ -167,9 +167,8 @@
 
                         <LinearLayout
                             android:id="@+id/qu_layout"
-                            android:layout_width="80dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/bg_choose_hui"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingBottom="7dp"
@@ -178,21 +177,47 @@
                             android:paddingTop="7dp">
 
                             <TextView
-                                android:id="@+id/qu_text"
+                                android:id="@+id/text_grid"
+                                android:layout_width="wrap_content"
+                                android:gravity="end"
+                                android:layout_height="wrap_content"
+                                android:text="请选择省"
+                                android:textColor="@color/text_color3"
+                                android:textSize="14sp" />
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_marginStart="5dp"
+                                android:src="@drawable/ic_more"/>
+                            <TextView
+                                android:id="@+id/text_grid2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:enabled="true"
-                                android:maxEms="6"
-                                android:singleLine="true"
+                                android:layout_marginStart="10dp"
+                                android:text="请选择市"
+                                android:textColor="@color/text_color3"
+                                android:textSize="14sp" />
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_marginStart="5dp"
+                                android:src="@drawable/ic_more"/>
+                            <TextView
+                                android:id="@+id/text_grid3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
                                 android:text="请选择区"
-                                android:textColor="@color/c6"
+                                android:textColor="@color/text_color3"
                                 android:textSize="14sp" />
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="5dp"
-                                android:src="@drawable/ic_xiala" />
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginEnd="20dp"
+                                android:src="@drawable/ic_more"/>
+
                         </LinearLayout>
 
                         <LinearLayout

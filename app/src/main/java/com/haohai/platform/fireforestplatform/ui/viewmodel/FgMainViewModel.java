@@ -118,14 +118,15 @@ public class FgMainViewModel extends BaseViewModel {
             e.printStackTrace();
         }
 
-        RequestParams params = new RequestParams(URLConstant.BASE_PATH + "resource/api/grid/list");
+//        RequestParams params = new RequestParams(URLConstant.BASE_PATH + "resource/api/grid/list");
+        RequestParams params = new RequestParams(URLConstant.BASE_PATH + "auth/api/sysArea/getAllSysArea");
         params.setConnectTimeout(20000);
         params.setBodyContent(jsonObject.toString());
         params.addHeader("Authorization","bearer " + CommonData.token);
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
-                HhLog.e("getGrid " + result);
+                //HhLog.e("getGrid " + result);
                 try {
                     JSONObject jsonObject1 = new JSONObject(result);
                     String code = jsonObject1.getString("code");

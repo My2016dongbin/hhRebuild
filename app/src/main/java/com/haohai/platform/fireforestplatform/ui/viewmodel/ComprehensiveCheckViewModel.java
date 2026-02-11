@@ -21,12 +21,14 @@ import com.haohai.platform.fireforestplatform.old.linyi.Res;
 import com.haohai.platform.fireforestplatform.ui.activity.ComprehensiveCheckActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.ComprehensiveListActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.DailyCheckActivity;
+import com.haohai.platform.fireforestplatform.ui.bean.Area;
 import com.haohai.platform.fireforestplatform.ui.bean.CheckPerson;
 import com.haohai.platform.fireforestplatform.ui.bean.CheckResource;
 import com.haohai.platform.fireforestplatform.ui.bean.CommonParams;
 import com.haohai.platform.fireforestplatform.ui.bean.ComprehensiveSubmit;
 import com.haohai.platform.fireforestplatform.ui.bean.VideoModel;
 import com.haohai.platform.fireforestplatform.ui.multitype.TaskList;
+import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.DbConfig;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
@@ -35,6 +37,7 @@ import com.haohai.platform.fireforestplatform.utils.SPValue;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xutils.DbManager;
 import org.xutils.ex.DbException;
 
 import java.text.SimpleDateFormat;
@@ -51,9 +54,15 @@ public class ComprehensiveCheckViewModel extends BaseViewModel {
     public MultiTypeAdapter adapter;
     public String id;
     public final MutableLiveData<List<CheckResource>> resourceList = new MutableLiveData<>();
-    public List<Grid> gridList = new ArrayList<>();
+    public final MutableLiveData<Integer> chooseType = new MutableLiveData<>(1);
+    public List<Area> gridAllList = new ArrayList<>();
+    public List<Area> gridList = new ArrayList<>();
+    public List<Area> grid2List = new ArrayList<>();
+    public List<Area> grid3List = new ArrayList<>();
     public List<CheckPerson> userList = new ArrayList<>();
     public int gridIndex = 0;
+    public int grid2Index = 0;
+    public int grid3Index = 0;
     public int userIndex = 0;
     public String title = "";
     public String info = "";
@@ -77,15 +86,90 @@ public class ComprehensiveCheckViewModel extends BaseViewModel {
         context.startActivity(new Intent(context, ComprehensiveListActivity.class));
     }
 
-    public void postData(){
+    /*public void postData(){
         try {
             gridList = new DbConfig(context).getDbManager().selector(Grid.class)
                     .where("state", "=", "ACTIVE")
-                    .and("level", "=", "2")
-                    .and("gridno", "like", "3713%")
+                    .and("level", "=", "1")
+                    .and("gridno", "like", "37%")
                     .findAll();
         } catch (DbException e) {
             e.printStackTrace();
+        }
+    }*/
+    public void postData() {
+        DbConfig dbConfig = new DbConfig(context);
+        gridAllList = dbConfig.getGridList();
+        if(gridAllList!=null){
+            initArea();
+        }
+        else{
+            loading.setValue(new LoadingEvent(true, "数据加载中.."));
+            HhHttp.get()
+                    .url(URLConstant.GET_GRID)
+                    .build()
+                    .connTimeOut(10000)
+                    .execute(new LoggedInStringCallback(this, context) {
+                        @Override
+                        public void onSuccess(String response, int id) {
+                            HhLog.e("getGridData: " + URLConstant.GET_GRID);
+                            HhLog.e("getGridData: " + CommonData.token);
+                            HhLog.e("getGridData: " + response);
+                            loading.setValue(new LoadingEvent(false, ""));
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                JSONArray data = jsonObject.getJSONArray("data");
+                                gridAllList = new Gson().fromJson(String.valueOf(data), new TypeToken<List<Area>>() {
+                                }.getType());
+                                //存储网格信息
+                                DbManager db = dbConfig.getDbManager();
+                                try {
+                                    db.saveOrUpdate(gridList);
+                                } catch (DbException e) {
+
+                                }
+                                initArea();
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call call, Exception e, int id) {
+                            HhLog.e("onFailure: " + e.toString());
+                            msg.setValue(e.getMessage());
+                            loading.setValue(new LoadingEvent(false, ""));
+                        }
+                    });
+        }
+    }
+
+
+    public void initArea() {
+        gridList.clear();
+        for (int i = 0; i < gridAllList.size(); i++) {
+            if ("1".equals(gridAllList.get(i).getLevel())) {
+                gridList.add(gridAllList.get(i));
+            }
+        }
+    }
+    public void initArea2() {
+        HhLog.e("initArea2 " + gridList.get(gridIndex).toString());
+        grid2List.clear();
+        for (int i = 0; i < gridAllList.size(); i++) {
+            if ("2".equals(gridAllList.get(i).getLevel()) && gridAllList.get(i).getParentId().equals(gridList.get(gridIndex).getId())) {
+                grid2List.add(gridAllList.get(i));
+            }
+        }
+    }
+    public void initArea3() {
+        grid3List.clear();
+        HhLog.e("initArea3 " + grid2List.get(grid2Index).toString());
+        for (int i = 0; i < gridAllList.size(); i++) {
+            if ("3".equals(gridAllList.get(i).getLevel()) && gridAllList.get(i).getParentId().equals(grid2List.get(grid2Index).getId())) {
+                grid3List.add(gridAllList.get(i));
+            }
         }
     }
 
@@ -125,7 +209,7 @@ public class ComprehensiveCheckViewModel extends BaseViewModel {
                 });
     }
 
-    public void submit() {
+    public void submit(Area grid) {
         ComprehensiveSubmit comprehensiveSubmit = new ComprehensiveSubmit();
         try{
             comprehensiveSubmit.setCheckStationCount(Objects.requireNonNull(resourceList.getValue()).size());
@@ -156,9 +240,8 @@ public class ComprehensiveCheckViewModel extends BaseViewModel {
         comprehensiveSubmit.setStartTime(simpleDateFormat.format(new Date()));
         comprehensiveSubmit.setEndTime("2024-08-21 00:00:00");
         try{
-            Grid grid = gridList.get(gridIndex);
             comprehensiveSubmit.setGridName(grid.getName());
-            comprehensiveSubmit.setGridNo(grid.getGridNo());
+            comprehensiveSubmit.setGridNo(grid.getId());
         }catch (Exception e){
             Toast.makeText(context, "请选择网格", Toast.LENGTH_SHORT).show();
             return;

@@ -31,6 +31,7 @@ import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
 import com.haohai.platform.fireforestplatform.databinding.ActivityComprehensiveCheckBinding;
 import com.haohai.platform.fireforestplatform.old.linyi.CommonUtils;
 import com.haohai.platform.fireforestplatform.old.linyi.Grid;
+import com.haohai.platform.fireforestplatform.ui.bean.Area;
 import com.haohai.platform.fireforestplatform.ui.bean.CheckResource;
 import com.haohai.platform.fireforestplatform.ui.cell.TypeChooseDialog;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.ComprehensiveCheckViewModel;
@@ -78,13 +79,40 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
             obtainViewModel().title = binding.editTitle.getText().toString();
             obtainViewModel().info = binding.editZz.getText().toString();
             obtainViewModel().endTime = binding.textTime.getText().toString();
-            obtainViewModel().submit();
+            Area grid = new Area();
+            if(!binding.textGrid.getText().toString().contains("请选择")){
+                grid = obtainViewModel().gridList.get(obtainViewModel().gridIndex);
+            }
+            if(!binding.textGrid2.getText().toString().contains("请选择")){
+                grid = obtainViewModel().grid2List.get(obtainViewModel().grid2Index);
+            }
+            if(!binding.textGrid3.getText().toString().contains("请选择")){
+                grid = obtainViewModel().grid3List.get(obtainViewModel().grid3Index);
+            }
+            obtainViewModel().submit(grid);
         });
         binding.textGrid.setOnClickListener(v -> {
             if(obtainViewModel().gridList==null || obtainViewModel().gridList.isEmpty()){
                 Toast.makeText(this, "网格数据加载中..", Toast.LENGTH_SHORT).show();
                 return;
             }
+            obtainViewModel().chooseType.setValue(1);
+            chooseGrid();
+        });
+        binding.textGrid2.setOnClickListener(v -> {
+            if(obtainViewModel().grid2List==null || obtainViewModel().grid2List.isEmpty()){
+                Toast.makeText(this, "请先选择省", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            obtainViewModel().chooseType.setValue(2);
+            chooseGrid();
+        });
+        binding.textGrid3.setOnClickListener(v -> {
+            if(obtainViewModel().grid3List==null || obtainViewModel().grid3List.isEmpty()){
+                Toast.makeText(this, "请先选择市", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            obtainViewModel().chooseType.setValue(3);
             chooseGrid();
         });
         binding.textZz.setOnClickListener(v -> {
@@ -123,7 +151,7 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
         Window dialogWindow = typeChooseDialog.getWindow();
         dialogWindow.setGravity(Gravity.BOTTOM);
         typeChooseDialog.setDialogListener(this);
-        typeChooseDialog.setTreeList(parseStrings(),obtainViewModel().gridIndex,1);
+        typeChooseDialog.setTreeList(parseStrings(),parseIndex(),1);
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         int height = wm.getDefaultDisplay().getHeight();
@@ -135,7 +163,22 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             typeChooseDialog.create();
         }
+
         typeChooseDialog.show();
+    }
+
+    private int parseIndex() {
+        int index = 0;
+        if(obtainViewModel().chooseType.getValue()==1){
+            index = obtainViewModel().gridIndex;
+        }
+        if(obtainViewModel().chooseType.getValue()==2){
+            index = obtainViewModel().grid2Index;
+        }
+        if(obtainViewModel().chooseType.getValue()==3){
+            index = obtainViewModel().grid3Index;
+        }
+        return index;
     }
 
     private List<String> parseStringsUser() {
@@ -146,10 +189,26 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
         return list;
     }
     private List<String> parseStrings() {
+        int type = obtainViewModel().chooseType.getValue();
+        HhLog.e("parseStrings " + type);
         List<String> list = new ArrayList<>();
-        for (int i = 0; i < obtainViewModel().gridList.size(); i++) {
-            list.add(obtainViewModel().gridList.get(i).getName());
+        if(type==1){
+            for (int i = 0; i < obtainViewModel().gridList.size(); i++) {
+                list.add(obtainViewModel().gridList.get(i).getName());
+            }
         }
+        if(type==2){
+            for (int i = 0; i < obtainViewModel().grid2List.size(); i++) {
+                list.add(obtainViewModel().grid2List.get(i).getName());
+            }
+        }
+        if(type==3){
+            for (int i = 0; i < obtainViewModel().grid3List.size(); i++) {
+                list.add(obtainViewModel().grid3List.get(i).getName());
+            }
+        }
+        HhLog.e("parseStrings " + type);
+        HhLog.e("parseStrings " + list.toString());
         return list;
     }
 
@@ -220,9 +279,40 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
     @Override
     public void onTypeChoose(String type, int index, int code) {
         if(code == 1){
-            binding.textGrid.setText(type);
-            obtainViewModel().gridIndex = index;
-            obtainViewModel().getUsers();
+            if(obtainViewModel().chooseType.getValue()==1){
+                //初始化市区
+                binding.textGrid2.setText("请选择市");
+                obtainViewModel().grid2List.clear();
+                obtainViewModel().grid2Index = 0;
+                binding.textGrid3.setText("请选择区");
+                obtainViewModel().grid3List.clear();
+                obtainViewModel().grid3Index = 0;
+
+
+                binding.textGrid.setText(type);
+                obtainViewModel().gridIndex = index;
+                obtainViewModel().getUsers();
+
+                obtainViewModel().initArea2();
+            }
+            if(obtainViewModel().chooseType.getValue()==2){
+                //初始化区
+                binding.textGrid3.setText("请选择区");
+                obtainViewModel().grid3List.clear();
+                obtainViewModel().grid3Index = 0;
+
+
+                binding.textGrid2.setText(type);
+                obtainViewModel().grid2Index = index;
+                obtainViewModel().getUsers();
+
+                obtainViewModel().initArea3();
+            }
+            if(obtainViewModel().chooseType.getValue()==3){
+                binding.textGrid3.setText(type);
+                obtainViewModel().grid3Index = index;
+                obtainViewModel().getUsers();
+            }
         }else if(code == 2){
             binding.textZz.setText(type);
             obtainViewModel().userIndex = index;

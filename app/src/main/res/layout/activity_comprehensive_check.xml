@@ -43,18 +43,43 @@
                         android:textSize="14sp" />
                     <TextView
                         android:id="@+id/text_grid"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:gravity="end"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:text="请选择网格"
+                        android:text="请选择省"
+                        android:textColor="@color/text_color3"
+                        android:textSize="14sp" />
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginStart="5dp"
+                        android:src="@drawable/ic_more"/>
+                    <TextView
+                        android:id="@+id/text_grid2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="请选择市"
+                        android:textColor="@color/text_color3"
+                        android:textSize="14sp" />
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginStart="5dp"
+                        android:src="@drawable/ic_more"/>
+                    <TextView
+                        android:id="@+id/text_grid3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="请选择区"
                         android:textColor="@color/text_color3"
                         android:textSize="14sp" />
 
                     <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="20dp"
                         android:src="@drawable/ic_more"/>

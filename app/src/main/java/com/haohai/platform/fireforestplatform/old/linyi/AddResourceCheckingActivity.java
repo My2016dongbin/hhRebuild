@@ -341,6 +341,7 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
         shaixuanInflater.setMinimumWidth(10000);
         shaixuanDialog.setContentView(shaixuanInflater);
         Window gaojiDialogWindow = shaixuanDialog.getWindow();
+
         gaojiDialogWindow.setGravity(Gravity.BOTTOM);
         WindowManager.LayoutParams gaojiLp = gaojiDialogWindow.getAttributes();
         WindowManager wmGaoji = (WindowManager) this
@@ -467,7 +468,7 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
                     public void call(Void aVoid) {
                         if((currentChooseQu==null||currentChooseQu.equals("")||currentChooseQu.contains("请选择")) && (currentChooseJiedao==null||currentChooseJiedao.equals("")||currentChooseJiedao.contains("请选择"))){
                             //tv_grid.setText("临沂市");
-                            Toast.makeText(AddResourceCheckingActivity.this, "请选择区", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddResourceCheckingActivity.this, "请选择网格", Toast.LENGTH_SHORT).show();
                             return;
                         }else if(cityRoot){
                             tv_grid.setText(currentChooseQu);
@@ -902,7 +903,7 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
             quStrList.clear();
 
             //Log.e(TAG, "getAllQu: "+quList.size() );
-            quStrList.add("请选择区");
+            quStrList.add("请选择网格");
             for (int i = 0; i < quList.size(); i++) {
                 if (!quList.get(i).getName().equals("高新区")) {
                     quStrList.add(quList.get(i).getName());

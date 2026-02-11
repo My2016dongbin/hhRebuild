@@ -23,6 +23,9 @@ public class Area {
     @Column(name = "areaLevel")
     public String areaLevel;   //0国家  1省 2市 3县
 
+    @Column(name = "gridNo")
+    public String gridNo;
+
     public Area() {
     }
 
@@ -40,6 +43,14 @@ public class Area {
         this.parentId = parentId;
         this.createTime = createTime;
         this.level = level;
+    }
+
+    public String getGridNo() {
+        return gridNo;
+    }
+
+    public void setGridNo(String gridNo) {
+        this.gridNo = gridNo;
     }
 
     public String getId() {

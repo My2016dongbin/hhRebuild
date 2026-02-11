@@ -512,7 +512,7 @@
                             android:enabled="true"
                             android:maxEms="6"
                             android:singleLine="true"
-                            android:text="请选择区"
+                            android:text="请选择网格"
                             android:textColor="@color/c6"
                             android:textSize="13sp" />
 

@@ -44,15 +44,22 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.haohai.platform.fireforestplatform.R;
+import com.haohai.platform.fireforestplatform.base.LoggedInStringCallback;
+import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.constant.URLConstant;
+import com.haohai.platform.fireforestplatform.event.LoadingEvent;
 import com.haohai.platform.fireforestplatform.old.FireMapActivity;
 import com.haohai.platform.fireforestplatform.old.rx.rxbinding.RxViewAction;
+import com.haohai.platform.fireforestplatform.ui.bean.Area;
 import com.haohai.platform.fireforestplatform.ui.cell.MNCTransparentDialog;
+import com.haohai.platform.fireforestplatform.ui.cell.TypeChooseDialog;
 import com.haohai.platform.fireforestplatform.ui.cell.WheelView;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.DbConfig;
 import com.haohai.platform.fireforestplatform.utils.GifSizeFilter;
+import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.ImageUtils;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
@@ -83,15 +90,18 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
+import okhttp3.Call;
 import rx.functions.Action1;
 
 
-public class AddResourceCheckingActivity extends HhBaseActivity implements DatePicker.OnDateChangedListener{
+public class AddResourceCheckingActivity extends HhBaseActivity implements DatePicker.OnDateChangedListener, TypeChooseDialog.TypeChooseDialogListener {
     private static final String TAG = AddResourceCheckingActivity.class.getSimpleName();
     public static final int MAP_REUEST_CODE = 2;
     private TextView tv_name;
     private EditText et_name;
-    private TextView tv_grid;
+    private TextView text_grid;
+    private TextView text_grid2;
+    private TextView text_grid3;
     private TextView tv_rowscreen;
     private LinearLayout ll_items;
     private LinearLayout ll_pictures;
@@ -107,28 +117,7 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
     private Button btn_submit;
     private LinePathView path_view;
     private ProgressDialog progressDialog;
-    private final boolean isShowDialog = true;
-    private String endDateStr = "";
-    private Dialog shaixuanDialog;
-    private View shaixuanInflater;
-    private TextView okButton;
-    private ImageView to_map_view;
     private LinearLayout ll_tomap;
-    private LinearLayout quLayout;
-    private ImageView iv_city;
-    private LinearLayout jiedaoLayout;
-    public int currentChooseArea = 0;  //当前在选择区还是街道   0选择区  1选择街道
-    public String currentChooseQu = "";
-    public String currentChooseJiedao = "";
-    public String currentQuId;
-    public String currentQuNo;
-    public List<Grid> quList;
-    private TextView quText;
-    private TextView jiedaoText;
-    public List<String> quStrList;
-    public List<Grid> jiedaoList;
-    public List<String> jiedaoStrList;
-    private WheelView areaWy;
     public int quSelectIndex = 0;
     public int jieDaoSelectIndex = 0;
     public boolean isChooseQu = false;
@@ -141,9 +130,16 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
     private List<AddResourceCheck.ImgsFirejd> imgsFirejds1 =new ArrayList<>();
     private List<checkuser> checkusers =new ArrayList<>();
 
-    private String id;
-    private String endDate;
-    private int checkType;
+    public List<Area> gridAllList = new ArrayList<>();
+    public List<Area> gridList = new ArrayList<>();
+    public List<Area> grid2List = new ArrayList<>();
+    public List<Area> grid3List = new ArrayList<>();
+    public int gridIndex = 0;
+    public int grid2Index = 0;
+    public int grid3Index = 0;
+    public int chooseType = 1;
+    private TypeChooseDialog typeChooseDialog;
+
     private double currentLongitude;
     private double currentLatitude;
     private String currentStreeNo = "";
@@ -169,13 +165,9 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
         setContentView(R.layout.add_activity_resource_checking);
         progressDialog = new ProgressDialog(this);
 
-        quList = new ArrayList<>();
-        quStrList=new ArrayList<>();
-        jiedaoList=new ArrayList<>();
-        jiedaoStrList=new ArrayList<>();
         date=new StringBuffer();
         initView();
-        getAllQu();
+        postData();
         initPictures();
         getLocation();
         initDateTime();
@@ -318,7 +310,9 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
         });
         tv_name = findViewById(R.id.tv_name);
         et_name = findViewById(R.id.et_name);
-        tv_grid = findViewById(R.id.tv_grid);
+        text_grid = findViewById(R.id.text_grid);
+        text_grid2 = findViewById(R.id.text_grid2);
+        text_grid3 = findViewById(R.id.text_grid3);
         tv_rowscreen = findViewById(R.id.tv_rowscreen);
         ll_pictures = findViewById(R.id.ll_pictures);
         tv_enddate = findViewById(R.id.tv_enddate);
@@ -333,29 +327,8 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
         fl_enddate = findViewById(R.id.fl_enddate);
         sv_out = findViewById(R.id.sv_out);
         tvAddress = findViewById(R.id.tv_address);
-        to_map_view = findViewById(R.id.to_map_view);
         ll_tomap = findViewById(R.id.ll_tomap);
 
-        shaixuanDialog=new Dialog(this, R.style.ActionSheetDialogStyle);
-        shaixuanInflater= LayoutInflater.from(this).inflate(R.layout.dialog_yh_wangge,null);
-        shaixuanInflater.setMinimumWidth(10000);
-        shaixuanDialog.setContentView(shaixuanInflater);
-        Window gaojiDialogWindow = shaixuanDialog.getWindow();
-
-        gaojiDialogWindow.setGravity(Gravity.BOTTOM);
-        WindowManager.LayoutParams gaojiLp = gaojiDialogWindow.getAttributes();
-        WindowManager wmGaoji = (WindowManager) this
-                .getSystemService(Context.WINDOW_SERVICE);
-        int heightGaoji = wmGaoji.getDefaultDisplay().getHeight();
-        gaojiLp.height = (int) (heightGaoji * 0.8);
-        gaojiDialogWindow.setAttributes(gaojiLp);
-        shaixuanDialog.setCanceledOnTouchOutside(true);
-        okButton=shaixuanInflater.findViewById(R.id.ok_button);
-        quLayout=shaixuanInflater.findViewById(R.id.qu_layout);
-        iv_city=shaixuanInflater.findViewById(R.id.iv_city);
-        jiedaoLayout=shaixuanInflater.findViewById(R.id.jiedao_layout);
-        quText=shaixuanInflater.findViewById(R.id.qu_text);
-        jiedaoText=shaixuanInflater.findViewById(R.id.jiedao_text);
         RxViewAction.clickNoDouble(btn_left).subscribe(unused -> {
             path_view.clear();
             path_view.setOnlyWatch(false);
@@ -416,10 +389,10 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
                 });
 
         RxViewAction.clickNoDouble(ll_worker_small).subscribe(unused -> {
-            if((!cityRoot) && (currentChooseQu.equals("")||currentChooseJiedao.equals("")||currentChooseQu.contains("请选择")||currentChooseJiedao.contains("请选择"))){
-                Toast.makeText(this, "请完善所属网格信息", Toast.LENGTH_SHORT).show();
-                return;
-            }
+//            if((!cityRoot) && (currentChooseQu.equals("")||currentChooseJiedao.equals("")||currentChooseQu.contains("请选择")||currentChooseJiedao.contains("请选择"))){
+//                Toast.makeText(this, "请完善所属网格信息", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
             if(checkUserStrList.size()==0){
                 Toast.makeText(this, "当前网格暂无整治人", Toast.LENGTH_SHORT).show();
                 return;
@@ -433,79 +406,165 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
                 Toast.makeText(this, "请选择整治人", Toast.LENGTH_SHORT).show();
             }
         });
-        RxViewAction.clickNoDouble(quLayout)
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) {
-                        currentChooseArea = 0;
-
-                        showAreaDialog(quStrList);
-                    }
-                });
-        RxViewAction.clickNoDouble(jiedaoLayout)
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) {
-                        currentChooseArea = 1;
-                        for (int i = 0; i < quList.size(); i++) {
-                            if (quList.get(i).getName().equals(currentChooseQu)) {
-                                currentQuId = quList.get(i).getId();
-                                currentQuNo = quList.get(i).getGridNo();
-                            }
-                        }
-                        if (quText.getText().equals("请选择区")){
-                            Toast.makeText(AddResourceCheckingActivity.this, "请先选择区", Toast.LENGTH_SHORT).show();
-
-                        }else {
-                            getAllJieDao();
-                        }
-
-                    }
-                });
-        RxViewAction.clickNoDouble(okButton)
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) {
-                        if((currentChooseQu==null||currentChooseQu.equals("")||currentChooseQu.contains("请选择")) && (currentChooseJiedao==null||currentChooseJiedao.equals("")||currentChooseJiedao.contains("请选择"))){
-                            //tv_grid.setText("临沂市");
-                            Toast.makeText(AddResourceCheckingActivity.this, "请选择网格", Toast.LENGTH_SHORT).show();
-                            return;
-                        }else if(cityRoot){
-                            tv_grid.setText(currentChooseQu);
-                        }else{
-                            tv_grid.setText(currentChooseQu+"/"+currentChooseJiedao);
-                        }
-                        for (int i = 0; i < jiedaoList.size(); i++) {
-                            Log.e(TAG, "call: " + jiedaoList.get(i).getName() );
-                            Log.e(TAG, "call: " + jiedaoList.get(i).getGridNo());
-                            if (jiedaoList.get(i).getName().equals(currentChooseJiedao)) {
-                                currentStreeNo = jiedaoList.get(i).getGridNo();
-                            }
-                        }
-
-                        checkUserStrList.clear();
-                        checkUserList = new JSONArray();
-                        //根据账号权限获取整治人列表
-                        if(cityRoot){
-                            getPerpleListFromService1();
-                        }else{
-                            if((!currentChooseQu.contains("请选择")) && (!currentChooseJiedao.contains("请选择")) && (!currentChooseQu.equals("")) && (!currentChooseJiedao.equals(""))){
-                                getPerpleListFromService1();
-                            }else{
-                                Toast.makeText(AddResourceCheckingActivity.this, "请完善所属网格信息", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        shaixuanDialog.dismiss();
-                    }
-                });
-        RxViewAction.clickNoDouble(tv_grid).subscribe(unused -> {
-            //showBottomDialog();
-            shaixuanDialog.show();
+        RxViewAction.clickNoDouble(text_grid).subscribe(unused -> {
+            if(gridList==null || gridList.isEmpty()){
+                Toast.makeText(this, "网格数据加载中..", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            chooseType = 1;
+            chooseGrid();
+        });
+        RxViewAction.clickNoDouble(text_grid2).subscribe(unused -> {
+            if(grid2List==null || grid2List.isEmpty()){
+                Toast.makeText(this, "请先选择省", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            chooseType = 2;
+            chooseGrid();
+        });
+        RxViewAction.clickNoDouble(text_grid3).subscribe(unused -> {
+            if(grid3List==null || grid3List.isEmpty()){
+                Toast.makeText(this, "请先选择市", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            chooseType = 3;
+            chooseGrid();
         });
         RxViewAction.clickNoDouble(tv_enddate).subscribe(unused -> {
             //showBottomDialog();
             showDataDialog(tv_enddate);
         });
+    }
+
+
+    private void chooseGrid(){
+        typeChooseDialog = new TypeChooseDialog(this, R.style.ActionSheetDialogStyle);
+        Window dialogWindow = typeChooseDialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        typeChooseDialog.setDialogListener(this);
+        typeChooseDialog.setTreeList(parseStrings(),parseIndex(),1);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        int height = wm.getDefaultDisplay().getHeight();
+        int width = wm.getDefaultDisplay().getWidth();
+        lp.width = width;
+        //lp.height = (int) (height * 0.7);
+        dialogWindow.setAttributes(lp);
+        typeChooseDialog.setCanceledOnTouchOutside(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            typeChooseDialog.create();
+        }
+
+        typeChooseDialog.show();
+    }
+
+    private int parseIndex() {
+        int index = 0;
+        if(chooseType==1){
+            index = gridIndex;
+        }
+        if(chooseType==2){
+            index = grid2Index;
+        }
+        if(chooseType==3){
+            index = grid3Index;
+        }
+        return index;
+    }
+
+    private List<String> parseStrings() {
+        int type = chooseType;
+        HhLog.e("parseStrings " + type);
+        List<String> list = new ArrayList<>();
+        if(type==1){
+            for (int i = 0; i < gridList.size(); i++) {
+                list.add(gridList.get(i).getName());
+            }
+        }
+        if(type==2){
+            for (int i = 0; i < grid2List.size(); i++) {
+                list.add(grid2List.get(i).getName());
+            }
+        }
+        if(type==3){
+            for (int i = 0; i < grid3List.size(); i++) {
+                list.add(grid3List.get(i).getName());
+            }
+        }
+        HhLog.e("parseStrings " + type);
+        HhLog.e("parseStrings " + list.toString());
+        return list;
+    }
+
+    public void postData() {
+        DbConfig dbConfig = new DbConfig(this);
+        gridAllList = dbConfig.getGridList();
+        if(gridAllList!=null){
+            initArea();
+        }
+        else{
+            HhHttp.get()
+                    .url(URLConstant.GET_GRID)
+                    .build()
+                    .connTimeOut(10000)
+                    .execute(new LoggedInStringCallback(null, this) {
+                        @Override
+                        public void onSuccess(String response, int id) {
+                            HhLog.e("getGridData: " + URLConstant.GET_GRID);
+                            HhLog.e("getGridData: " + CommonData.token);
+                            HhLog.e("getGridData: " + response);
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                JSONArray data = jsonObject.getJSONArray("data");
+                                gridAllList = new Gson().fromJson(String.valueOf(data), new TypeToken<List<Area>>() {
+                                }.getType());
+                                //存储网格信息
+                                DbManager db = dbConfig.getDbManager();
+                                try {
+                                    db.saveOrUpdate(gridList);
+                                } catch (DbException e) {
+
+                                }
+                                initArea();
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call call, Exception e, int id) {
+                            HhLog.e("onFailure: " + e.toString());
+                        }
+                    });
+        }
+    }
+
+    public void initArea() {
+        gridList.clear();
+        for (int i = 0; i < gridAllList.size(); i++) {
+            if ("1".equals(gridAllList.get(i).getLevel())) {
+                gridList.add(gridAllList.get(i));
+            }
+        }
+    }
+    public void initArea2() {
+        HhLog.e("initArea2 " + gridList.get(gridIndex).toString());
+        grid2List.clear();
+        for (int i = 0; i < gridAllList.size(); i++) {
+            if ("2".equals(gridAllList.get(i).getLevel()) && gridAllList.get(i).getParentId().equals(gridList.get(gridIndex).getId())) {
+                grid2List.add(gridAllList.get(i));
+            }
+        }
+    }
+    public void initArea3() {
+        grid3List.clear();
+        HhLog.e("initArea3 " + grid2List.get(grid2Index).toString());
+        for (int i = 0; i < gridAllList.size(); i++) {
+            if ("3".equals(gridAllList.get(i).getLevel()) && gridAllList.get(i).getParentId().equals(grid2List.get(grid2Index).getId())) {
+                grid3List.add(gridAllList.get(i));
+            }
+        }
     }
 
 
@@ -703,7 +762,7 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
             try {
                 if (tv_worker.getText().toString().equals(checkUserList.getJSONObject(i).getString("fullName"))){
                     Log.e(TAG, "postDataToServiceFromDb1: "+ checkUserList.getJSONObject(i).getString("id"));
-                    checkusers.add(new checkuser(id,2,2,checkUserList.getJSONObject(i).getString("id"),tv_worker.getText().toString()));
+                    checkusers.add(new checkuser(null,2,2,checkUserList.getJSONObject(i).getString("id"),tv_worker.getText().toString()));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -720,17 +779,19 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
         addResourceCheck.setCheckusers(checkusers);
         addResourceCheck.setCheckType(6);
         addResourceCheck.setStatus(3);
-        if(cityRoot){
-            addResourceCheck.setGridNo((currentStreeNo==null||currentStreeNo.equals(""))?currentQuNo:currentStreeNo);
-        }else{
-            addResourceCheck.setGridNo(currentStreeNo);
-        }
         addResourceCheck.setGroupId(currentGroupId);
-        if(cityRoot){
-            addResourceCheck.setGridName((currentStreeNo==null||currentStreeNo.equals(""))?currentChooseQu:currentChooseJiedao);
-        }else{
-            addResourceCheck.setGridName(currentChooseJiedao);
+        Area grid = new Area();
+        if(!text_grid.getText().toString().contains("请选择")){
+            grid = gridList.get(gridIndex);
         }
+        if(!text_grid2.getText().toString().contains("请选择")){
+            grid = grid2List.get(grid2Index);
+        }
+        if(!text_grid3.getText().toString().contains("请选择")){
+            grid = grid3List.get(grid3Index);
+        }
+        addResourceCheck.setGridNo(grid.getId());
+        addResourceCheck.setGridName(grid.getName());
         addResourceCheck.setName(et_name.getText().toString());
         //addResourceCheck.setResourceType(planResourceType);
         addResourceCheck.setLatitude(currentLatitude);
@@ -782,7 +843,7 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
     }
     JSONArray checkUserList = new JSONArray();
     List<String> checkUserStrList = new ArrayList<>();
-    private void getPerpleListFromService1() {
+    private void getUsers() {
         JSONObject jsonObject = new JSONObject();
         try {
             /*if(cityRoot){
@@ -885,126 +946,6 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, 600);
         dialog.show();
 
-    }
-    /**
-     * 获取所有区的数据
-     */
-    private void getAllQu() {
-
-        quList.clear();
-        DbManager db = new DbConfig(getApplicationContext()).getDbManager();
-        try {
-            quList = db.selector(Grid.class)
-                    .where("state", "=", "ACTIVE")
-                    .and("level", "=", "2")
-                    .and("gridno", "like", "3713%")
-                    .findAll();
-
-            quStrList.clear();
-
-            //Log.e(TAG, "getAllQu: "+quList.size() );
-            quStrList.add("请选择网格");
-            for (int i = 0; i < quList.size(); i++) {
-                if (!quList.get(i).getName().equals("高新区")) {
-                    quStrList.add(quList.get(i).getName());
-                }
-            }
-
-
-            if(!cityRoot){
-                for (int i = 0; i < quList.size(); i++) {
-                    if(quList.get(i).getGridNo().contains((CharSequence) SPUtils.get(this, SPValue.gridNo,""))){
-                        currentQuNo = quList.get(i).getGridNo();
-                        currentQuId = quList.get(i).getId();
-                        currentChooseQu = quList.get(i).getName();
-                        quText.setText(currentChooseQu);
-                        quText.setTextColor(getResources().getColor(R.color.text_color9));
-                        quLayout.setClickable(false);
-                        iv_city.setVisibility(View.GONE);
-                    }
-                }
-            }else{
-                jiedaoLayout.setVisibility(View.GONE);
-            }
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
-    }
-    /**
-     * 获取所有街道数据
-     */
-    private void getAllJieDao() {
-        jiedaoList.clear();
-        DbManager db = new DbConfig(getApplicationContext()).getDbManager();
-        try {
-            jiedaoList = db.selector(Grid.class)
-                    .where("state", "=", "ACTIVE")
-                    .where("level", "=", "1")
-                    .where("parentid", "=", currentQuId)
-                    .findAll();
-
-            jiedaoStrList.clear();
-            jiedaoStrList.add("请选择街道");
-            for (int i = 0; i < jiedaoList.size(); i++) {
-                jiedaoStrList.add(jiedaoList.get(i).getName());
-            }
-            showAreaDialog(jiedaoStrList);
-        } catch (DbException e) {
-            e.printStackTrace();
-        }
-    }
-    private void showAreaDialog(List<String> strList) {
-        View areaView = LayoutInflater.from(this).inflate(R.layout.dialog_area, null);
-        areaWy = ((WheelView) areaView.findViewById(R.id.wheel_view_area));
-        areaWy.setIsLoop(false);
-        if (currentChooseArea == 0){
-            areaWy.setItems(strList, quSelectIndex);//init selected position is 0 初始选中位置为0
-        }else {
-            areaWy.setItems(strList, jieDaoSelectIndex);//init selected position is 0 初始选中位置为0
-        }
-
-        areaWy.setOnItemSelectedListener(new WheelView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(int selectedIndex, String item) {
-                if (currentChooseArea == 0){   //选择区
-                    isChooseQu = true;
-                    currentChooseQu = areaWy.getSelectedItem();
-                    quSelectIndex = areaWy.getSelectedPosition();
-                    quText.setText(currentChooseQu);
-                    currentChooseJiedao = "";
-                    jiedaoText.setText("请选择街道");
-                    jieDaoSelectIndex = 0;
-                    if(quSelectIndex-1 >= 0){
-                        currentQuNo = quList.get(quSelectIndex-1).getGridNo();
-                        currentQuId = quList.get(quSelectIndex-1).getId();
-                    }else{
-                        currentQuNo = "";
-                    }
-                }else {                          //选择街道
-                    currentChooseJiedao = areaWy.getSelectedItem();
-                    jieDaoSelectIndex = areaWy.getSelectedPosition();
-                    jiedaoText.setText(currentChooseJiedao);
-                    if(jieDaoSelectIndex-1 >= 0){
-                        currentStreeNo = jiedaoList.get(jieDaoSelectIndex-1).getGridNo();
-                    }else{
-                        currentStreeNo = "";
-                    }
-                }
-
-            }
-        });
-        new AlertDialog.Builder(this)
-                .setTitle("请选择区域")
-                .setView(areaView)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String areStr = "";
-                        String area = areaWy.getSelectedItem();
-
-                    }
-                })
-                .show();
     }
     public void getLocation() {
         //获得位置服务
@@ -1187,5 +1128,50 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
         this.year = year;
         this.month = monthOfYear;
         this.day = dayOfMonth;
+    }
+
+    @Override
+    public void onTypeChooseDialogRefresh() {
+
+    }
+
+    @Override
+    public void onTypeChoose(String type, int index, int code) {
+        if(code == 1){
+            if(chooseType==1){
+                //初始化市区
+                text_grid2.setText("请选择市");
+                grid2List.clear();
+                grid2Index = 0;
+                text_grid3.setText("请选择区");
+                grid3List.clear();
+                grid3Index = 0;
+
+
+                text_grid.setText(type);
+                gridIndex = index;
+                getUsers();
+
+                initArea2();
+            }
+            if(chooseType==2){
+                //初始化区
+                text_grid3.setText("请选择区");
+                grid3List.clear();
+                grid3Index = 0;
+
+
+                text_grid2.setText(type);
+                grid2Index = index;
+                getUsers();
+
+                initArea3();
+            }
+            if(chooseType==3){
+                text_grid3.setText(type);
+                grid3Index = index;
+                getUsers();
+            }
+        }
     }
 }

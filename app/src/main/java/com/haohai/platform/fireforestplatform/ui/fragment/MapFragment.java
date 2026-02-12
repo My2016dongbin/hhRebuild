@@ -607,8 +607,9 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
     private void resourceMarker(List<Resource> resources) {
         ArrayList<MarkerOptions> options = new ArrayList<>();
-        BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_fire);
+        BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.kaoqian);
         for (int i = 0; i < resources.size(); i++) {
+            HhLog.e("resources.get(i).getApiUrl() " +resources.get(i).getApiUrl());
             //TODO 需后端配置后自动获取类型图标
             if(Objects.equals(resources.get(i).getApiUrl(), "/api/helicopterPoint")){//停机坪
                 btm = BitmapDescriptorFactory.fromResource(R.drawable.airport);

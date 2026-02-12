@@ -131,6 +131,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
     private WheelView areaWy;
     private int leixingSelectIndex = 0;
     private String currentChooseLeixing = "";
+    private String currentChooseLeixingApi = "";
     private ImageView backButton;
     private TextView backText;
 
@@ -533,7 +534,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
                 } catch (Exception e) {
                     Log.e(TAG, "initEditing: " + e.getMessage());
                 }
-            } else if (currentChooseLeixing.equals("队伍驻防点")) {      //专业队
+            } else if (currentChooseLeixing.equals("消防专业队")) {      //专业队
                 try {
                     if (Objects.equals(resourceObj.getString("type"), "0")) {
                         currentZhuanyeduiType = 0;
@@ -945,6 +946,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
 
                             if (isEditing && Objects.equals(resource.code, type)) {
                                 currentChooseLeixing = resource.name;
+                                currentChooseLeixingApi = resource.code;
                                 DialogHelper.getInstance().show(ResourceAddActivity.this, "数据加载中...");
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
@@ -2013,7 +2015,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
                 } else {
                     jsonObject.put("isHelicopterWater", 0);
                 }
-            } else if (currentChooseLeixing.equals("队伍驻防点")) {      //专业队
+            } else if (currentChooseLeixing.equals("消防专业队")) {      //专业队
                 /*if(duiwurenshuTeamEdit.getText().toString().isEmpty()//TODO 去除其它参数
                         || zhibanTeamEdit.getText().toString().isEmpty()
                         || xiaofangcheTeamEdit.getText().toString().isEmpty()
@@ -2079,7 +2081,7 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
                 jsonObject.put("waterBagCount", /*shuidaiMrEdit.getText().toString()*/"1");
                 jsonObject.put("waterSacCount", /*shuinangMrEdit.getText().toString()*/"1");
                 jsonObject.put("oilDrumCount", /*youtongMrEdit.getText().toString()*/"1");
-            } else if (currentChooseLeixing.equals("森林防火监测中心")) {      //森林防火监测中心
+            } else if (currentChooseLeixing.equals("防火指挥部")) {      //森林防火监测中心
                 jsonObject.put("typeName", currentJiancezhongxinType + "");
             } else if (currentChooseLeixing.equals("瞭望塔")) {      //瞭望塔
                 /*if(jiancefanweiEdit.getText().toString().isEmpty()){//TODO 去除其它参数
@@ -2145,13 +2147,13 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
         } else if (currentChooseLeixing.equals("物资库")) {      //物资库
             params = new RequestParams(URLConstant.BASE_PATH + "resource/api/materialRepository");
             type = "materialRepository";
-        } else if (currentChooseLeixing.equals("森林防火监测中心")) {      //森林防火监测中心
+        } else if (currentChooseLeixing.equals("防火指挥部")) {      //防火指挥部
             params = new RequestParams(URLConstant.BASE_PATH + "resource/api/fireCommand");
             type = "fireCommand";
         } else if (currentChooseLeixing.equals("瞭望塔")) {      //瞭望塔
             params = new RequestParams(URLConstant.BASE_PATH + "resource/api/watchTower");
             type = "watchTower";
-        } else if (currentChooseLeixing.equals("视频监控点")) {      //视频监控点
+        } else if (currentChooseLeixing.equals("视频监控点")) {      //视频监控点-
             params = new RequestParams(URLConstant.BASE_PATH + "resource/api/monitor");
             type = "monitor";
         } else if (currentChooseLeixing.equals("墓地")) {      //墓地
@@ -2160,13 +2162,11 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
         } else if (currentChooseLeixing.equals("危险源")) {      //危险源
             params = new RequestParams(URLConstant.BASE_PATH + "resource/api/dangerSource");
             type = "dangerSource";
-        } else if (currentChooseLeixing.equals("停机坪")) {      //停机坪
+        } else if (currentChooseLeixing.equals("直升机机降点")) {      //直升机机降点
             params = new RequestParams(URLConstant.BASE_PATH + "resource/api/helicopterPoint");
             type = "helicopterPoint";
-        } else if (currentChooseLeixing.equals("防火指挥部")) {      //防火指挥部
-            params = new RequestParams(URLConstant.BASE_PATH + "resource/api/fireCommand");
-            type = "fireCommand";
         } else {
+            type = currentChooseLeixingApi.replace("/api/","");
             params = new RequestParams(URLConstant.BASE_PATH + "resource/api/resourceList/saveResourceBase");
         }
         Log.e(TAG, "pic: 5");
@@ -2284,6 +2284,8 @@ public class ResourceAddActivity extends BaseActivity implements ChooseImageView
             @Override
             public void onItemSelected(int selectedIndex, String item) {
                 currentChooseLeixing = areaWy.getSelectedItem();
+                currentChooseLeixingApi = areaWy.getSelectedPosition()==0?"":resourceList.get(areaWy.getSelectedPosition()-1).apiUrl;
+                HhLog.e("currentChooseLeixingApi " + currentChooseLeixingApi);
                 leixingSelectIndex = areaWy.getSelectedPosition();
                 leixingText.setText(currentChooseLeixing);
                 jianchazhanLayout.setVisibility(View.GONE);

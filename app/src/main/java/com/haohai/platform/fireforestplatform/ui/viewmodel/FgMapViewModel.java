@@ -18,6 +18,7 @@ import com.haohai.platform.fireforestplatform.event.Search;
 import com.haohai.platform.fireforestplatform.old.bean.Grid;
 import com.haohai.platform.fireforestplatform.ui.bean.Resource;
 import com.haohai.platform.fireforestplatform.ui.bean.SatelliteParams;
+import com.haohai.platform.fireforestplatform.ui.multitype.LandFire;
 import com.haohai.platform.fireforestplatform.ui.multitype.SheQu;
 import com.haohai.platform.fireforestplatform.ui.multitype.OneBodyFire;
 import com.haohai.platform.fireforestplatform.ui.multitype.ResourceType;
@@ -52,9 +53,11 @@ import okhttp3.Call;
 public class FgMapViewModel extends BaseViewModel {
     public Context context;
     public int currentPage = 1;
+    public int currentPageLand = 1;
     public int isReal = 2;
     public final int USER_LOCATION = 100;
     public final int ONE_BODY = 101;
+    public final int LAND = 106;
     public final int SATELLITE = 102;
     public final int RESOURCE = 103;
     public final int defaultFindTime = 500;//默认查询距离当前时间前N小时数据
@@ -62,10 +65,12 @@ public class FgMapViewModel extends BaseViewModel {
     public String endTime = "";
     public String search = "";
     public int oneBodyFilterState = 1;//0全部  1未处理  2真实火点  3疑似火点
+    public int landFilterState = 1;//0全部  1未处理  2真实火点  3疑似火点
     public List<Grid> gridList = new ArrayList<>();
     public final MutableLiveData<List<SheQu>> sheQuGridList = new MutableLiveData<>();
     public final MutableLiveData<List<ArrayList<Double>>> sheQuCurrentList = new MutableLiveData<>();
     public final MutableLiveData<List<OneBodyFire>> oneBodyList = new MutableLiveData<>();
+    public final MutableLiveData<List<LandFire>> landList = new MutableLiveData<>();
     public final MutableLiveData<List<ResourceType>> resourceTypeList = new MutableLiveData<>();
     public final MutableLiveData<List<Resource>> resourceList = new MutableLiveData<>();
     public final MutableLiveData<List<SatelliteFire>> satelliteList = new MutableLiveData<>();
@@ -80,6 +85,7 @@ public class FgMapViewModel extends BaseViewModel {
         c.add(Calendar.HOUR, -defaultFindTime);//获取默认小时之前的时间
         startTime = format.format(c.getTime()).replace(" ", "T");
         getOneBodyData();
+        getLandData();
         getResourceTypeData();
         getSatelliteData(startTime,endTime);
         initGridIntoDb();
@@ -126,7 +132,7 @@ public class FgMapViewModel extends BaseViewModel {
             @Override
             public void onSuccess(String result) {
                 try {
-                    HhLog.e("grid " + result);
+                    //HhLog.e("grid " + result);
                     JSONObject jsonObject1 = new JSONObject(result);
                     String code = jsonObject1.getString("code");
                     if (code.equals("200")){
@@ -250,6 +256,63 @@ public class FgMapViewModel extends BaseViewModel {
                         loading.setValue(new LoadingEvent(false, ""));
                     }
                 });*/
+    }
+    public void getLandData() {
+        loading.setValue(new LoadingEvent(true, "正在获取报警信息.."));
+        final JSONObject jsonObject = new JSONObject();
+        JSONObject dto;
+        try {
+            dto = new JSONObject();
+            jsonObject.put("dto", dto);
+            jsonObject.put("limit", 100);
+            jsonObject.put("page", currentPageLand);
+            //dto.put("isReal", isReal);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        HhLog.e("oneBody params " + jsonObject.toString());
+        RequestParams params = new RequestParams(URLConstant.POST_MAP_ONE_BODY);
+        params.setBodyContent(jsonObject.toString());
+        HhHttp.postX(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    HhLog.e("POST_MAP_ONE_BODY" + currentPageLand + " , " + result);
+                    loading.postValue(new LoadingEvent(false, ""));
+                    JSONObject jsonObject = new JSONObject(result);
+                    JSONArray data = jsonObject.getJSONArray("data");
+                    if(data.length()>0){
+                        JSONObject obj = (JSONObject) data.get(0);
+                        JSONArray dataList = obj.getJSONArray("dataList");
+                        landList.postValue(new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<LandFire>>(){}.getType()));
+                                /*卫星暂用一体机数据
+                                satelliteList.postValue(new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<SatelliteFire>>(){}.getType()));*/
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    HhLog.e("onError: catch " + e.toString());
+                }
+            }
+
+            @Override
+            public void onError(Throwable e, boolean isOnCallback) {
+                HhLog.e("onError: " + e.toString());
+                msg.setValue(e.getMessage());
+                loading.setValue(new LoadingEvent(false, ""));
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
     }
     public void getResourceTypeData() {
         resourceTypeList.postValue(new ArrayList<>());

@@ -320,6 +320,9 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
             if(mainFgMenu.getTitle().equals("卫星遥感")){
                 EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"satellite"));
             }
+            if(mainFgMenu.getTitle().equals("地表火")){
+                EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"landFire"));
+            }
             if(mainFgMenu.getTitle().equals("任务单")){
                 requireActivity().startActivity(new Intent(requireActivity(), TaskActivity.class));
             }

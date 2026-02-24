@@ -106,9 +106,32 @@
                     android:layout_width="22dp"
                     android:layout_height="18dp"/>
                 <TextView
-                    android:text="列表"
+                    android:text="一体机"
                     android:layout_marginTop="2dp"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
+                    android:textColor="@color/black90"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <View
+                android:background="@color/back_color_line"
+                android:layout_margin="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"/>
+            <LinearLayout
+                android:id="@+id/view_warn_list_land"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:src="@drawable/ic_menu"
+                    android:layout_width="22dp"
+                    android:layout_height="18dp"/>
+                <TextView
+                    android:text="地表火"
+                    android:layout_marginTop="2dp"
+                    android:textSize="11sp"
                     android:textColor="@color/black90"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -121,7 +144,7 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:layout_marginStart="15dp"
-            android:layout_marginTop="190dp"
+            android:layout_marginTop="240dp"
             android:background="@drawable/white_conner"
             android:layout_width="45dp"
             android:layout_height="wrap_content">

@@ -334,7 +334,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                     }
                 }
                 landDetailDialog.setOneBodyFire(landFire);
-                delayDialog(oneBodyDetailDialog);
+                delayDialog(landDetailDialog);
             }else if(markerType == obtainViewModel().SATELLITE){
                 for (SatelliteFire res: Objects.requireNonNull(obtainViewModel().satelliteList.getValue())) {
                     if(Objects.equals(res.getId(), markerId)){
@@ -1148,7 +1148,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         oneBodyListDialog.hide();
         oneBodyDetailDialog.setOneBodyFire(oneBodyFire);
         oneBodyDetailDialog.show();
-        flyBaiduMapZoom(Double.parseDouble(oneBodyFire.getAlarmLatitude()),Double.parseDouble(oneBodyFire.getAlarmLongitude()),14);
+        double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBodyFire.getAlarmLatitude()),Double.parseDouble(oneBodyFire.getAlarmLongitude()));
+        flyBaiduMapZoom(doubles[0],doubles[1], 14);
     }
 
     @Override
@@ -1161,7 +1162,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         satelliteListDialog.hide();
         satelliteDetailDialog.setSatelliteFire(satelliteFire);
         satelliteDetailDialog.show();
-        flyBaiduMapZoom(Double.parseDouble(satelliteFire.getLatitude()),Double.parseDouble(satelliteFire.getLongitude()),14);
+        double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(satelliteFire.getLatitude()),Double.parseDouble(satelliteFire.getLongitude()));
+        flyBaiduMapZoom(doubles[0],doubles[1], 14);
     }
 
     @Override
@@ -1255,7 +1257,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         landListDialog.hide();
         landDetailDialog.setOneBodyFire(landFire);
         landDetailDialog.show();
-        flyBaiduMapZoom(Double.parseDouble(landFire.getAlarmLatitude()),Double.parseDouble(landFire.getAlarmLongitude()),14);
+        double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(landFire.getAlarmLatitude()),Double.parseDouble(landFire.getAlarmLongitude()));
+        flyBaiduMapZoom(doubles[0],doubles[1], 14);
     }
 
     @Override

@@ -20,7 +20,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
-                android:text="一体机火点详情"
+                android:text="地表火火点详情"
                 android:layout_marginStart="15dp"
                 android:textColor="@color/text_color3"/>
             <LinearLayout
@@ -35,7 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="13sp"
-                    android:text="一体机名称:"
+                    android:text="设备名称:"
                     android:layout_marginStart="15dp"
                     android:textColor="@color/text_color3"/>
 
@@ -61,7 +61,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="13sp"
-                    android:text="报警时间:"
+                    android:text="发现时间:"
                     android:layout_marginStart="15dp"
                     android:textColor="@color/text_color3"/>
 

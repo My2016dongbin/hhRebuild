@@ -344,7 +344,7 @@ public class FgMainViewModel extends BaseViewModel {
         int index = 0;
         if(CommonPermission.hasPermission(context,CommonPermission.APP_ALARM)){menu_.add(new MainFgMenu("","warn","报警管理","",R.drawable.icon_manage,"/warn/manage",index));index++;}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_SATELLITE)){menu_.add(new MainFgMenu("","star","卫星遥感","",R.drawable.icon_star,"/star",index));index++;}
-        if(CommonPermission.hasPermission(context,CommonPermission.APP_ALARM)){menu_.add(new MainFgMenu("","land","地表火","",R.drawable.icon_manage,"/warn/land",index));index++;}
+        if(CommonPermission.hasPermission(context,CommonPermission.APP_ALARM)){menu_.add(new MainFgMenu("","land","地表火","",R.drawable.icon_land_fire,"/warn/land",index));index++;}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_DANGER)){menu_.add(new MainFgMenu("","danger","隐患排查","",R.drawable.icon_danger,"/danger",index));index++;}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_UPLOAD)){menu_.add(new MainFgMenu("","fire","火情上报","",R.drawable.icon_fire,"/fire",index));index++;}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_VIDEO)){menu_.add(new MainFgMenu("","video","视频监控","",R.drawable.icon_video,"/video",index));index++;}

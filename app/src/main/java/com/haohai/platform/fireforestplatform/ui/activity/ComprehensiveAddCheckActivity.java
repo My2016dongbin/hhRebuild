@@ -1,9 +1,12 @@
 package com.haohai.platform.fireforestplatform.ui.activity;
 
+import static com.haohai.platform.fireforestplatform.utils.ImageUtils.rotaingImageView;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,8 +27,12 @@ import androidx.lifecycle.ViewModelProviders;
 import com.bumptech.glide.Glide;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.base.BaseLiveActivity;
+import com.haohai.platform.fireforestplatform.base.LoggedInStringCallback;
 import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
+import com.haohai.platform.fireforestplatform.constant.HhHttp;
+import com.haohai.platform.fireforestplatform.constant.URLConstant;
 import com.haohai.platform.fireforestplatform.databinding.ActivityComprehensiveAddCheckBinding;
+import com.haohai.platform.fireforestplatform.event.LoadingEvent;
 import com.haohai.platform.fireforestplatform.old.linyi.Res;
 import com.haohai.platform.fireforestplatform.ui.bean.CheckImage;
 import com.haohai.platform.fireforestplatform.ui.bean.CheckResource;
@@ -37,19 +44,28 @@ import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.GifSizeFilter;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.ImagePagerUtil;
+import com.haohai.platform.fireforestplatform.utils.ImageUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 import com.zhihu.matisse.filter.Filter;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
+import com.zhy.http.okhttp.builder.PostFormBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import okhttp3.Call;
 
 public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComprehensiveAddCheckBinding, ComprehensiveAddCheckViewModel> implements TypeChooseDialog.TypeChooseDialogListener {
 
@@ -148,33 +164,38 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
             chooseResource();
         });
         binding.submit.setOnClickListener(v -> {
-            
-            try{
+            binding.submit.setEnabled(false);
+
+            try {
                 CheckResource checkResource = new CheckResource();
                 checkResource.setCheckType(2);
                 checkResource.setDescription(binding.editZz.getText().toString());
+
                 ResInfo resInfo = obtainViewModel().resInfoList.get(obtainViewModel().resInfoIndex);
                 checkResource.setLatitude(Double.parseDouble(resInfo.getPosition().getLat()));
                 checkResource.setLongitude(Double.parseDouble(resInfo.getPosition().getLng()));
                 checkResource.setName(resInfo.getName());
                 checkResource.setResourceType(obtainViewModel().apiCode);
-                checkResource.setStatus(obtainViewModel().pass?4:3);///3：不通过 4：通过
+                checkResource.setResourceTypeName(binding.textType.getText().toString());
+                checkResource.setStatus(obtainViewModel().pass ? 4 : 3);
+
                 List<CheckResource.ImgsBean> images = new ArrayList<>();
                 List<CheckImage> checkImageList = obtainViewModel().imageList.getValue();
-                for (int i = 0; i < checkImageList.size(); i++) {
-                    CheckImage checkImage = checkImageList.get(i);
-                    HhLog.e("CheckImage " + checkImage.toString());
-                    CheckResource.ImgsBean bean = new CheckResource.ImgsBean();
-                    bean.setImg(checkImage.getUri()+"");
-                    images.add(bean);
-                }
-                //添加选择图片
-                checkResource.setImgs(images);
-                CommonData.checkResourceList.add(checkResource);
-                setResult(1);
-                finish();
-            }catch (Exception e){
-                HhLog.e(e.toString());
+
+                // 没图也允许提交：你要是不允许就这里拦一下
+                uploadImages(checkImageList, images, 0);
+
+                // 注意：submitFinal(result) 在 uploadImages 全部完成后会调用
+                // 所以这里别提前 setImgs / finish
+
+                // 你如果需要把 checkResource 带到 submitFinal，用成员变量存一下
+                this.pendingCheckResource = checkResource;
+                this.pendingImgs = images;
+
+            } catch (Exception e) {
+                HhLog.e("提交构建失败：" + e);
+                Toast.makeText(this, "数据异常，无法提交", Toast.LENGTH_SHORT).show();
+                binding.submit.setEnabled(true);
             }
         });
         binding.imagePass.setOnClickListener(v -> {
@@ -186,6 +207,7 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
             updateStatus();
         });
     }
+
 
     private void updateStatus() {
         if (obtainViewModel().pass) {
@@ -392,4 +414,163 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
             obtainViewModel().resInfoIndex = index;
         }
     }
+
+    public interface UploadCallback {
+        void onSuccess(String url);
+        void onFail(Exception e);
+    }
+
+    public void postPicToServiceAsync(Uri uri, UploadCallback callback) {
+        obtainViewModel().loading.setValue(new LoadingEvent(true,"正在保存.."));
+
+        if (uri == null) {
+            runOnUiThread(() -> callback.onFail(new NullPointerException("uri == null")));
+            return;
+        }
+
+        new Thread(() -> {
+
+            String picPath;
+            try {
+                // 注意：这里用 uri.toString() 前已判空
+                int degree = ImageUtils.readPictureDegree(uri.toString());
+                Bitmap photo = ImageUtils.getBitmapFormUri(ComprehensiveAddCheckActivity.this, uri);
+                if (photo == null) {
+                    throw new NullPointerException("getBitmapFormUri 返回 null");
+                }
+
+                Bitmap rotated = rotaingImageView(degree, photo);
+
+                picPath = ImageUtils.savePhoto(
+                        rotated,
+                        getObbDir().getAbsolutePath(),
+                        "file_" + System.currentTimeMillis()
+                );
+
+                // 回收 bitmap（避免连传多张 OOM）
+                try { photo.recycle(); } catch (Exception ignore) {}
+                if (rotated != photo) {
+                    try { rotated.recycle(); } catch (Exception ignore) {}
+                }
+
+            } catch (Exception e) {
+                runOnUiThread(() -> callback.onFail(e));
+                return;
+            }
+
+            PostFormBuilder builder = HhHttp.post()
+                    .url(URLConstant.POST_PICTURE)
+                    .addFile("file", picPath, new File(picPath));
+
+            builder.build().execute(new LoggedInStringCallback(null, ComprehensiveAddCheckActivity.this) {
+
+                @Override
+                public void onSuccess(String response, int id) {
+                    try {
+                        JSONObject json = new JSONObject(response);
+                        HhLog.e("图片上传response " + response);
+
+                        // 你返回的 code 是数字 200
+                        if (json.optInt("code") == 200) {
+                            String url = json.getJSONObject("data")
+                                    .getJSONArray("img")
+                                    .optString(0, "");
+
+                            if (url == null || url.length() == 0) {
+                                throw new Exception("解析到的图片URL为空");
+                            }
+
+                            runOnUiThread(() -> callback.onSuccess(url));
+                        } else {
+                            runOnUiThread(() -> callback.onFail(new Exception("上传失败 code=" + json.optInt("code"))));
+                        }
+                    } catch (Exception e) {
+                        runOnUiThread(() -> callback.onFail(e));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call call, Exception e, int id) {
+                    runOnUiThread(() -> callback.onFail(e));
+                }
+            });
+
+        }).start();
+    }
+    private void uploadImages(List<CheckImage> list,
+                              List<CheckResource.ImgsBean> result,
+                              int index) {
+
+        if (list == null || list.size() == 0) {
+            submitFinal(result);
+            return;
+        }
+
+        // 结束条件
+        if (index >= list.size()) {
+            submitFinal(result);
+            return;
+        }
+
+        CheckImage item = list.get(index);
+        Uri uri = (item == null) ? null : item.getUri();
+
+        // ✅ 关键：遇到空的，直接跳过，继续下一张
+        if (uri == null) {
+            HhLog.e("图片上传跳过：index=" + index + " uri=null");
+            uploadImages(list, result, index + 1);
+            return;
+        }
+
+        HhLog.e("图片上传开始 index=" + index + " uri=" + uri);
+
+        postPicToServiceAsync(uri, new UploadCallback() {
+            @Override
+            public void onSuccess(String url) {
+                HhLog.e("图片上传成功 index=" + index + " url=" + url);
+
+                CheckResource.ImgsBean bean = new CheckResource.ImgsBean();
+                bean.setImg(url);
+                result.add(bean);
+
+                uploadImages(list, result, index + 1);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                HhLog.e("图片上传失败 index=" + index + " err=" + e);
+
+                Toast.makeText(
+                        ComprehensiveAddCheckActivity.this,
+                        "图片上传失败：" + (e == null ? "" : e.getMessage()),
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                binding.submit.setEnabled(true);
+            }
+        });
+    }
+    private void submitFinal(List<CheckResource.ImgsBean> result) {
+        try {
+            if (pendingCheckResource == null) {
+                throw new Exception("pendingCheckResource == null");
+            }
+
+            pendingCheckResource.setImgs(result);
+
+            CommonData.checkResourceList.add(pendingCheckResource);
+            obtainViewModel().loading.postValue(new LoadingEvent(false, ""));
+            setResult(1);
+            finish();
+
+        } catch (Exception e) {
+            HhLog.e("submitFinal失败：" + e);
+            Toast.makeText(this, "提交失败", Toast.LENGTH_SHORT).show();
+            binding.submit.setEnabled(true);
+        }
+    }
+
+    private CheckResource pendingCheckResource;
+    private List<CheckResource.ImgsBean> pendingImgs;
+
 }

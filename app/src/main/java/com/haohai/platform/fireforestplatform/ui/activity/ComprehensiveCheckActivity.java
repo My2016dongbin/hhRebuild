@@ -266,7 +266,8 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
                     .into(icon);
             title.setText(checkResource.getName());
             content.setText(checkResource.getDescription());
-            type.setText(new CommonUtils().parseType(checkResource.getResourceType()));
+            //type.setText(new CommonUtils().parseType(checkResource.getResourceType()));
+            type.setText(checkResource.getResourceTypeName());
             binding.llResource.addView(view);
         }
     }

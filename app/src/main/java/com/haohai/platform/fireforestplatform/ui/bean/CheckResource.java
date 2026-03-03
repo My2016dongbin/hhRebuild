@@ -26,8 +26,17 @@ public class CheckResource {
     private double longitude;
     private String name;
     private String resourceType;
+    private String resourceTypeName;
     private int status;
     private List<ImgsBean> imgs;
+
+    public String getResourceTypeName() {
+        return resourceTypeName;
+    }
+
+    public void setResourceTypeName(String resourceTypeName) {
+        this.resourceTypeName = resourceTypeName;
+    }
 
     public int getCheckType() {
         return checkType;

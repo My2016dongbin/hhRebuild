@@ -210,6 +210,7 @@ public class ComprehensiveCheckViewModel extends BaseViewModel {
     }
 
     public void submit(Area grid) {
+        loading.setValue(new LoadingEvent(true,"正在提交.."));
         ComprehensiveSubmit comprehensiveSubmit = new ComprehensiveSubmit();
         try{
             comprehensiveSubmit.setCheckStationCount(Objects.requireNonNull(resourceList.getValue()).size());

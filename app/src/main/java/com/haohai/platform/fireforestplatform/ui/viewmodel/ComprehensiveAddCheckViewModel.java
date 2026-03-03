@@ -67,7 +67,7 @@ public class ComprehensiveAddCheckViewModel extends BaseViewModel {
                 .execute(new LoggedInStringCallback(this,context) {
                     @Override
                     public void onSuccess(String response, int id) {
-                        HhLog.e("POST_RES_TYPE_LIST " + response);
+                        //HhLog.e("POST_RES_TYPE_LIST " + response);
                         loading.setValue(new LoadingEvent(false));
                         try {
                             JSONObject jsonObject = new JSONObject(response);
@@ -98,8 +98,8 @@ public class ComprehensiveAddCheckViewModel extends BaseViewModel {
                 .execute(new LoggedInStringCallback(this,context) {
                     @Override
                     public void onSuccess(String response, int id) {
-                        HhLog.e("GET_RES_LIST " + URLConstant.GET_RES_LIST + code + "/list");
-                        HhLog.e("GET_RES_LIST " + response);
+                        //HhLog.e("GET_RES_LIST " + URLConstant.GET_RES_LIST + code + "/list");
+                        //HhLog.e("GET_RES_LIST " + response);
                         loading.setValue(new LoadingEvent(false));
                         try {
                             JSONObject jsonObject = new JSONObject(response);

@@ -83,6 +83,7 @@ public class FgMainViewModel extends BaseViewModel {
     public String weatherUrl = "";
     public int oneBodyNum = 0;
     public int kkNum = 0;
+    public int landNum = 0;
     public final MutableLiveData<Integer> weatherState = new MutableLiveData<>();
     public final MutableLiveData<List<MainFgMenu>> menuList = new MutableLiveData<>();
     public final MutableLiveData<List<BannerBean>> bannerList = new MutableLiveData<>();
@@ -370,7 +371,7 @@ public class FgMainViewModel extends BaseViewModel {
                     JSONArray data = jsonObject.getJSONArray("data");
                     if(data.length()>0){
                         oneBodyNum = (int) data.get(0);
-                        deviceNumber.postValue(oneBodyNum + kkNum);
+                        deviceNumber.postValue(oneBodyNum + kkNum + landNum);
                     }
 
                 } catch (JSONException e) {
@@ -394,7 +395,7 @@ public class FgMainViewModel extends BaseViewModel {
                     JSONArray data = jsonObject.getJSONArray("data");
                     if(data.length()>0){
                         kkNum = (int) data.get(0);
-                        deviceNumber.postValue(kkNum + oneBodyNum);
+                        deviceNumber.postValue(oneBodyNum + kkNum + landNum);
                     }
 
                 } catch (JSONException e) {
@@ -413,6 +414,7 @@ public class FgMainViewModel extends BaseViewModel {
                 .build().execute(new LoggedInStringCallback(this,context) {
             @Override
             public void onSuccess(String response, int id) {
+                HhLog.e("GET_MONITOR_ONLINE_COUNT " + response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     JSONArray data = jsonObject.getJSONArray("data");
@@ -420,7 +422,10 @@ public class FgMainViewModel extends BaseViewModel {
                         JSONObject obj = (JSONObject) data.get(0);
                         int onlineMonitorCount = obj.getInt("onlineMonitorCount");
                         int onlineKakouCount = obj.getInt("onlineKakouCount");
-                        deviceOnline.postValue(onlineMonitorCount+onlineKakouCount);
+                        landNum = obj.getInt("surfaceFireDeviceTotal");
+                        deviceNumber.postValue(oneBodyNum + kkNum + landNum);
+                        int onlineSurfaceFireDevice = obj.getInt("onlineSurfaceFireDevice");
+                        deviceOnline.postValue(onlineMonitorCount+onlineKakouCount+onlineSurfaceFireDevice);
 
                     }
                 } catch (JSONException e) {
@@ -482,11 +487,11 @@ public class FgMainViewModel extends BaseViewModel {
                                         String finalFireIds = fireIds;
                                         HhHttp.get()
                                                 .url(URLConstant.GET_FIRE_COUNT)
-                                                .addParams("groupId", groupId)//"001021")
-                                                .addParams("provinceCode",gridNo)//"370214")
-                                                .addParams("fireIds",fireIds)
-                                                .addParams("ip","0")
-                                                .addParams("isAndroid","0")
+//                                                .addParams("groupId", groupId)//"001021")
+//                                                .addParams("provinceCode",gridNo)//"370214")
+//                                                .addParams("fireIds",fireIds)
+//                                                .addParams("ip","0")
+//                                                .addParams("isAndroid","0")
                                                 .build().execute(new LoggedInStringCallback(FgMainViewModel.this,context) {
                                             @Override
                                             public void onSuccess(String response, int id) {
@@ -496,8 +501,10 @@ public class FgMainViewModel extends BaseViewModel {
                                                     JSONArray data = jsonObject.getJSONArray("data");
                                                     if(data.length()>0){
                                                         JSONObject obj = (JSONObject) data.get(0);
-                                                        int fireUntreatedCount = obj.getInt("fireUntreatedCount");
-                                                        int fireSrocessedCount = obj.getInt("fireSrocessedCount");
+//                                                        int fireUntreatedCount = obj.getInt("fireUntreatedCount");
+//                                                        int fireSrocessedCount = obj.getInt("fireSrocessedCount");
+                                                        int fireUntreatedCount = obj.getInt("surfaceFireAlarmIsNotHandle");
+                                                        int fireSrocessedCount = obj.getInt("surfaceFireAlarmIsHandle");
                                                         handle = Float.parseFloat(fireSrocessedCount + "");
                                                         noHandle = Float.parseFloat(fireUntreatedCount + "");
                                                     }
@@ -531,10 +538,10 @@ public class FgMainViewModel extends BaseViewModel {
                             //直接查询
                             HhHttp.get()
                                     .url(URLConstant.GET_FIRE_COUNT)
-                                    .addParams("groupId", groupId)//"001021")
-                                    .addParams("provinceCode",gridNo)//"370214")
-                                    .addParams("ip","0")
-                                    .addParams("isAndroid","0")
+//                                    .addParams("groupId", groupId)//"001021")
+//                                    .addParams("provinceCode",gridNo)//"370214")
+//                                    .addParams("ip","0")
+//                                    .addParams("isAndroid","0")
                                     .build().execute(new LoggedInStringCallback(FgMainViewModel.this,context) {
                                 @Override
                                 public void onSuccess(String response, int id) {
@@ -544,8 +551,10 @@ public class FgMainViewModel extends BaseViewModel {
                                         JSONArray data = jsonObject.getJSONArray("data");
                                         if(data.length()>0){
                                             JSONObject obj = (JSONObject) data.get(0);
-                                            int fireUntreatedCount = obj.getInt("fireUntreatedCount");
-                                            int fireSrocessedCount = obj.getInt("fireSrocessedCount");
+//                                                        int fireUntreatedCount = obj.getInt("fireUntreatedCount");
+//                                                        int fireSrocessedCount = obj.getInt("fireSrocessedCount");
+                                            int fireUntreatedCount = obj.getInt("surfaceFireAlarmIsNotHandle");
+                                            int fireSrocessedCount = obj.getInt("surfaceFireAlarmIsHandle");
                                             handle = Float.parseFloat(fireSrocessedCount + "");
                                             noHandle = Float.parseFloat(fireUntreatedCount + "");
                                         }

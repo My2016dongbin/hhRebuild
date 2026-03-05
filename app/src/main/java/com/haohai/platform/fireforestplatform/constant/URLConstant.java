@@ -3,7 +3,7 @@ package com.haohai.platform.fireforestplatform.constant;
 public class URLConstant {
 
 //    public static final String BASE_PATH = "http://192.168.1.34:8012/";//Release 本地
-    public static final String BASE_PATH = "http://124.115.75.98:28011/";//"http://192.168.1.88:8444/";//Release-穿透 //平台8081
+    public static final String BASE_PATH = "http://172.16.55.57:8444/";//"http://124.115.75.98:28011/";//"http://192.168.1.88:8444/";//Release-穿透 //平台8081
 //    public static final String BASE_PATH = "http://192.168.1.40:8011/";//Release web
 
     public static final String SATELLITE_IMAGE = "http://web.ehaohai.com:2018";//卫星图片前缀
@@ -32,6 +32,7 @@ public class URLConstant {
     public static final String HISTORY_LINE = BASE_PATH + "oa/api/trajectory/userTrajectoryByTime/";//查询轨迹
     //地图相关
     public static final String POST_MAP_ONE_BODY = BASE_PATH + "fire/api/monitorFirealarm/page?type=appInternet";//一体机报警数据
+    public static final String POST_MAP_ONE_LAND = BASE_PATH + "resource/api/surfaceFireAlarm/page";//地表火报警数据
 //    public static final String POST_MAP_ONE_BODY = BASE_PATH + "fire/api/monitorFirealarm/getFirePage?fireIds=";//一体机报警数据
     public static final String GET_MAP_FIRE_VIDEO_URL = BASE_PATH + "fire/api/monitorFirealarm/getMonitorAlarmById?type=appInternet";//一体机报警详情
 //    public static final String POST_MAP_SATELLITE = BASE_PATH + "fire/api/satelliteFirealarm/list";//卫星报警数据
@@ -54,7 +55,8 @@ public class URLConstant {
 
     public static final String GET_FIRE_COUNT_ROLE = BASE_PATH + "auth/api/auth/auth/user/auth";//查询账号权限
     public static final String GET_FIRE_COUNT_FIRE_IDS = BASE_PATH + "fire/api/monitorFirealarmMessage/getSendMessageByResave";//查询领导账号fireIds
-    public static final String GET_FIRE_COUNT = BASE_PATH + "fire/api/Statistic/getLeaderFireAlarmList";//"fire/api/Statistic/getLatestFireAlarmList";//查询报警数量
+    public static final String GET_FIRE_COUNT2 = BASE_PATH + "fire/api/Statistic/getLeaderFireAlarmList";//"fire/api/Statistic/getLatestFireAlarmList";//查询报警数量
+    public static final String GET_FIRE_COUNT = BASE_PATH + "resource/api/surfaceFireAlarm/statistic";//查询报警数量
 
 
     public static final String GET_GRID = BASE_PATH + "auth/api/sysArea/getAllSysArea";//获取区域数据
@@ -115,6 +117,7 @@ public class URLConstant {
     public static final String POST_LIVE_UPLOAD = BASE_PATH +"oa/api/taskDetail";//现场上报
     public static final String GET_ONE_BODY_IS_REAL = BASE_PATH +"fire/api/monitorFirealarm/realOrError";//处理一体机火警 真实并下发
     public static final String PUT_ONE_BODY_IS_REAL = BASE_PATH +"fire/api/monitorFirealarm/updateMonitorFireStates";//处理一体机火警 误报
+    public static final String PUT_LAND_IS_REAL = BASE_PATH +"resource/api/surfaceFireAlarm";//处理地表火
 
     public static final String POST_PUSH_FEEDBACK = BASE_PATH +"resource/api/dispatchCommand/receiveFeedback";//推送反馈
 

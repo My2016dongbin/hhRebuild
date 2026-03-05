@@ -26,7 +26,9 @@ public class PhotoViewerActivity extends BaseActivity {
         BigImageView bigImageView = findViewById(R.id.mBigImage);
         ImageView leftIcon = findViewById(R.id.left_icon);
         TextView left = findViewById(R.id.left);
-        bigImageView.showImage(Uri.parse(url));
+        if(url!= null){
+            bigImageView.showImage(Uri.parse(url));
+        }
 
         left.setOnClickListener(v -> {
             finish();

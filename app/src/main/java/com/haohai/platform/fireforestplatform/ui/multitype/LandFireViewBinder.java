@@ -49,9 +49,9 @@ public class LandFireViewBinder extends ItemViewProvider<LandFire, LandFireViewB
         binding.setVariable(BR.adapter, this);
         binding.executePendingBindings(); //防止闪烁
 
-        binding.name.setText(landFire.getName());
-        binding.date.setText(parse19(landFire.getAlarmDatetime()));
-        binding.lngLat.setText(landFire.getAlarmLongitude()+"、"+landFire.getAlarmLatitude());
+        binding.name.setText(landFire.getDeviceName());
+        binding.date.setText(parse19(landFire.getWriteTime()));
+        binding.lngLat.setText(landFire.getLongitude()+"、"+landFire.getLatitude());
         binding.address.setText(landFire.getAddress());
     }
 

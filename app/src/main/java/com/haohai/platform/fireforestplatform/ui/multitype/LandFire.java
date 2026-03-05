@@ -15,6 +15,7 @@ public class LandFire {
     private String updateUser;
     //("createTime")
     private String createTime;
+    private String writeTime;
     //("updateTime")
     private String updateTime;
     //("groupId")
@@ -40,9 +41,9 @@ public class LandFire {
     //("heatY")
     private String heatY;
     //("alarmLongitude")
-    private String alarmLongitude;
+    private String longitude;
     //("alarmLatitude")
-    private String alarmLatitude;
+    private String latitude;
     //("alarmAltitude")
     private String alarmAltitude;
     //("provinceCode")
@@ -65,8 +66,10 @@ public class LandFire {
     private String findType;
     //("picPath1")
     private String picPath1;
+    private String img1;
     //("picPath2")
     private String picPath2;
+    private String img2;
     //("videoPath1")
     private String videoPath1;
     //("videoPath2")
@@ -94,7 +97,7 @@ public class LandFire {
     //("endTime")
     private String endTime;
     //("name")
-    private String name;
+    private String deviceName;
     //("isDelegate")
     private String isDelegate;
     //("type")
@@ -173,6 +176,46 @@ public class LandFire {
     private String pwidth;
 
     public LandFire() {
+    }
+
+    public String getImg1() {
+        return img1;
+    }
+
+    public void setImg1(String img1) {
+        this.img1 = img1;
+    }
+
+    public String getImg2() {
+        return img2;
+    }
+
+    public void setImg2(String img2) {
+        this.img2 = img2;
+    }
+
+    public String getWriteTime() {
+        return writeTime;
+    }
+
+    public void setWriteTime(String writeTime) {
+        this.writeTime = writeTime;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getCreateUser() {
@@ -293,22 +336,6 @@ public class LandFire {
 
     public void setHeatY(String heatY) {
         this.heatY = heatY;
-    }
-
-    public String getAlarmLongitude() {
-        return alarmLongitude;
-    }
-
-    public void setAlarmLongitude(String alarmLongitude) {
-        this.alarmLongitude = alarmLongitude;
-    }
-
-    public String getAlarmLatitude() {
-        return alarmLatitude;
-    }
-
-    public void setAlarmLatitude(String alarmLatitude) {
-        this.alarmLatitude = alarmLatitude;
     }
 
     public String getAlarmAltitude() {
@@ -511,12 +538,12 @@ public class LandFire {
         this.endTime = endTime;
     }
 
-    public String getName() {
-        return name;
+    public String getDeviceName() {
+        return deviceName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
     public String getIsDelegate() {

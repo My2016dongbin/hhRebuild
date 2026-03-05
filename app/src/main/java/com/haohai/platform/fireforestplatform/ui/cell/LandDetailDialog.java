@@ -170,15 +170,15 @@ public class LandDetailDialog extends Dialog implements INaviInfoCallback {
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
     private void updateData() {
-        binding.name.setText(oneBodyFire.getName());
-        binding.date.setText(StringData.parse19(oneBodyFire.getAlarmDatetime()));
-        binding.lngLat.setText(oneBodyFire.getAlarmLongitude() + "、" + oneBodyFire.getAlarmLatitude());
+        binding.name.setText(oneBodyFire.getDeviceName());
+        binding.date.setText(StringData.parse19(oneBodyFire.getWriteTime()));
+        binding.lngLat.setText(oneBodyFire.getLongitude() + "、" + oneBodyFire.getLatitude());
         binding.address.setText(oneBodyFire.getAddress());
-        binding.real.setText(parseReal(oneBodyFire.getIsReal()));
-        Glide.with(context).load(oneBodyFire.getPicPath1())
+        binding.real.setText(parseReal(oneBodyFire.getIsReal()) + " " +oneBodyFire.getFireType());
+        Glide.with(context).load(oneBodyFire.getImg1())
                 .error(context.getResources().getDrawable(R.drawable.ic_no_pic))
                 .into(binding.lightPic);
-        Glide.with(context).load(oneBodyFire.getPicPath2())
+        Glide.with(context).load(oneBodyFire.getImg2())
                 .error(context.getResources().getDrawable(R.drawable.ic_no_pic))
                 .into(binding.hotPic);
         binding.lightVideo.setOnClickListener(v -> {
@@ -207,7 +207,7 @@ public class LandDetailDialog extends Dialog implements INaviInfoCallback {
             imagePagerUtil.show();*/
 
             Intent intent = new Intent(context, PhotoViewerActivity.class);
-            intent.putExtra("url", Objects.requireNonNull(oneBodyFire).getPicPath1());
+            intent.putExtra("url", Objects.requireNonNull(oneBodyFire).getImg1());
             context.startActivity(intent);
         });
         binding.hotPic.setOnClickListener(v -> {
@@ -218,7 +218,7 @@ public class LandDetailDialog extends Dialog implements INaviInfoCallback {
             imagePagerUtil.show();*/
 
             Intent intent = new Intent(context, PhotoViewerActivity.class);
-            intent.putExtra("url", Objects.requireNonNull(oneBodyFire).getPicPath2());
+            intent.putExtra("url", Objects.requireNonNull(oneBodyFire).getImg2());
             context.startActivity(intent);
         });
         binding.yes.setOnClickListener(v -> {
@@ -270,7 +270,7 @@ public class LandDetailDialog extends Dialog implements INaviInfoCallback {
                         }
                         all.setOnClickListener(v15 -> {
                             if (!fireType.isChecked()) {
-                                valueReal = fireType.getValue();
+                                valueReal = fireType.getDescription();
                                 for (int m = 0; m < fireTypesReal.size(); m++) {
                                     fireTypesReal.get(m).setChecked(false);
                                 }
@@ -357,7 +357,7 @@ public class LandDetailDialog extends Dialog implements INaviInfoCallback {
                         }
                         all.setOnClickListener(v15 -> {
                             if (!fireType.isChecked()) {
-                                valueFuck = fireType.getValue();
+                                valueFuck = fireType.getDescription();
                                 for (int m = 0; m < fireTypesFuck.size(); m++) {
                                     fireTypesFuck.get(m).setChecked(false);
                                 }
@@ -410,12 +410,12 @@ public class LandDetailDialog extends Dialog implements INaviInfoCallback {
 
             double[] doubles_start = LatLngChangeNew.calBD09toGCJ02(CommonData.lat, CommonData.lng);
             LatLng latLng_start = new LatLng(doubles_start[0], doubles_start[1]);
-            double[] doubles_end = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBodyFire.getAlarmLatitude()), Double.parseDouble(oneBodyFire.getAlarmLongitude()));
+            double[] doubles_end = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBodyFire.getLatitude()), Double.parseDouble(oneBodyFire.getLongitude()));
             LatLng latLng_end = new LatLng(doubles_end[0], doubles_end[1]);
 
 
             Poi start = new Poi("", latLng_start, "");
-            Poi end = new Poi(oneBodyFire.getAddress() + "火点", latLng_end, "");
+            Poi end = new Poi(oneBodyFire.getAddress()!=null?oneBodyFire.getAddress():"" + "火点", latLng_end, "");
             AmapNaviParams params = new AmapNaviParams(start, null, end, AmapNaviType.DRIVER, AmapPageType.ROUTE);
             params.setUseInnerVoice(true);
             AmapNaviPage.getInstance().showRouteActivity(HhApplication.getInstance(), params, this);
@@ -431,25 +431,37 @@ public class LandDetailDialog extends Dialog implements INaviInfoCallback {
             Toast.makeText(context, "当前账号没有操作权限", Toast.LENGTH_SHORT).show();
             return;
         }
-        RequestParams params = new RequestParams(URLConstant.GET_ONE_BODY_IS_REAL);
+        RequestParams params = new RequestParams(URLConstant.PUT_LAND_IS_REAL);
         if(isRelease == 1){
-            params = new RequestParams(URLConstant.GET_ONE_BODY_IS_REAL);
-            params.addParameter("id", oneBodyFire.getId());
-            params.addParameter("type", 1);
-            params.addParameter("trueAlarmType", valueReal);
-            params.addParameter("isAutoDelegate", 1);//0,1,2
-            params.addParameter("isAndroid", 2);
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("id", oneBodyFire.getId());
+                jsonObject.put("fireType", valueReal);
+                jsonObject.put("isReal", "1");
+                jsonObject.put("isHandle", "1");
+                jsonObject.put("isPut", "0");
+                params.setBodyContent(jsonObject.toString());
+                Log.e("TAG", "resource: --" + jsonObject.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         if(isRelease == 0){
-            params = new RequestParams(URLConstant.PUT_ONE_BODY_IS_REAL);
-            params.addParameter("fireId", oneBodyFire.getId());
-            params.addParameter("isReal", 0);
-            params.addParameter("isHandle", 1);
-            params.addParameter("isTrueNote", null);
-            params.addParameter("unrealType", valueFuck);
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("id", oneBodyFire.getId());
+                jsonObject.put("fireType", valueFuck);
+                jsonObject.put("isReal", "0");
+                jsonObject.put("isHandle", "1");
+                jsonObject.put("isPut", "0");
+                params.setBodyContent(jsonObject.toString());
+                Log.e("TAG", "resource: --" + jsonObject.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         Log.e("TAG", "resource: --" + params);
-        HhHttp.methodX(isRelease==1?HttpMethod.GET:HttpMethod.PUT, params, new Callback.CommonCallback<String>() {
+        HhHttp.methodX(HttpMethod.PUT, params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 Log.e("TAG", "onSuccess: 真实火点:" + result);

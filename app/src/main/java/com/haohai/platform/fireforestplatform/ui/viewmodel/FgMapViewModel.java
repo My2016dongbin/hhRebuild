@@ -272,7 +272,7 @@ public class FgMapViewModel extends BaseViewModel {
             e.printStackTrace();
         }
         HhLog.e("oneBody params " + jsonObject.toString());
-        RequestParams params = new RequestParams(URLConstant.POST_MAP_ONE_BODY);
+        RequestParams params = new RequestParams(URLConstant.POST_MAP_ONE_LAND);
         params.setBodyContent(jsonObject.toString());
         HhHttp.postX(params, new Callback.CommonCallback<String>() {
             @Override

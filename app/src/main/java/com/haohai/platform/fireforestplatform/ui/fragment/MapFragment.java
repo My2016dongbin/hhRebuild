@@ -461,7 +461,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //跳转第一火点
         try{
             LandFire oneBody = oneBodyFires.get(0);
-            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBody.getAlarmLatitude()), Double.parseDouble(oneBody.getAlarmLongitude()));
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBody.getLatitude()), Double.parseDouble(oneBody.getLongitude()));
             flyBaiduMapZoom(doubles[0],doubles[1], 14);
         }catch (Exception e){
             Log.e(TAG, "oneBodyFireChanged: " + e.getMessage() );
@@ -683,7 +683,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                     break;
             }*/
             try {
-                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(landFires.get(i).getAlarmLatitude()), Double.parseDouble(landFires.get(i).getAlarmLongitude()));
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(landFires.get(i).getLatitude()), Double.parseDouble(landFires.get(i).getLongitude()));
                 LatLng point = new LatLng(doubles[0], doubles[1]);
                 MarkerOptions option = new MarkerOptions()
                         .position(point)
@@ -1257,7 +1257,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         landListDialog.hide();
         landDetailDialog.setOneBodyFire(landFire);
         landDetailDialog.show();
-        double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(landFire.getAlarmLatitude()),Double.parseDouble(landFire.getAlarmLongitude()));
+        double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(landFire.getLatitude()),Double.parseDouble(landFire.getLongitude()));
         flyBaiduMapZoom(doubles[0],doubles[1], 14);
     }
 

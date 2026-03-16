@@ -3,7 +3,7 @@ package com.haohai.platform.fireforestplatform.constant;
 public class URLConstant {
 
 //    public static final String BASE_PATH = "http://192.168.1.34:8012/";//Release 本地
-    public static final String BASE_PATH = "http://172.16.55.57:8444/";//"http://124.115.75.98:28011/";//"http://192.168.1.88:8444/";//Release-穿透 //平台8081
+    public static final String BASE_PATH = "http://112.19.184.167:8011/";//"http://124.115.75.98:28011/";//"http://192.168.1.88:8444/";//Release-穿透 //平台8081
 //    public static final String BASE_PATH = "http://192.168.1.40:8011/";//Release web
 
     public static final String SATELLITE_IMAGE = "http://web.ehaohai.com:2018";//卫星图片前缀

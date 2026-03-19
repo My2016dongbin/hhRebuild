@@ -927,7 +927,7 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
         params.addHeader("Authorization", "bearer " + CommonData.token);
         params.addHeader("NetworkType","Internet");//内网  Intranet互联网  Internet
         Log.e("TAG", "resource: --"  + params);
-        x.http().request(HttpMethod.GET,params, new Callback.CommonCallback<String>() {
+        x.http().request(auto?HttpMethod.GET:HttpMethod.PUT,params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 Log.e("TAG", "onSuccess: postRealFireToService:" + result );

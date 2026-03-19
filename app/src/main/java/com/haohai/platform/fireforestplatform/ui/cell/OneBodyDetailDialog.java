@@ -825,23 +825,31 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
                 illegallyFireType = reason.getValue();
             }
         }
-        RequestParams params = new RequestParams(URLConstant.GET_FIRE_HANDLE_WEI_GUI);
-        params.addParameter("id", oneBodyFire.getId());
-        params.addParameter("type", 1);
-        params.addParameter("isReal", 2);
-        params.addParameter("trueAlarmType", "");
-        params.addParameter("illegallyFireType", illegallyFireType);
-        params.addParameter("isTrueNote", note);
+        RequestParams params = new RequestParams(URLConstant.GET_FIRE_HANDLE_WEI_GUI_AUTO);
         if(auto){
+            params.addParameter("id", oneBodyFire.getId());
+            params.addParameter("type", 1);
+            params.addParameter("isReal", 2);
+            params.addParameter("trueAlarmType", "");
+            params.addParameter("illegallyFireType", illegallyFireType);
+            params.addParameter("isTrueNote", note);
+            params.addParameter("isAndroid", 1);
+            params.addParameter("taskDeadline", complete);
+            params.addParameter("feedbackDeadline", feedback);
             params.addParameter("isAutoDelegate", 1);
+        }else{
+            params = new RequestParams(URLConstant.GET_FIRE_HANDLE_WEI_GUI_NO_AUTO);
+            params.addParameter("fireId", oneBodyFire.getId());
+            params.addParameter("isReal", 2);
+            params.addParameter("isTrueNote", note);
+            params.addParameter("trueAlarmType", "");
+            params.addParameter("illegallyFireType", illegallyFireType);
+            params.addParameter("isHandle", 1);
         }
-        params.addParameter("isAndroid", 1);
-        params.addParameter("taskDeadline", complete);
-        params.addParameter("feedbackDeadline", feedback);
         params.addHeader("Authorization", "bearer " + CommonData.token);
         params.addHeader("NetworkType","Internet");//内网  Intranet互联网  Internet
         Log.e("TAG", "resource: --"  + params);
-        x.http().request(HttpMethod.GET,params, new Callback.CommonCallback<String>() {
+        x.http().request(auto?HttpMethod.GET:HttpMethod.PUT,params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 Log.e("TAG", "onSuccess: postWeiGuiFireToService:" + result );
@@ -883,8 +891,8 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
             Toast.makeText(context, "当前账号没有操作权限", Toast.LENGTH_SHORT).show();
             return;
         }
-        RequestParams params = new RequestParams(URLConstant.GET_FIRE_HANDLE_REAL);
-        params.addParameter("id", oneBodyFire.getId());
+        RequestParams params = new RequestParams(URLConstant.GET_FIRE_HANDLE_REAL_AUTO);
+        /*params.addParameter("id", oneBodyFire.getId());
         params.addParameter("type", 1);
         params.addParameter("isReal", 1);
         params.addParameter("trueAlarmType", "");
@@ -895,7 +903,27 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
         }
         params.addParameter("isAndroid", 1);
         params.addParameter("taskDeadline", complete);
-        params.addParameter("feedbackDeadline", feedback);
+        params.addParameter("feedbackDeadline", feedback);*/
+
+        if(auto){
+            params.addParameter("id", oneBodyFire.getId());
+            params.addParameter("type", 1);
+            params.addParameter("isReal", 1);
+            params.addParameter("trueAlarmType", "");
+            params.addParameter("illegallyFireType", "");
+            params.addParameter("isTrueNote", note);
+            params.addParameter("isAndroid", 1);
+            params.addParameter("taskDeadline", complete);
+            params.addParameter("feedbackDeadline", feedback);
+            params.addParameter("isAutoDelegate", 1);
+        }else{
+            params = new RequestParams(URLConstant.GET_FIRE_HANDLE_REAL_NO_AUTO);
+            params.addParameter("fireId", oneBodyFire.getId());
+            params.addParameter("isReal", 1);
+            params.addParameter("isTrueNote", note);
+            params.addParameter("trueAlarmType", "");
+            params.addParameter("isHandle", 1);
+        }
         params.addHeader("Authorization", "bearer " + CommonData.token);
         params.addHeader("NetworkType","Internet");//内网  Intranet互联网  Internet
         Log.e("TAG", "resource: --"  + params);

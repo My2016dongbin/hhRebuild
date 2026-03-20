@@ -237,7 +237,7 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
             context.startActivity(intent);
         });
         binding.pass.setOnClickListener(v -> {
-            isRelease = 2;
+            isRelease = 2;//TODO
             hide();
             TextInfo okTextInfo = new TextInfo();
             okTextInfo.setFontColor(context.getResources().getColor(R.color.c7));
@@ -248,7 +248,7 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
                     .setOtherTextInfo(okTextInfo)
                     .setOkButtonClickListener((dialog, v1) -> {
                         show();
-                        //postIsReleaseFireToService();
+                        postIsReleaseFireToService();
                         return false;
                     })
                     .setCancelButtonClickListener((dialog, v2) -> {
@@ -482,18 +482,27 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
             params.addParameter("isAndroid", 2);
         }
         if(isRelease == 0){
+            params = new RequestParams(URLConstant.GET_ONE_BODY_IS_REAL);
+            params.addParameter("id", oneBodyFire.getId());
+            params.addParameter("type", 2);
+            params.addParameter("unrealType", valueFuck);
+            params.addParameter("trueAlarmType", "");
+            params.addParameter("isAutoDelegate", 1);//0,1,2
+            params.addParameter("isAndroid", 2);
+        }
+        if(isRelease == 2){
             params = new RequestParams(URLConstant.PUT_ONE_BODY_IS_REAL);
             params.addParameter("fireId", oneBodyFire.getId());
-            params.addParameter("isReal", 0);
+            params.addParameter("isReal", 2);
             params.addParameter("isHandle", 1);
             params.addParameter("isTrueNote", null);
-            params.addParameter("unrealType", valueFuck);
+            params.addParameter("unrealType", "");
         }
-        Log.e("TAG", "resource: --" + params);
-        HhHttp.methodX(isRelease==1?HttpMethod.GET:HttpMethod.PUT, params, new Callback.CommonCallback<String>() {
+        Log.e("TAG", "handle: --" + params);
+        HhHttp.methodX(isRelease==2?HttpMethod.PUT:HttpMethod.GET, params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
-                Log.e("TAG", "onSuccess: 真实火点:" + result);
+                Log.e("TAG", "handle: -- onSuccess: 火情处理:" + result);
                 try {
                     JSONObject jsonObject1 = new JSONObject(result);
                     if (jsonObject1.getString("code").equals("200")) {
@@ -532,6 +541,7 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
             str = "未处理";
             binding.real.setVisibility(View.GONE);
             binding.yes.setVisibility(View.VISIBLE);
+            binding.pass.setVisibility(View.VISIBLE);
             binding.no.setVisibility(View.VISIBLE);
         } else {
             if (Objects.equals(isReal, "1")) {
@@ -541,6 +551,7 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
             }
             binding.real.setVisibility(View.VISIBLE);
             binding.yes.setVisibility(View.GONE);
+            binding.pass.setVisibility(View.GONE);
             binding.no.setVisibility(View.GONE);
         }
         return str;

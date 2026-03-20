@@ -236,6 +236,32 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
             intent.putExtra("url", Objects.requireNonNull(oneBodyFire).getPicPath2());
             context.startActivity(intent);
         });
+        binding.pass.setOnClickListener(v -> {
+            isRelease = 2;
+            hide();
+            TextInfo okTextInfo = new TextInfo();
+            okTextInfo.setFontColor(context.getResources().getColor(R.color.c7));
+            MessageDialog.show("火情处理", "确定判定为误报吗？","确定","取消")
+                    .setButtonOrientation(LinearLayout.VERTICAL)
+                    .setOkTextInfo(okTextInfo)
+                    .setCancelTextInfo(okTextInfo)
+                    .setOtherTextInfo(okTextInfo)
+                    .setOkButtonClickListener((dialog, v1) -> {
+                        show();
+                        //postIsReleaseFireToService();
+                        return false;
+                    })
+                    .setCancelButtonClickListener((dialog, v2) -> {
+                        show();
+                        return false;
+                    })
+                    .setOnBackgroundMaskClickListener((dialog, v12) -> {
+                        show();
+                        return false;
+                    })
+                    .setCancelable(true);
+
+        });
         binding.yes.setOnClickListener(v -> {
             isRelease = 1;
             hide();

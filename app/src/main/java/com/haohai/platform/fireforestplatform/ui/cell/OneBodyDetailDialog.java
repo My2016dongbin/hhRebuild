@@ -493,7 +493,7 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
         if(isRelease == 2){
             params = new RequestParams(URLConstant.PUT_ONE_BODY_IS_REAL);
             params.addParameter("fireId", oneBodyFire.getId());
-            params.addParameter("isReal", 2);
+            params.addParameter("isReal", 3);
             params.addParameter("isHandle", 1);
             params.addParameter("isTrueNote", null);
             params.addParameter("unrealType", "");

@@ -10,9 +10,9 @@
     {
       "type": "SINGLE",
       "filters": [],
-      "versionCode": 204,
-      "versionName": "2.0.4",
-      "outputFile": "fireRebuild-2.0.4.apk"
+      "versionCode": 208,
+      "versionName": "2.0.8",
+      "outputFile": "fireRebuild-2.0.8.apk"
     }
   ]
 }

@@ -169,7 +169,11 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
         initView();
         postData();
         initPictures();
-        getLocation();
+        try {
+            getLocation();
+        } catch (Exception e) {
+            Log.e(TAG, "getLocation crash", e);
+        }
         initDateTime();
     }
 
@@ -1017,36 +1021,23 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
 
         //有位置提供器的情况
         if (provider != null) {
-            //为了压制getLastKnownLocation方法的警告
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
-                // return null;
-            }
-            Location location= locationManager.getLastKnownLocation(provider);
-            double longitude = 0.00;
-            double latitude = 0.00;
-            try {
-                longitude = location.getLongitude();
-                latitude = location.getLatitude();
-            }catch (Exception e){
-
+                return;
             }
 
-
-            currentLongitude = longitude ;
-            currentLatitude = latitude ;
-            Log.e(TAG, "getLocation: --" + longitude);
-            Log.e(TAG, "getLocation: *--" + latitude);
-         /*   BigDecimal   la   =   new BigDecimal(latitude);
-            double   lat = la.setScale(6,BigDecimal.ROUND_HALF_UP).doubleValue();*/
-            //    return longitude + "," + latitude;
-            //   return "0.00,0.00";
+            Location location = locationManager.getLastKnownLocation(provider);
+            if (location != null) {
+                currentLongitude = location.getLongitude();
+                currentLatitude = location.getLatitude();
+            }
+            tvAddress.setText(currentLongitude + "," + currentLatitude);
         }else {
             //  return "0.00,0.00";
         }
-        tvAddress.setText(currentLongitude+","+currentLatitude);
+        //tvAddress.setText(currentLongitude+","+currentLatitude);
     }
     /**
      * 获取当前的日期和时间

@@ -2,8 +2,8 @@ plugins {
     id 'com.android.application'
 }
 
-def VERSION_CODE = 207
-def VERSION_NAME = "2.0.7"
+def VERSION_CODE = 209
+def VERSION_NAME = "2.0.9"
 def keyfile = file('s.keystore.temp')
 ext{
     routerApiVersion = '1.5.0'
@@ -30,7 +30,7 @@ android {
 
         ndk {
             //设置支持的SO库架构
-            abiFilters 'armeabi-v7a'//, 'arm64-v8a', 'x86', 'x86_64'
+            abiFilters 'armeabi-v7a', 'arm64-v8a'//, 'x86', 'x86_64'
         }
         manifestPlaceholders = [
                 XG_ACCESS_ID : "1500015815",

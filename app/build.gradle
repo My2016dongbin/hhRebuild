@@ -3,7 +3,7 @@ plugins {
 }
 
 def VERSION_CODE = 209
-def VERSION_NAME = "2.0.9"
+def VERSION_NAME = "2.0.9.1"
 def keyfile = file('s.keystore.temp')
 ext{
     routerApiVersion = '1.5.0'
@@ -253,6 +253,7 @@ dependencies {
 
     implementation 'com.github.piasy:BigImageViewer:1.8.1'//大图预览.+ 坑爹
     implementation ('com.koushikdutta.ion:ion:2.2.1')
+    implementation ('com.tencent.bugly:crashreport:latest.release')
     implementation ('com.github.piasy:GlideImageLoader:1.8.0')
             {
                 exclude(group:'com.facebook.fresco')

@@ -25,6 +25,7 @@ import com.qweather.sdk.view.HeConfig;
 import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
+import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.smtt.export.external.TbsCoreSettings;
 import com.tencent.smtt.sdk.QbSdk;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -229,6 +230,7 @@ public class HhApplication extends Application {
         //是否自动在主线程执行
         DialogX.autoRunOnUIThread = true;
 
+        CrashReport.initCrashReport(getApplicationContext(), "91c90c0246", false);
 
         initTPNS();
 

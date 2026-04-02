@@ -472,14 +472,15 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             List<OneBodyFire> value = obtainViewModel().oneBodyList.getValue();
             List<OneBodyFire> list = new ArrayList<>();
             if (value != null && value.size() > 0) {
-                //0全部  1未处理  2真实火点  3疑似火点
-                if (obtainViewModel().oneBodyFilterState == 0) {
-                    /*for (int i = 0; i < value.size(); i++) {
+                //0全部  1未处理  2真实火点  3疑似火点  4违规用火
+                list.addAll(value);
+                /*if (obtainViewModel().oneBodyFilterState == 0) {
+                    *//*for (int i = 0; i < value.size(); i++) {
                         OneBodyFire fire = value.get(i);
                         if(!Objects.equals(fire.getIsReal(), "0")){
                             list.add(fire);
                         }
-                    }*/
+                    }*//*
                     list.addAll(value);
                 }
                 if (obtainViewModel().oneBodyFilterState == 1) {
@@ -505,7 +506,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                             list.add(fire);
                         }
                     }
-                }
+                }*/
             }
             oneBodyMarker(list);
         }
@@ -1116,7 +1117,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
     @Override
     public void onOneBodyDialogFilterState(int state) {
-        //0全部  1未处理  2真实火点  3疑似火点
+        //0全部  1未处理  2真实火点  3疑似火点  4违规用火
         obtainViewModel().oneBodyFilterState = state;
 
 

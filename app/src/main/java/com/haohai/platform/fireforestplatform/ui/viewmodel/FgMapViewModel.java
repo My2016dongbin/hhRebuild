@@ -59,7 +59,7 @@ public class FgMapViewModel extends BaseViewModel {
     public String endTime = "";
     public String search = "";
     public String level = "3";//区3/街道4/社区5
-    public int oneBodyFilterState = 1;//0全部  1未处理  2真实火点  3疑似火点
+    public int oneBodyFilterState = 1;//0全部  1未处理  2真实火点  3疑似火点  4违规用火
     public List<Grid> gridList = new ArrayList<>();
     public final MutableLiveData<List<SheQu>> sheQuGridList = new MutableLiveData<>();
     public final MutableLiveData<List<com.haohai.platform.fireforestplatform.ui.multitype.Grid>> gridGridList = new MutableLiveData<>();
@@ -198,15 +198,30 @@ public class FgMapViewModel extends BaseViewModel {
         JSONObject dto;
         try {
             dto = new JSONObject();
+            //0全部  1未处理  2真实火点  3疑似火点  4违规用火
+            if(oneBodyFilterState == 0){
+
+            }else if(oneBodyFilterState == 1){
+                dto.put("isHandle","0");
+            }else if(oneBodyFilterState == 2){
+                dto.put("isHandle","1");
+                dto.put("isReal","1");
+            }else if(oneBodyFilterState == 3){
+                dto.put("isHandle","1");
+                dto.put("isReal","2");
+            }else if(oneBodyFilterState == 4){
+                dto.put("isHandle","1");
+                dto.put("isReal","0");
+            }
             jsonObject.put("dto", dto);
             jsonObject.put("limit", 100);
             jsonObject.put("page", currentPage);
-            //dto.put("isReal", isReal);
+            jsonObject.put("isAndroid", 1);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        HhLog.e("oneBody params " + jsonObject.toString());
+        HhLog.e("POST_MAP_ONE_BODY oneBody params " + jsonObject.toString());
         RequestParams params = new RequestParams(URLConstant.POST_MAP_ONE_BODY);
         params.setBodyContent(jsonObject.toString());
         HhHttp.postX(params, new Callback.CommonCallback<String>() {
@@ -221,8 +236,6 @@ public class FgMapViewModel extends BaseViewModel {
                         JSONObject obj = (JSONObject) data.get(0);
                         JSONArray dataList = obj.getJSONArray("dataList");
                         oneBodyList.postValue(new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<OneBodyFire>>(){}.getType()));
-                                /*卫星暂用一体机数据
-                                satelliteList.postValue(new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<SatelliteFire>>(){}.getType()));*/
                     }
 
                 } catch (Exception e) {
@@ -248,38 +261,6 @@ public class FgMapViewModel extends BaseViewModel {
 
             }
         });
-        /*HhHttp.postString()
-                .url(URLConstant.POST_MAP_ONE_BODY)
-                .content(jsonObject.toString())
-                .build()
-                .connTimeOut(30000)
-                .execute(new LoggedInStringCallback(this, context) {
-                    @Override
-                    public void onSuccess(String response, int id) {
-                        try {
-                            loading.postValue(new LoadingEvent(false, ""));
-                            JSONObject jsonObject = new JSONObject(response);
-                            JSONArray data = jsonObject.getJSONArray("data");
-                            if(data.length()>0){
-                                JSONObject obj = (JSONObject) data.get(0);
-                                JSONArray dataList = obj.getJSONArray("dataList");
-                                oneBodyList.postValue(new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<OneBodyFire>>(){}.getType()));
-                                *//*卫星暂用一体机数据
-                                satelliteList.postValue(new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<SatelliteFire>>(){}.getType()));*//*
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call call, Exception e, int id) {
-                        HhLog.e("onFailure: " + e.toString());
-                        msg.setValue(e.getMessage());
-                        loading.setValue(new LoadingEvent(false, ""));
-                    }
-                });*/
     }
     public void getResourceTypeData() {
         resourceTypeList.postValue(new ArrayList<>());

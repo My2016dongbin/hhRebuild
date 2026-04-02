@@ -1120,10 +1120,12 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //0全部  1未处理  2真实火点  3疑似火点  4违规用火
         obtainViewModel().oneBodyFilterState = state;
 
+        obtainViewModel().currentPage = 1;
+        obtainViewModel().getOneBodyData();
 
-        aMap.clear();
+        /*aMap.clear();
         //更新所有Marker
-        updateMarkers();
+        updateMarkers();*/
     }
 
     @Override

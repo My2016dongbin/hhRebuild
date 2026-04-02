@@ -208,20 +208,20 @@ public class FgMapViewModel extends BaseViewModel {
                 dto.put("isReal","1");
             }else if(oneBodyFilterState == 3){
                 dto.put("isHandle","1");
-                dto.put("isReal","2");
+                dto.put("isReal","0");
             }else if(oneBodyFilterState == 4){
                 dto.put("isHandle","1");
-                dto.put("isReal","0");
+                dto.put("isReal","2");
             }
             jsonObject.put("dto", dto);
             jsonObject.put("limit", 100);
             jsonObject.put("page", currentPage);
-            jsonObject.put("isAndroid", 1);
+            jsonObject.put("isAndroid", 2);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        HhLog.e("POST_MAP_ONE_BODY oneBody params " + jsonObject.toString());
+        HhLog.e("POST_MAP_ONE_BODY oneBody params " + jsonObject);
         RequestParams params = new RequestParams(URLConstant.POST_MAP_ONE_BODY);
         params.setBodyContent(jsonObject.toString());
         HhHttp.postX(params, new Callback.CommonCallback<String>() {

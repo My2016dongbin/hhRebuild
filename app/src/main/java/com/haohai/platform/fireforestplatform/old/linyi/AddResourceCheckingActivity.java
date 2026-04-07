@@ -96,6 +96,8 @@ import rx.functions.Action1;
 
 public class AddResourceCheckingActivity extends HhBaseActivity implements DatePicker.OnDateChangedListener, TypeChooseDialog.TypeChooseDialogListener {
     private static final String TAG = AddResourceCheckingActivity.class.getSimpleName();
+    private static final String TARGET_PROVINCE_NAME = "山东省";
+    private static final String TARGET_CITY_NAME = "临沂市";
     public static final int MAP_REUEST_CODE = 2;
     private TextView tv_name;
     private EditText et_name;
@@ -547,7 +549,8 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
     public void initArea() {
         gridList.clear();
         for (int i = 0; i < gridAllList.size(); i++) {
-            if ("1".equals(gridAllList.get(i).getLevel())) {
+            if ("1".equals(gridAllList.get(i).getLevel())
+                    && Objects.equals(TARGET_PROVINCE_NAME, gridAllList.get(i).getName())) {
                 gridList.add(gridAllList.get(i));
             }
         }
@@ -556,7 +559,9 @@ public class AddResourceCheckingActivity extends HhBaseActivity implements DateP
         HhLog.e("initArea2 " + gridList.get(gridIndex).toString());
         grid2List.clear();
         for (int i = 0; i < gridAllList.size(); i++) {
-            if ("2".equals(gridAllList.get(i).getLevel()) && gridAllList.get(i).getParentId().equals(gridList.get(gridIndex).getId())) {
+            if ("2".equals(gridAllList.get(i).getLevel())
+                    && gridAllList.get(i).getParentId().equals(gridList.get(gridIndex).getId())
+                    && Objects.equals(TARGET_CITY_NAME, gridAllList.get(i).getName())) {
                 grid2List.add(gridAllList.get(i));
             }
         }

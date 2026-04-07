@@ -331,7 +331,8 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
         obtainViewModel().shiStrList.clear();
         obtainViewModel().shiStrList.add("请选择市");
         for (int i = 0; i < obtainViewModel().allAreaList.size(); i++) {
-            if (obtainViewModel().allAreaList.get(i).getParentId().equals(currentShengId)) {
+            if (obtainViewModel().allAreaList.get(i).getParentId().equals(currentShengId)
+                    && FireUploadViewModel.TARGET_CITY_NAME.equals(obtainViewModel().allAreaList.get(i).getName())) {
                 obtainViewModel().shiList.add(obtainViewModel().allAreaList.get(i));
                 obtainViewModel().shiStrList.add(obtainViewModel().allAreaList.get(i).getName());
             }
@@ -776,7 +777,8 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
         obtainViewModel().shengList.clear();
         obtainViewModel().shengStrList.add("请选择省");
         for (int i = 0; i < obtainViewModel().allAreaList.size(); i++) {
-            if ("1".equals(obtainViewModel().allAreaList.get(i).getLevel())) {
+            if ("1".equals(obtainViewModel().allAreaList.get(i).getLevel())
+                    && FireUploadViewModel.TARGET_PROVINCE_NAME.equals(obtainViewModel().allAreaList.get(i).getName())) {
                 obtainViewModel().shengList.add(obtainViewModel().allAreaList.get(i));
                 obtainViewModel().shengStrList.add(obtainViewModel().allAreaList.get(i).getName());
             }
@@ -795,7 +797,8 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
         obtainViewModel().shiStrList.clear();
         obtainViewModel().shiStrList.add("请选择市");
         for (int i = 0; i < obtainViewModel().allAreaList.size(); i++) {
-            if (obtainViewModel().allAreaList.get(i).getParentId().equals(currentShengId)) {
+            if (obtainViewModel().allAreaList.get(i).getParentId().equals(currentShengId)
+                    && FireUploadViewModel.TARGET_CITY_NAME.equals(obtainViewModel().allAreaList.get(i).getName())) {
                 obtainViewModel().shiList.add(obtainViewModel().allAreaList.get(i));
                 obtainViewModel().shiStrList.add(obtainViewModel().allAreaList.get(i).getName());
             }

@@ -50,6 +50,8 @@ import me.drakeet.multitype.MultiTypeAdapter;
 import okhttp3.Call;
 
 public class FireUploadViewModel extends BaseViewModel {
+    public static final String TARGET_PROVINCE_NAME = "山东省";
+    public static final String TARGET_CITY_NAME = "临沂市";
     public Context context;
     public MultiTypeAdapter adapter;
     public List<Object> items = new ArrayList<>();
@@ -165,7 +167,8 @@ public class FireUploadViewModel extends BaseViewModel {
         shengList.clear();
         shengStrList.add("请选择省");
         for (int i = 0; i < allAreaList.size(); i++) {
-            if ("1".equals(allAreaList.get(i).getLevel())) {
+            if ("1".equals(allAreaList.get(i).getLevel())
+                    && TARGET_PROVINCE_NAME.equals(allAreaList.get(i).getName())) {
                 shengList.add(allAreaList.get(i));
                 shengStrList.add(allAreaList.get(i).getName());
             }

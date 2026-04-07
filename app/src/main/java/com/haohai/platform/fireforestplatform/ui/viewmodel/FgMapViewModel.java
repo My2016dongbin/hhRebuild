@@ -53,6 +53,7 @@ public class FgMapViewModel extends BaseViewModel {
     public final int ONE_BODY = 101;
     public final int SATELLITE = 102;
     public final int RESOURCE = 103;
+    public final int RESOURCE_CLUSTER = 104;
     public final int defaultFindTime = 500;//默认查询距离当前时间前N小时数据
     public String startTime = "";
     public String endTime = "";
@@ -387,8 +388,6 @@ public class FgMapViewModel extends BaseViewModel {
     public void clickModel(ResourceType resourceType,boolean state) {
         boolean isNew = resourceType.getApiUrl()==null;
         if(state){
-            //移除选中类型数据
-            removeResourceByApiUrl(resourceType);
             //获取选中类型数据
             if(isNew){
                 postResourceByApiUrlNew(resourceType);
@@ -456,11 +455,10 @@ public class FgMapViewModel extends BaseViewModel {
     public void removeResourceByApiUrl(ResourceType resourceType) {
         List<Resource> value = resourceList.getValue();
         if(value!=null && !value.isEmpty()){
-            List<Resource> value_C = new ArrayList<>(value);
-
+            List<Resource> value_C = new ArrayList<>();
             for (Resource res:value) {
-                if(Objects.equals(res.getApiUrl(), "/api/"+resourceType.getCode()) || Objects.equals(res.getResourceType(), resourceType.getCode()) || (res.getResourceType()==null||res.getResourceType().isEmpty())){
-                    value_C.remove(res);
+                if(!isResourceMatchType(res, resourceType)){
+                    value_C.add(res);
                 }
             }
             resourceList.postValue(value_C);
@@ -498,6 +496,7 @@ public class FgMapViewModel extends BaseViewModel {
                                 if(value == null){
                                     value = new ArrayList<>();
                                 }
+                                value = new ArrayList<>(value);
                                 value.addAll(list);
                                 resourceList.postValue(value);
                             }
@@ -534,7 +533,7 @@ public class FgMapViewModel extends BaseViewModel {
                 .execute(new LoggedInStringCallback(this, context) {
                     @Override
                     public void onSuccess(String response, int id) {
-                        //HhLog.e(resourceType.getApiUrl() + " , " + response);
+                        HhLog.e(resourceType.getApiUrl() + " , " + response);
                         try {
                             loading.postValue(new LoadingEvent(false, ""));
                             JSONObject jsonObject = new JSONObject(response);
@@ -547,18 +546,10 @@ public class FgMapViewModel extends BaseViewModel {
                                 resource.setType(resourceType.getApiUrl().replace("/api/",""));
                                 list.add(resource);
                             }
-                            if(!list.isEmpty()){
-                                for (Resource res:list) {
-                                    res.setApiUrl(resourceType.getApiUrl());
-                                }
-
-                                List<Resource> value = resourceList.getValue();
-                                if(value == null){
-                                    value = new ArrayList<>();
-                                }
-                                value.addAll(list);
-                                resourceList.postValue(value);
+                            for (Resource res:list) {
+                                res.setApiUrl(resourceType.getApiUrl());
                             }
+                            replaceResourcesByType(resourceType, list);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -607,18 +598,7 @@ public class FgMapViewModel extends BaseViewModel {
                                 resource.setType(resourceType.getCode());
                                 list.add(resource);
                             }
-                            if(!list.isEmpty()){
-                                /*for (Resource res:list) {
-                                    res.setApiUrl(resourceType.getApiUrl());
-                                }*/
-
-                                List<Resource> value = resourceList.getValue();
-                                if(value == null){
-                                    value = new ArrayList<>();
-                                }
-                                value.addAll(list);
-                                resourceList.postValue(value);
-                            }
+                            replaceResourcesByType(resourceType, list);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -640,5 +620,59 @@ public class FgMapViewModel extends BaseViewModel {
         }else{
             Toast.makeText(context, "请输入搜索内容", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public List<Resource> getValidResourceList() {
+        List<Resource> value = resourceList.getValue();
+        List<Resource> result = new ArrayList<>();
+        if (value == null || value.isEmpty()) {
+            return result;
+        }
+        for (Resource resource : value) {
+            if (resource == null || resource.getPosition() == null) {
+                continue;
+            }
+            String lat = resource.getPosition().getLat();
+            String lng = resource.getPosition().getLng();
+            if (lat == null || lat.isEmpty() || lng == null || lng.isEmpty()) {
+                continue;
+            }
+            result.add(resource);
+        }
+        return result;
+    }
+
+    private void replaceResourcesByType(ResourceType resourceType, List<Resource> resources) {
+        List<Resource> current = resourceList.getValue();
+        List<Resource> merged = new ArrayList<>();
+        if (current != null && !current.isEmpty()) {
+            for (Resource resource : current) {
+                if (!isResourceMatchType(resource, resourceType)) {
+                    merged.add(resource);
+                }
+            }
+        }
+        if (resources != null && !resources.isEmpty()) {
+            merged.addAll(resources);
+        }
+        resourceList.postValue(merged);
+    }
+
+    private boolean isResourceMatchType(Resource resource, ResourceType resourceType) {
+        if (resource == null || resourceType == null) {
+            return false;
+        }
+        String code = resourceType.getCode();
+        String apiUrl = resourceType.getApiUrl();
+        if (apiUrl != null && !apiUrl.isEmpty() && Objects.equals(resource.getApiUrl(), apiUrl)) {
+            return true;
+        }
+        if (code != null && !code.isEmpty()) {
+            if (Objects.equals(resource.getResourceType(), code) || Objects.equals(resource.getType(), code)) {
+                return true;
+            }
+            return Objects.equals(resource.getApiUrl(), "/api/" + code);
+        }
+        return false;
     }
 }

@@ -1,9 +1,12 @@
 package com.haohai.platform.fireforestplatform.ui.fragment;
 
 import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +30,7 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
@@ -72,8 +76,11 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements OneBodyListDialog.OneBodyDialogListener, SatelliteListDialog.SatelliteDialogListener, OneBodyDetailDialog.OneBodyDetailDialogListener, SatelliteDetailDialog.SatelliteDetailDialogListener, ResourceDetailDialog.ResourceDetailDialogListener, ResourceListDialog.ResourceDialogListener, SatelliteSearchDialog.SatelliteSearchDialogListener, SatelliteSearchAdvancedDialog.SatelliteSearchAdvancedDialogListener, SheQuListDialog.SheQuDialogListener {
@@ -89,6 +96,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private SheQuListDialog sheQuListDialog;
     private ResourceDetailDialog resourceDetailDialog;
     private AMap aMap;
+    private CameraPosition lastResourceClusterCameraPosition;
+    private final int resourceClusterGridSizeDp = 60;
 
     public static MapFragment newInstance(String param1) {
         Bundle args = new Bundle();
@@ -315,9 +324,29 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                         return false;
                     }
                 }
+            }else if(markerType == obtainViewModel().RESOURCE_CLUSTER){
+                LatLng target = marker.getPosition();
+                float currentZoom = aMap.getCameraPosition().zoom;
+                if (currentZoom >= aMap.getMaxZoomLevel() - 1F) {
+                    showClusterResourceDialog(marker);
+                    return true;
+                }
+                float nextZoom = Math.min(currentZoom + 2F, aMap.getMaxZoomLevel());
+                aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(target, nextZoom));
+                return true;
             }
 
             return false;
+        });
+        aMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+            }
+
+            @Override
+            public void onCameraChangeFinish(CameraPosition cameraPosition) {
+                refreshResourceClustersIfNeeded(cameraPosition);
+            }
         });
 
         //一体机报警列表Dialog
@@ -460,7 +489,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
         //绘制资源点Marker
         if(obtainViewModel().resourceList.getValue()!=null){
-            resourceMarker(Objects.requireNonNull(obtainViewModel().resourceList.getValue()));
+            resourceMarker(obtainViewModel().getValidResourceList());
         }
         //绘制当前社区图层数据
         if(obtainViewModel().sheQuCurrentList.getValue()!=null && !obtainViewModel().sheQuCurrentList.getValue().isEmpty()){
@@ -485,6 +514,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
     private void resourceChanged(List<Resource> resources) {
         aMap.clear();
+        lastResourceClusterCameraPosition = null;
         //更新所有Marker
         updateMarkers();
         //跳转第一火点
@@ -503,6 +533,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private void sheQuCurrentChanged(List<ArrayList<Double>> points) {
         //更新地图图层数据
         aMap.clear();
+        lastResourceClusterCameraPosition = null;
         updateMarkers();
     }
     private void resourceTypeChanged(List<ResourceType> resourceTypes) {
@@ -606,111 +637,259 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
     }
     private void resourceMarker(List<Resource> resources) {
-        ArrayList<MarkerOptions> options = new ArrayList<>();
-        BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.kaoqian);
-        for (int i = 0; i < resources.size(); i++) {
-            HhLog.e("resources.get(i).getApiUrl() " +resources.get(i).getApiUrl());
+        if (resources == null || resources.isEmpty()) {
+            return;
+        }
+        Map<String, ResourceCluster> clusterMap = new HashMap<>();
+        int clusterSizePx = dp2px(resourceClusterGridSizeDp);
+        for (Resource resource : resources) {
+            HhLog.e("resource apiUrl " + resource.getApiUrl());
             //TODO 需后端配置后自动获取类型图标
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/helicopterPoint")){//停机坪
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.airport);
-            }
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/team")){//消防专业队
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.teem);
-            }
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/dangerSource")){//危险源
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.danger);
-            }
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/materialRepository")){//物资库
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.wuziku);
-            }
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/waterSource")){//水源地
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.water);
-            }
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/cemetery")){//墓地
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.md);
-            }
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/watchTower")){//瞭望塔
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.lwt);
-            }
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/checkStation")){//护林检查站
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.check);
-            }
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/monitor/kakou")){//卡口
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.kk);
-            }
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/monitor/jiankong")){//监控点
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.onbody);
-            }
-            if(Objects.equals(resources.get(i).getApiUrl(), "/api/fireCommand")){//指挥部
-                btm = BitmapDescriptorFactory.fromResource(R.drawable.zhihui);
-            }
-            //新增资源类型
-            if(resources.get(i).getApiUrl()==null){
-                if(Objects.equals(resources.get(i).getResourceType(), "weatherStation")){//气象站
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.qixiang);
-                }
-                if(Objects.equals(resources.get(i).getResourceType(), "touristAttraction")){//旅游景点
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.lvyou);
-                }
-                if(Objects.equals(resources.get(i).getResourceType(), "residentialArea")){//居民地
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.jumindi);
-                }
-                if(Objects.equals(resources.get(i).getResourceType(), "ancientTree")){//古树名木
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.gushu);
-                }
-                if(Objects.equals(resources.get(i).getResourceType(), "historicSites")){//文物古迹
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.wenwu);
-                }
-                if(Objects.equals(resources.get(i).getResourceType(), "shoppingMall")){//商场
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.shop);
-                }
-                if(Objects.equals(resources.get(i).getResourceType(), "school")){//学校
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.school);
-                }
-                if(Objects.equals(resources.get(i).getResourceType(), "baseStation")){//通信基站
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.jizhan);
-                }
-                if(Objects.equals(resources.get(i).getResourceType(), "shelter")){//避难场所
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.binan);
-                }
-                if(Objects.equals(resources.get(i).getResourceType(), "medicalAgency")){//医疗机构
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.yiliao);
-                }
-                if(Objects.equals(resources.get(i).getResourceType(), "garrisonPoint")){//靠前驻防点
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.kaoqian);
-                }
-
-                //未知类型
-                if(resources.get(i).getResourceType()==null || Objects.equals(resources.get(i).getResourceType(), "")){//靠前驻防点
-                    btm = BitmapDescriptorFactory.fromResource(R.drawable.danger);
-                    resources.get(i).setApiUrl("/api/dangerSource");
-                    resources.get(i).setResourceType("dangerSource");
-                }
-            }
             try {
-                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(resources.get(i).getPosition().getLat()), Double.parseDouble(resources.get(i).getPosition().getLng()));
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(resource.getPosition().getLat()), Double.parseDouble(resource.getPosition().getLng()));
                 LatLng point = new LatLng(doubles[0], doubles[1]);
-                MarkerOptions option = new MarkerOptions()
-                        .position(point)
-                        .icon(btm);
-                options.add(i, option);
+                Point screenPoint = aMap.getProjection().toScreenLocation(point);
+                String key = (screenPoint.x / clusterSizePx) + "_" + (screenPoint.y / clusterSizePx);
+                ResourceCluster cluster = clusterMap.get(key);
+                if (cluster == null) {
+                    cluster = new ResourceCluster();
+                    cluster.latLng = point;
+                    clusterMap.put(key, cluster);
+                }
+                cluster.resources.add(resource);
+                cluster.latSum += point.latitude;
+                cluster.lngSum += point.longitude;
+                cluster.latLng = new LatLng(cluster.latSum / cluster.resources.size(), cluster.lngSum / cluster.resources.size());
             }catch (Exception e){
-                Log.e(TAG, "satelliteMarker: " + e.getMessage() );
-                continue;
+                Log.e(TAG, "resourceMarker: " + e.getMessage() );
+            }
+        }
+        ArrayList<MarkerOptions> options = new ArrayList<>();
+        ArrayList<Bundle> markerBundles = new ArrayList<>();
+        for (ResourceCluster cluster : clusterMap.values()) {
+            if (cluster.resources.size() == 1) {
+                Bundle bundle = new Bundle();
+                Resource resource = cluster.resources.get(0);
+                bundle.putString("id", resource.getId());
+                bundle.putInt("type", obtainViewModel().RESOURCE);
+                options.add(new MarkerOptions()
+                        .position(cluster.latLng)
+                        .anchor(0.5f, 0.5f)
+                        .icon(resolveResourceIcon(resource)));
+                markerBundles.add(bundle);
+            } else {
+                Bundle bundle = new Bundle();
+                bundle.putInt("type", obtainViewModel().RESOURCE_CLUSTER);
+                bundle.putInt("size", cluster.resources.size());
+                ArrayList<String> resourceIds = new ArrayList<>();
+                for (Resource resource : cluster.resources) {
+                    resourceIds.add(resource.getId());
+                }
+                bundle.putStringArrayList("resourceIds", resourceIds);
+                options.add(new MarkerOptions()
+                        .position(cluster.latLng)
+                        .anchor(0.5f, 0.5f)
+                        .icon(createClusterIcon(cluster.resources.size())));
+                markerBundles.add(bundle);
             }
         }
         List<Marker> markers = aMap.addMarkers(options, false);
-
-        try{
-            for (int i = 0; i < markers.size(); i++) {
-                Bundle bundle = new Bundle();
-                bundle.putString("id", resources.get(i).getId());
-                bundle.putInt("type", obtainViewModel().RESOURCE);
-                markers.get(i).setObject(bundle);
-            }
-        }catch (Exception e){
-            //
+        for (int i = 0; i < markers.size(); i++) {
+            markers.get(i).setObject(markerBundles.get(i));
         }
+    }
+
+    private void refreshResourceClustersIfNeeded(CameraPosition cameraPosition) {
+        List<Resource> resources = obtainViewModel().getValidResourceList();
+        if (resources.isEmpty()) {
+            lastResourceClusterCameraPosition = cameraPosition;
+            return;
+        }
+        if (!shouldRefreshResourceClusters(cameraPosition)) {
+            return;
+        }
+        lastResourceClusterCameraPosition = cameraPosition;
+        aMap.clear();
+        updateMarkers();
+    }
+
+    private boolean shouldRefreshResourceClusters(CameraPosition cameraPosition) {
+        if (cameraPosition == null || lastResourceClusterCameraPosition == null) {
+            return true;
+        }
+        LatLng lastTarget = lastResourceClusterCameraPosition.target;
+        LatLng currentTarget = cameraPosition.target;
+        if (lastTarget == null || currentTarget == null) {
+            return true;
+        }
+        return Math.abs(cameraPosition.zoom - lastResourceClusterCameraPosition.zoom) > 0.1F
+                || Math.abs(currentTarget.latitude - lastTarget.latitude) > 0.0001D
+                || Math.abs(currentTarget.longitude - lastTarget.longitude) > 0.0001D;
+    }
+
+    private BitmapDescriptor resolveResourceIcon(Resource resource) {
+        if (Objects.equals(resource.getApiUrl(), "/api/helicopterPoint")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.airport);
+        }
+        if (Objects.equals(resource.getApiUrl(), "/api/team")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.teem);
+        }
+        if (Objects.equals(resource.getApiUrl(), "/api/dangerSource")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.danger);
+        }
+        if (Objects.equals(resource.getApiUrl(), "/api/materialRepository")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.wuziku);
+        }
+        if (Objects.equals(resource.getApiUrl(), "/api/waterSource")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.water);
+        }
+        if (Objects.equals(resource.getApiUrl(), "/api/cemetery")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.md);
+        }
+        if (Objects.equals(resource.getApiUrl(), "/api/watchTower")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.lwt);
+        }
+        if (Objects.equals(resource.getApiUrl(), "/api/checkStation")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.check);
+        }
+        if (Objects.equals(resource.getApiUrl(), "/api/monitor/kakou")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.kk);
+        }
+        if (Objects.equals(resource.getApiUrl(), "/api/monitor/jiankong")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.onbody);
+        }
+        if (Objects.equals(resource.getApiUrl(), "/api/fireCommand")) {
+            return BitmapDescriptorFactory.fromResource(R.drawable.zhihui);
+        }
+        if (resource.getApiUrl() == null) {
+            if (Objects.equals(resource.getResourceType(), "weatherStation")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.qixiang);
+            }
+            if (Objects.equals(resource.getResourceType(), "touristAttraction")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.lvyou);
+            }
+            if (Objects.equals(resource.getResourceType(), "residentialArea")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.jumindi);
+            }
+            if (Objects.equals(resource.getResourceType(), "ancientTree")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gushu);
+            }
+            if (Objects.equals(resource.getResourceType(), "historicSites")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.wenwu);
+            }
+            if (Objects.equals(resource.getResourceType(), "shoppingMall")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.shop);
+            }
+            if (Objects.equals(resource.getResourceType(), "school")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.school);
+            }
+            if (Objects.equals(resource.getResourceType(), "baseStation")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.jizhan);
+            }
+            if (Objects.equals(resource.getResourceType(), "shelter")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.binan);
+            }
+            if (Objects.equals(resource.getResourceType(), "medicalAgency")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.yiliao);
+            }
+            if (Objects.equals(resource.getResourceType(), "garrisonPoint")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.kaoqian);
+            }
+            if (resource.getResourceType() == null || Objects.equals(resource.getResourceType(), "")) {
+                resource.setApiUrl("/api/dangerSource");
+                resource.setResourceType("dangerSource");
+                return BitmapDescriptorFactory.fromResource(R.drawable.danger);
+            }
+        }
+        return BitmapDescriptorFactory.fromResource(R.drawable.kaoqian);
+    }
+
+    private BitmapDescriptor createClusterIcon(int size) {
+        TextView textView = new TextView(requireContext());
+        int paddingHorizontal = dp2px(12);
+        int minSize = dp2px(40);
+        textView.setMinWidth(minSize);
+        textView.setMinHeight(minSize);
+        textView.setPadding(paddingHorizontal, 0, paddingHorizontal, 0);
+        textView.setGravity(Gravity.CENTER);
+        textView.setTextColor(Color.WHITE);
+        textView.setTextSize(14);
+        textView.setText(String.format(Locale.getDefault(), "%d", size));
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.OVAL);
+        background.setColor(Color.parseColor("#D94B39"));
+        background.setStroke(dp2px(2), Color.parseColor("#FFF3E0"));
+        textView.setBackground(background);
+        return BitmapDescriptorFactory.fromView(textView);
+    }
+
+    private int dp2px(int dp) {
+        float density = requireContext().getResources().getDisplayMetrics().density;
+        return Math.max(1, (int) (dp * density + 0.5F));
+    }
+
+    private void showClusterResourceDialog(Marker marker) {
+        Bundle extraInfo = (Bundle) marker.getObject();
+        if (extraInfo == null) {
+            return;
+        }
+        ArrayList<String> resourceIds = extraInfo.getStringArrayList("resourceIds");
+        List<Resource> clusterResources = getResourcesByIds(resourceIds);
+        if (clusterResources.isEmpty()) {
+            return;
+        }
+        if (clusterResources.size() == 1) {
+            resourceDetailDialog.setResource(clusterResources.get(0));
+            delayDialog(resourceDetailDialog);
+            return;
+        }
+        String[] names = new String[clusterResources.size()];
+        for (int i = 0; i < clusterResources.size(); i++) {
+            Resource resource = clusterResources.get(i);
+            String name = resource.getResourceName();
+            if (name == null || name.isEmpty()) {
+                name = resource.getName();
+            }
+            if (name == null || name.isEmpty()) {
+                name = "资源点" + (i + 1);
+            }
+            names[i] = name;
+        }
+        new AlertDialog.Builder(requireContext())
+//                .setTitle("请选择资源点")
+                .setItems(names, (dialog, which) -> {
+                    resourceDetailDialog.setResource(clusterResources.get(which));
+                    delayDialog(resourceDetailDialog);
+                })
+//                .setNegativeButton("取消", null)
+                .show();
+    }
+
+    private List<Resource> getResourcesByIds(List<String> resourceIds) {
+        List<Resource> result = new ArrayList<>();
+        if (resourceIds == null || resourceIds.isEmpty()) {
+            return result;
+        }
+        List<Resource> allResources = obtainViewModel().resourceList.getValue();
+        if (allResources == null || allResources.isEmpty()) {
+            return result;
+        }
+        for (String resourceId : resourceIds) {
+            for (Resource resource : allResources) {
+                if (Objects.equals(resource.getId(), resourceId)) {
+                    result.add(resource);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    private static class ResourceCluster {
+        private final List<Resource> resources = new ArrayList<>();
+        private double latSum;
+        private double lngSum;
+        private LatLng latLng;
     }
 
     private void userLocationMarker(){

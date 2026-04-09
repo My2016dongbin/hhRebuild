@@ -326,13 +326,27 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 }
             }else if(markerType == obtainViewModel().RESOURCE_CLUSTER){
                 LatLng target = marker.getPosition();
+                Bundle clusterExtraInfo = (Bundle) marker.getObject();
+                ArrayList<String> resourceIds = clusterExtraInfo == null ? new ArrayList<>() : clusterExtraInfo.getStringArrayList("resourceIds");
                 float currentZoom = aMap.getCameraPosition().zoom;
-                if (currentZoom >= aMap.getMaxZoomLevel() - 1F) {
-                    showClusterResourceDialog(marker);
+                float nextZoom = Math.min(currentZoom + 2F, aMap.getMaxZoomLevel());
+                if (nextZoom - currentZoom < 0.1F) {
+                    showClusterResourceDialog(resourceIds);
                     return true;
                 }
-                float nextZoom = Math.min(currentZoom + 2F, aMap.getMaxZoomLevel());
-                aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(target, nextZoom));
+                aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(target, nextZoom), new AMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                        float zoomAfterAnimation = aMap.getCameraPosition().zoom;
+                        if (zoomAfterAnimation - currentZoom < 0.1F) {
+                            showClusterResourceDialog(resourceIds);
+                        }
+                    }
+
+                    @Override
+                    public void onCancel() {
+                    }
+                });
                 return true;
             }
 
@@ -806,19 +820,19 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
     private BitmapDescriptor createClusterIcon(int size) {
         TextView textView = new TextView(requireContext());
-        int paddingHorizontal = dp2px(12);
-        int minSize = dp2px(40);
+        int paddingHorizontal = dp2px(8);
+        int minSize = dp2px(32);
         textView.setMinWidth(minSize);
         textView.setMinHeight(minSize);
         textView.setPadding(paddingHorizontal, 0, paddingHorizontal, 0);
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(Color.WHITE);
-        textView.setTextSize(14);
+        textView.setTextSize(12);
         textView.setText(String.format(Locale.getDefault(), "%d", size));
         GradientDrawable background = new GradientDrawable();
         background.setShape(GradientDrawable.OVAL);
-        background.setColor(Color.parseColor("#D94B39"));
-        background.setStroke(dp2px(2), Color.parseColor("#FFF3E0"));
+        background.setColor(Color.parseColor("#1E88E5"));
+        background.setStroke(dp2px(2), Color.parseColor("#D6E9FF"));
         textView.setBackground(background);
         return BitmapDescriptorFactory.fromView(textView);
     }
@@ -833,7 +847,10 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         if (extraInfo == null) {
             return;
         }
-        ArrayList<String> resourceIds = extraInfo.getStringArrayList("resourceIds");
+        showClusterResourceDialog(extraInfo.getStringArrayList("resourceIds"));
+    }
+
+    private void showClusterResourceDialog(List<String> resourceIds) {
         List<Resource> clusterResources = getResourcesByIds(resourceIds);
         if (clusterResources.isEmpty()) {
             return;

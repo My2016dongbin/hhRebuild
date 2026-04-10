@@ -55,8 +55,8 @@ public class CommonPermission {
     public static final String MY_AUDIO = "app-setting-btn-audio";//语音播报
 
     public static boolean hasPermission(Context context, String code){
-        /*String mt = (String) SPUtils.get(context, SPValue.permission, "");
-        return mt.contains(code);*/
-        return true;
+        String mt = (String) SPUtils.get(context, SPValue.permission, "");
+        return mt.contains(code);
+//        return true;
     }
 }

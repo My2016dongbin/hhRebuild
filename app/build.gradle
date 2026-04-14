@@ -30,7 +30,7 @@ android {
 
         ndk {
             //设置支持的SO库架构
-            abiFilters 'armeabi-v7a'//, 'arm64-v8a', 'x86', 'x86_64' //32
+            abiFilters 'armeabi-v7a', 'arm64-v8a'//, 'x86', 'x86_64' //32
 //            abiFilters 'arm64-v8a'//, 'arm64-v8a', 'x86', 'x86_64'  //64
         }
         manifestPlaceholders = [
@@ -110,7 +110,7 @@ android {
 
             ndk{
                 //QQ微信等大佬都只用"armeabi"
-                abiFilters "armeabi-v7a" //32
+                abiFilters "armeabi-v7a","arm64-v8a" //32+64
 //                abiFilters "arm64-v8a" //64
             }
             //混淆配置

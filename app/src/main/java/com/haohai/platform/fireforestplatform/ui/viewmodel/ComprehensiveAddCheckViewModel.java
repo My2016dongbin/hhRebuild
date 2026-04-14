@@ -13,12 +13,15 @@ import com.haohai.platform.fireforestplatform.base.LoggedInStringCallback;
 import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.constant.URLConstant;
 import com.haohai.platform.fireforestplatform.event.LoadingEvent;
+import com.haohai.platform.fireforestplatform.old.linyi.Grid;
 import com.haohai.platform.fireforestplatform.old.linyi.Res;
 import com.haohai.platform.fireforestplatform.ui.activity.ComprehensiveAddCheckActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.CheckImage;
 import com.haohai.platform.fireforestplatform.ui.bean.CommonParams;
 import com.haohai.platform.fireforestplatform.ui.bean.ResInfo;
 import com.haohai.platform.fireforestplatform.ui.multitype.News;
+import com.haohai.platform.fireforestplatform.utils.CommonData;
+import com.haohai.platform.fireforestplatform.utils.DbConfig;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
@@ -26,6 +29,12 @@ import com.haohai.platform.fireforestplatform.utils.SPValue;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xutils.DbManager;
+import org.xutils.common.Callback;
+import org.xutils.ex.DbException;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
 import java.util.ArrayList;
 import java.util.List;
 import okhttp3.Call;
@@ -67,7 +76,7 @@ public class ComprehensiveAddCheckViewModel extends BaseViewModel {
                 .execute(new LoggedInStringCallback(this,context) {
                     @Override
                     public void onSuccess(String response, int id) {
-                        //HhLog.e("POST_RES_TYPE_LIST " + response);
+                        HhLog.e("POST_RES_TYPE_LIST " + response);
                         loading.setValue(new LoadingEvent(false));
                         try {
                             JSONObject jsonObject = new JSONObject(response);
@@ -117,4 +126,69 @@ public class ComprehensiveAddCheckViewModel extends BaseViewModel {
                     }
                 });
     }
+
+
+    public void getGridResource(String resCode) {
+        loading.setValue(new LoadingEvent(true,"加载中.."));
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("updateTime", "2010-11-21T08:36:31.420Z");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestParams params = new RequestParams(URLConstant.BASE_PATH + "resource/api/resourceList/getResourcesByGrid?districtNo=371300");
+        params.setConnectTimeout(20000);
+        params.setBodyContent(jsonObject.toString());
+        params.addHeader("Authorization","bearer " + CommonData.token);
+        x.http().get(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                HhLog.e("getGridResource " + params);
+                HhLog.e("getGridResource " + result);
+                try {
+                    JSONObject obj = new JSONObject(result);
+                    String code = obj.getString("code");
+                    if (code.equals("200")){
+                        JSONArray data = obj.getJSONArray("data");
+                        if(data.length()>0){
+                            JSONObject model = (JSONObject) data.get(0);
+                            if("waterSource".equals(resCode)){
+                                resInfoList = new ArrayList<>();
+                                JSONArray array1 = model.getJSONArray("waterBag"+"List");
+                                resInfoList.addAll(new Gson().fromJson(String.valueOf(array1), new TypeToken<List<ResInfo>>() {
+                                }.getType()));
+                                JSONArray array2 = model.getJSONArray("waterReservoir"+"List");
+                                resInfoList.addAll(new Gson().fromJson(String.valueOf(array2), new TypeToken<List<ResInfo>>() {
+                                }.getType()));
+                                JSONArray array3 = model.getJSONArray("reservoir"+"List");
+                                resInfoList.addAll(new Gson().fromJson(String.valueOf(array3), new TypeToken<List<ResInfo>>() {
+                                }.getType()));
+                            }
+                            JSONArray modelJSONArray = model.getJSONArray(resCode+"List");
+                            resInfoList =  new Gson().fromJson(String.valueOf(modelJSONArray), new TypeToken<List<ResInfo>>() {
+                            }.getType());
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                HhLog.e( "onError: materialRepository请求失败 getGrid " + ex.toString());
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+                loading.setValue(new LoadingEvent(false));
+            }
+        });
+    }
+
 }

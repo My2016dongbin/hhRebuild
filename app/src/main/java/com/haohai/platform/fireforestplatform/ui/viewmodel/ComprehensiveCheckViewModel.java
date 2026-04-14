@@ -150,58 +150,6 @@ public class ComprehensiveCheckViewModel extends BaseViewModel {
         }
     }
 
-    public void getGridResource() {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("updateTime", "2010-11-21T08:36:31.420Z");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestParams params = new RequestParams(URLConstant.BASE_PATH + "resource/api/resourceList/getResourcesByGrid?districtNo=371300");
-        params.setConnectTimeout(20000);
-        params.setBodyContent(jsonObject.toString());
-        params.addHeader("Authorization","bearer " + CommonData.token);
-        x.http().get(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                HhLog.e("getGridResource " + params);
-                HhLog.e("getGridResource " + result);
-                try {
-                    JSONObject jsonObject1 = new JSONObject(result);
-                    String code = jsonObject1.getString("code");
-                    if (code.equals("200")){
-                        JSONArray data = jsonObject1.getJSONArray("data");
-                        Gson gson = new Gson();
-                        List<Grid> gridList = gson.fromJson(String.valueOf(data), new TypeToken<List<Grid>>(){}.getType());
-                        DbConfig dbConfig = new DbConfig(context);
-                        DbManager db = dbConfig.getDbManager();
-                        try {
-                            db.saveOrUpdate(gridList);
-                        } catch (DbException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                HhLog.e( "onError: materialRepository请求失败 getGrid " + ex.toString());
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-            }
-        });
-    }
-
 
     public void initArea() {
         gridList.clear();

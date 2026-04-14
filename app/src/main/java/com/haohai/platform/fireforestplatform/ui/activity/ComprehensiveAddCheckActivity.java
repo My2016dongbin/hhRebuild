@@ -118,7 +118,7 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
         Window dialogWindow = resourceChooseDialog.getWindow();
         dialogWindow.setGravity(Gravity.BOTTOM);
         resourceChooseDialog.setDialogListener(this);
-        resourceChooseDialog.setTreeList(parseResStrings(),obtainViewModel().resInfoIndex,RES_LIST_CODE);
+        resourceChooseDialog.setTreeList(parseResStrings(),Math.max(obtainViewModel().resInfoIndex,0),RES_LIST_CODE);
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         int height = wm.getDefaultDisplay().getHeight();
@@ -194,7 +194,7 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
 
             } catch (Exception e) {
                 HhLog.e("提交构建失败：" + e);
-                Toast.makeText(this, "数据异常，无法提交", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "请选择资源点", Toast.LENGTH_SHORT).show();
                 binding.submit.setEnabled(true);
             }
         });
@@ -408,7 +408,11 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
             obtainViewModel().resIndex = index;
             Res res = obtainViewModel().resList.get(index);
             obtainViewModel().apiCodeString = res.getName();
-            obtainViewModel().getRes(res.getCode());
+            obtainViewModel().resInfoIndex = -1;
+            binding.textTitle.setText("请选择资源点");
+            obtainViewModel().resInfoList = new ArrayList<>();
+//            obtainViewModel().getRes(res.getCode());
+            obtainViewModel().getGridResource(res.getCode());
         }else if(code == RES_LIST_CODE){
             binding.textTitle.setText(type);
             obtainViewModel().resInfoIndex = index;

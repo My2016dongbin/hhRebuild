@@ -406,7 +406,7 @@ public class FgMainViewModel extends BaseViewModel {
         if(CommonPermission.hasPermission(context,CommonPermission.APP_SATELLITE)){menu_.add(new MainFgMenu("","star","卫星遥感","",R.drawable.icon_star,"/star",index));index++;}
 //        if(CommonPermission.hasPermission(context,CommonPermission.APP_DANGER)){menu_.add(new MainFgMenu("","danger","隐患排查","",R.drawable.icon_danger,"/danger",index));index++;}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_UPLOAD)){menu_.add(new MainFgMenu("","fire","火情上报","",R.drawable.icon_danger,"/fire",index));index++;}
-        if(CommonPermission.hasPermission(context,CommonPermission.APP_UPLOAD)){menu_.add(new MainFgMenu("","flame","计划烧除","",R.drawable.icon_fire,"/flame",index));index++;}
+        if(CommonPermission.hasPermission(context,CommonPermission.APP_FLAME)){menu_.add(new MainFgMenu("","flame","计划烧除","",R.drawable.icon_fire,"/flame",index));index++;}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_VIDEO)){menu_.add(new MainFgMenu("","video","视频监控","",R.drawable.icon_video,"/video",index));index++;}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_TASK)){menu_.add(new MainFgMenu("","order","任务单","",R.drawable.icon_order,"/order",index));index++;}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_RANGER)){menu_.add(new MainFgMenu("","person","防火员","",R.drawable.icon_person,"/person",index));index++;}
@@ -415,7 +415,7 @@ public class FgMainViewModel extends BaseViewModel {
         if(CommonPermission.hasPermission(context,CommonPermission.APP_SIGN)){menu_.add(new MainFgMenu("","signManage","考勤管理","",R.drawable.icon_signmanage,"/sign/manage",index));index++;}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_WEATHER)){menu_.add(new MainFgMenu("","weather","天气","",R.drawable.icon_weather,"/weather",index));}
         if(CommonPermission.hasPermission(context,CommonPermission.APP_CHECK)){menu_.add(new MainFgMenu("","check","综合检查","",R.drawable.comprehensive,"/check",index));}
-        if(CommonPermission.hasPermission(context,CommonPermission.APP_DAILY_CHECK)){menu_.add(new MainFgMenu("","daily","隐患排查","",R.drawable.daily,"/daily",index));}
+        if(CommonPermission.hasPermission(context,CommonPermission.APP_DANGER)){menu_.add(new MainFgMenu("","daily","隐患排查","",R.drawable.daily,"/daily",index));}
 //        if(CommonPermission.hasPermission(context,CommonPermission.APP_RESOURCE_SEARCH)){menu_.add(new MainFgMenu("","search","资源检索","",R.drawable.search_check,"/search",index));}
         menus = new ArrayList<>(menu_);
         menuList.setValue(menus);

@@ -23,6 +23,7 @@ public class CommonPermission {
     public static final String APP_SATELLITE = "app-application-btn-satelliteFireAlarm";//首页-卫星遥感
     public static final String APP_DANGER = "app-application-btn-danger";//首页-隐患排查
     public static final String APP_UPLOAD = "app-application-btn-fire";//首页-火情上报
+    public static final String APP_FLAME = "app-application-btn-flame";//首页-计划烧除
     public static final String APP_VIDEO = "app-application-btn-video";//首页-视频监控
     public static final String APP_TASK = "app-application-btn-task";//首页-任务单
     public static final String APP_RANGER = "app-application-btn-ranger";//首页-防火员

@@ -57,6 +57,7 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
         bind_();
         initDateTime();
         obtainViewModel().postData();
+        obtainViewModel().getGridResource();
     }
 
     @Override

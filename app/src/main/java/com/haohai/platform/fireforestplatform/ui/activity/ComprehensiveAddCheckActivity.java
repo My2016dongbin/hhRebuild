@@ -76,6 +76,7 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        obtainViewModel().grid = getIntent().getStringExtra("grid");
         init_();
         bind_();
         obtainViewModel().postData();
@@ -182,15 +183,9 @@ public class ComprehensiveAddCheckActivity extends BaseLiveActivity<ActivityComp
                 List<CheckResource.ImgsBean> images = new ArrayList<>();
                 List<CheckImage> checkImageList = obtainViewModel().imageList.getValue();
 
-                // 没图也允许提交：你要是不允许就这里拦一下
-                uploadImages(checkImageList, images, 0);
-
-                // 注意：submitFinal(result) 在 uploadImages 全部完成后会调用
-                // 所以这里别提前 setImgs / finish
-
-                // 你如果需要把 checkResource 带到 submitFinal，用成员变量存一下
                 this.pendingCheckResource = checkResource;
                 this.pendingImgs = images;
+                uploadImages(checkImageList, images, 0);
 
             } catch (Exception e) {
                 HhLog.e("提交构建失败：" + e);

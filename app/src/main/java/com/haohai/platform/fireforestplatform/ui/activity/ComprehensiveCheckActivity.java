@@ -36,6 +36,7 @@ import com.haohai.platform.fireforestplatform.ui.bean.CheckResource;
 import com.haohai.platform.fireforestplatform.ui.cell.TypeChooseDialog;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.ComprehensiveCheckViewModel;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
+import com.haohai.platform.fireforestplatform.utils.CommonUtil;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 
 import java.text.ParseException;
@@ -123,7 +124,20 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
             chooseUser();
         });
         binding.checkAdd.setOnClickListener(v -> {
-            startActivityForResult(new Intent(this,ComprehensiveAddCheckActivity.class),CommonData.CHECK_REQUEST_CODE);
+            Intent intent = new Intent(this, ComprehensiveAddCheckActivity.class);
+            Area grid = new Area();
+            if(!binding.textGrid.getText().toString().contains("请选择")){
+                grid = obtainViewModel().gridList.get(obtainViewModel().gridIndex);
+            }
+            if(!binding.textGrid2.getText().toString().contains("请选择")){
+                grid = obtainViewModel().grid2List.get(obtainViewModel().grid2Index);
+            }
+            if(!binding.textGrid3.getText().toString().contains("请选择")){
+                grid = obtainViewModel().grid3List.get(obtainViewModel().grid3Index);
+            }
+            HhLog.e("grid.toString() " + grid.toString());
+            intent.putExtra("grid", CommonUtil.parseNullString(grid.getId(),""));
+            startActivityForResult(intent,CommonData.CHECK_REQUEST_CODE);
         });
     }
 
@@ -263,6 +277,7 @@ public class ComprehensiveCheckActivity extends BaseLiveActivity<ActivityCompreh
             Glide.with(ComprehensiveCheckActivity.this)
                     .load(Uri.parse(url))
                     .apply(RequestOptions.bitmapTransform(new GranularRoundedCorners(20,0,0,20)))
+                    .error(R.drawable.ic_no_pic)
                     .into(icon);
             title.setText(checkResource.getName());
             content.setText(checkResource.getDescription());

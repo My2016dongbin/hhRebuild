@@ -217,7 +217,6 @@ public class ComprehensiveCheckViewModel extends BaseViewModel {
     }
 
     public void submit(Area grid) {
-        loading.setValue(new LoadingEvent(true,"正在提交.."));
         ComprehensiveSubmit comprehensiveSubmit = new ComprehensiveSubmit();
         try{
             comprehensiveSubmit.setCheckStationCount(Objects.requireNonNull(resourceList.getValue()).size());
@@ -225,6 +224,7 @@ public class ComprehensiveCheckViewModel extends BaseViewModel {
             Toast.makeText(context, "请选择资源点", Toast.LENGTH_SHORT).show();
             return;
         }
+        loading.setValue(new LoadingEvent(true,"正在提交.."));
         comprehensiveSubmit.setCheckUserName((String) SPUtils.get(context,SPValue.fullName,""));
         try{
             CheckPerson checkPerson = userList.get(userIndex);

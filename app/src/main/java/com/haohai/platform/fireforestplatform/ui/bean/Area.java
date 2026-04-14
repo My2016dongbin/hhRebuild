@@ -101,6 +101,8 @@ public class Area {
                 ", parentId='" + parentId + '\'' +
                 ", createTime='" + createTime + '\'' +
                 ", level='" + level + '\'' +
+                ", areaLevel='" + areaLevel + '\'' +
+                ", gridNo='" + gridNo + '\'' +
                 '}';
     }
 }

@@ -55,6 +55,7 @@ public class ComprehensiveAddCheckViewModel extends BaseViewModel {
     public int resInfoIndex = 0;
     public String apiCode = "";
     public String apiCodeString = "";
+    public String grid = "";
 
 
     public void barLeftClick(View v){
@@ -130,15 +131,9 @@ public class ComprehensiveAddCheckViewModel extends BaseViewModel {
 
     public void getGridResource(String resCode) {
         loading.setValue(new LoadingEvent(true,"加载中.."));
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("updateTime", "2010-11-21T08:36:31.420Z");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestParams params = new RequestParams(URLConstant.BASE_PATH + "resource/api/resourceList/getResourcesByGrid?districtNo=371300");
+        RequestParams params = new RequestParams(URLConstant.BASE_PATH + "resource/api/resourceList/getResourcesByGrid");
+        params.addParameter("districtNo",grid);
         params.setConnectTimeout(20000);
-        params.setBodyContent(jsonObject.toString());
         params.addHeader("Authorization","bearer " + CommonData.token);
         x.http().get(params, new Callback.CommonCallback<String>() {
             @Override

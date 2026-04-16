@@ -6,6 +6,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.haohai.platform.fireforestplatform.base.BaseViewModel;
@@ -45,6 +47,8 @@ public class TaskViewModel extends BaseViewModel {
     public String id;
     public List<TaskList> taskLists = new ArrayList<>();
     public List<Object> items = new ArrayList<>();
+    ///0未开始，1执行中，2已结束
+    public final MutableLiveData<String> status = new MutableLiveData<>("");
     public void start(Context context){
         this.context = context;
     }
@@ -56,7 +60,7 @@ public class TaskViewModel extends BaseViewModel {
 
     public void postData(){
         loading.setValue(new LoadingEvent(true,"加载中.."));
-        String content = new Gson().toJson(new CommonParams(id,"", (String) SPUtils.get(context, SPValue.groupId, ""),"appInternet",new ArrayList<>()));
+        String content = new Gson().toJson(new CommonParams(id,status.getValue(),"", (String) SPUtils.get(context, SPValue.groupId, ""),"appInternet",new ArrayList<>()));
         HhHttp.postString()
                 .url(URLConstant.POST_TASK_LIST)
                 .content(content)

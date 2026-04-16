@@ -299,6 +299,14 @@ public class CommonParams {
         this.type = type;
         this.doubleList = doubleList;
     }
+    public CommonParams(String appMessageId,String status,String id, String groupId, String type, List<Double> doubleList) {
+        this.appMessageId = appMessageId;
+        this.status = status;
+        this.id = id;
+        this.groupId = groupId;
+        this.type = type;
+        this.doubleList = doubleList;
+    }
 
     public CommonParams(String id, String feedback, String ext, String ext2) {
         this.id = id;

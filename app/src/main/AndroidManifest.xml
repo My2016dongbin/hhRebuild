@@ -92,6 +92,7 @@
             android:launchMode="singleInstance" />
         <activity android:name=".ui.activity.FireUploadActivity" />
         <activity android:name=".ui.activity.XhUploadActivity" />
+        <activity android:name=".ui.activity.XhUploadListActivity" />
         <activity android:name=".ui.activity.HiddenDangerActivity" />
         <activity android:name=".ui.activity.TaskActivity" />
         <activity android:name=".ui.activity.TaskListInfoActivity" />

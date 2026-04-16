@@ -10,9 +10,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TimePicker;
@@ -165,6 +167,14 @@ public class XhUploadActivity extends BaseLiveActivity<ActivityXhUploadBinding, 
 
     private void init_() {
         binding.topBar.title.setText("巡护上报");
+        int iconSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 22, getResources().getDisplayMetrics());
+        ViewGroup.LayoutParams layoutParams = binding.topBar.rightIcon.getLayoutParams();
+        layoutParams.width = iconSize;
+        layoutParams.height = iconSize;
+        binding.topBar.rightIcon.setLayoutParams(layoutParams);
+        binding.topBar.rightIcon.setImageResource(R.drawable.ic_xh_upload_list);
+        binding.topBar.rightIcon.setVisibility(View.VISIBLE);
+        binding.topBar.right.setVisibility(View.GONE);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         binding.photeRecycle.setLayoutManager(gridLayoutManager);

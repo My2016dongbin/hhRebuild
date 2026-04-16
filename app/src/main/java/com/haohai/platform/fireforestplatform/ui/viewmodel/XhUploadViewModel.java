@@ -1,6 +1,7 @@
 package com.haohai.platform.fireforestplatform.ui.viewmodel;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.haohai.platform.fireforestplatform.base.LoggedInStringCallback;
 import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.constant.URLConstant;
 import com.haohai.platform.fireforestplatform.event.LoadingEvent;
+import com.haohai.platform.fireforestplatform.ui.activity.XhUploadListActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.XhUploadActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.Area;
 import com.haohai.platform.fireforestplatform.ui.cell.WheelView;
@@ -76,6 +78,10 @@ public class XhUploadViewModel extends BaseViewModel {
 
     public void barLeftClick(View v){
         ((XhUploadActivity)context).finish();
+    }
+
+    public void barRightClick(View v) {
+        context.startActivity(new Intent(context, XhUploadListActivity.class));
     }
 
     public void postPicToService() {

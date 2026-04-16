@@ -16,7 +16,8 @@
         <include
             android:id="@+id/top_bar"
             layout="@layout/view_top_bar"
-            binding:onLeftClick ="@{viewModel.barLeftClick}"/>
+            binding:onLeftClick ="@{viewModel.barLeftClick}"
+            binding:onRightClick ="@{viewModel.barRightClick}"/>
 
 
         <FrameLayout

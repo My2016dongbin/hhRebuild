@@ -3,12 +3,14 @@ package com.haohai.platform.fireforestplatform.ui.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -43,6 +45,11 @@ public class TaskListInfoActivity extends BaseLiveActivity<ActivityTaskListInfoB
         super.onCreate(savedInstanceState);
         obtainViewModel().message = getIntent().getBooleanExtra("message",false);
         id = getIntent().getStringExtra("id");
+        if (TextUtils.isEmpty(id)) {
+            Toast.makeText(this, "该任务数据异常,请稍后重试", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         init_();
         bind_();
     }
@@ -75,8 +82,13 @@ public class TaskListInfoActivity extends BaseLiveActivity<ActivityTaskListInfoB
 
     private void bind_() {
         binding.mapContent.setOnClickListener(v -> {
+            TaskList currentTask = obtainViewModel().taskLists.getValue();
+            if (currentTask == null || TextUtils.isEmpty(currentTask.getRoomId())) {
+                Toast.makeText(this, "暂无地图信息", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(this, MapSnapActivity.class);
-            intent.putExtra("roomId", Objects.requireNonNull(obtainViewModel().taskLists.getValue()).getRoomId());
+            intent.putExtra("roomId", currentTask.getRoomId());
             startActivity(intent);
         });
         binding.textStatus.setOnClickListener(new View.OnClickListener() {
@@ -121,6 +133,9 @@ public class TaskListInfoActivity extends BaseLiveActivity<ActivityTaskListInfoB
 
     @SuppressLint("SetTextI18n")
     private void updateUi(TaskList taskList) {
+        if (taskList == null) {
+            return;
+        }
         if(obtainViewModel().taskLists.getValue()!=null &&
                 Objects.requireNonNull(obtainViewModel().taskLists.getValue()).getRoomId()!=null){
             binding.mapContentView.setVisibility(View.VISIBLE);
@@ -176,6 +191,8 @@ public class TaskListInfoActivity extends BaseLiveActivity<ActivityTaskListInfoB
         binding.llUpload.removeAllViews();
         if(taskDetailDTOList==null || taskDetailDTOList.size()==0 ){
             binding.titleUpload.setVisibility(View.GONE);
+        } else {
+            binding.titleUpload.setVisibility(View.VISIBLE);
         }
         if(taskDetailDTOList!=null){
             for (int i = 0; i < taskDetailDTOList.size(); i++) {

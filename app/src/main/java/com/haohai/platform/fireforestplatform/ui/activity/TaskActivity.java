@@ -4,6 +4,7 @@ import static me.drakeet.multitype.MultiTypeAsserts.assertHasTheSameAdapter;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -13,16 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.base.BaseLiveActivity;
 import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
-import com.haohai.platform.fireforestplatform.databinding.ActivityFireUploadBinding;
 import com.haohai.platform.fireforestplatform.databinding.ActivityTaskBinding;
 import com.haohai.platform.fireforestplatform.event.MessageRefresh;
 import com.haohai.platform.fireforestplatform.ui.multitype.Empty;
 import com.haohai.platform.fireforestplatform.ui.multitype.EmptyViewBinder;
-import com.haohai.platform.fireforestplatform.ui.multitype.LevelFireMessageViewBinder;
-import com.haohai.platform.fireforestplatform.ui.multitype.MonitorFireMessage;
 import com.haohai.platform.fireforestplatform.ui.multitype.TaskList;
 import com.haohai.platform.fireforestplatform.ui.multitype.TaskListViewBinder;
-import com.haohai.platform.fireforestplatform.ui.viewmodel.FireUploadViewModel;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.TaskViewModel;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
@@ -36,6 +33,7 @@ import me.drakeet.multitype.MultiTypeAdapter;
 
 public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskViewModel> implements TaskListViewBinder.OnItemClickListener {
 
+    private TextView[] tabViews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +54,7 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
 
     private void init_() {
         binding.topBar.title.setText("任务单");
+        initTabs();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         binding.recycle.setLayoutManager(linearLayoutManager);
         obtainViewModel().adapter = new MultiTypeAdapter(obtainViewModel().items);
@@ -83,6 +82,39 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
         obtainViewModel().adapter.register(Empty.class, new EmptyViewBinder(this));
         binding.recycle.setAdapter(obtainViewModel().adapter);
         assertHasTheSameAdapter(binding.recycle, obtainViewModel().adapter);
+    }
+
+    private void initTabs() {
+        tabViews = new TextView[]{binding.tabNotStarted, binding.tabInProgress, binding.tabFinished};
+        binding.tabNotStarted.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_NOT_STARTED));
+        binding.tabInProgress.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_IN_PROGRESS));
+        binding.tabFinished.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_FINISHED));
+        updateTabSelection(obtainViewModel().status.getValue());
+    }
+
+    private void switchTaskStatus(String status) {
+        if (status.equals(obtainViewModel().status.getValue())) {
+            return;
+        }
+        updateTabSelection(status);
+        obtainViewModel().switchStatus(status);
+    }
+
+    private void updateTabSelection(String status) {
+        if (tabViews == null) {
+            return;
+        }
+        String currentStatus = status == null ? TaskViewModel.STATUS_NOT_STARTED : status;
+        for (TextView tabView : tabViews) {
+            tabView.setSelected(false);
+        }
+        if (TaskViewModel.STATUS_IN_PROGRESS.equals(currentStatus)) {
+            binding.tabInProgress.setSelected(true);
+        } else if (TaskViewModel.STATUS_FINISHED.equals(currentStatus)) {
+            binding.tabFinished.setSelected(true);
+        } else {
+            binding.tabNotStarted.setSelected(true);
+        }
     }
 
     ///推送任务刷新

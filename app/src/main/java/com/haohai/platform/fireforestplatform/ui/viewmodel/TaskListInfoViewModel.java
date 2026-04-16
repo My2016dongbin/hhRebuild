@@ -1,7 +1,10 @@
 package com.haohai.platform.fireforestplatform.ui.viewmodel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -17,12 +20,9 @@ import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.constant.URLConstant;
 import com.haohai.platform.fireforestplatform.event.LoadingEvent;
 import com.haohai.platform.fireforestplatform.event.MessageRefresh;
-import com.haohai.platform.fireforestplatform.ui.activity.MonitorFireMessageInfoActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.TaskListInfoActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.CommonParams;
-import com.haohai.platform.fireforestplatform.ui.multitype.MonitorFireMessage;
 import com.haohai.platform.fireforestplatform.ui.multitype.TaskList;
-import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -31,10 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.http.HttpMethod;
 import org.xutils.http.RequestParams;
-import org.xutils.x;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 import okhttp3.Call;
@@ -42,8 +40,12 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class TaskListInfoViewModel extends BaseViewModel {
+    private static final long ERROR_FINISH_DELAY = 1000L;
+
     public Context context;
     public boolean message;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Runnable finishRunnable = this::finishSafely;
 
     public void start(Context context) {
         this.context = context;
@@ -58,8 +60,13 @@ public class TaskListInfoViewModel extends BaseViewModel {
     }
 
     public void postData(String ids) {
+        if (TextUtils.isEmpty(ids)) {
+            error("该任务数据异常,请稍后重试");
+            return;
+        }
         HhLog.e("ids " + ids);
         loading.postValue(new LoadingEvent(true, "加载中.."));
+        handler.removeCallbacks(finishRunnable);
         if (message) {
             HhHttp.get()
                     .url(URLConstant.GET_TASK_MESSAGE)
@@ -75,27 +82,32 @@ public class TaskListInfoViewModel extends BaseViewModel {
                             HhLog.e("postData " + response);
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
-                                String code = jsonObject.getString("code");
+                                String code = jsonObject.optString("code");
                                 if (Objects.equals(code, "200")) {
                                     loading.postValue(new LoadingEvent(false));
-                                    JSONObject data = jsonObject.getJSONObject("data");
+                                    JSONObject data = jsonObject.optJSONObject("data");
+                                    if (data == null) {
+                                        error(jsonObject.optString("message", "该任务数据异常,请稍后重试"));
+                                        return;
+                                    }
                                     taskList = new Gson().fromJson(String.valueOf(data), TaskList.class);
                                     taskLists.postValue(taskList);
 
                                     updateReadState();
                                 } else {
-                                    error();
+                                    error(jsonObject.optString("message", "该任务数据异常,请稍后重试"));
                                 }
 
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                loading.postValue(new LoadingEvent(false));
+                                error("该任务数据异常,请稍后重试");
                             }
                         }
 
                         @Override
                         public void onFailure(Call call, Exception e, int id) {
-                            //loading.postValue(new LoadingEvent(false));
-                            error();
+                            loading.postValue(new LoadingEvent(false));
+                            error("该任务数据异常,请稍后重试");
                         }
                     });
         } else {
@@ -113,31 +125,39 @@ public class TaskListInfoViewModel extends BaseViewModel {
                             HhLog.e("postData " + response);
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
-                                String code = jsonObject.getString("code");
+                                String code = jsonObject.optString("code");
                                 if (Objects.equals(code, "200")) {
                                     loading.postValue(new LoadingEvent(false));
-                                    JSONObject data = jsonObject.getJSONObject("data");
+                                    JSONObject data = jsonObject.optJSONObject("data");
+                                    if (data == null) {
+                                        error(jsonObject.optString("message", "该任务数据异常,请稍后重试"));
+                                        return;
+                                    }
                                     taskList = new Gson().fromJson(String.valueOf(data), TaskList.class);
                                     taskLists.postValue(taskList);
                                 } else {
-                                    error();
+                                    error(jsonObject.optString("message", "该任务数据异常,请稍后重试"));
                                 }
 
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                loading.postValue(new LoadingEvent(false));
+                                error("该任务数据异常,请稍后重试");
                             }
                         }
 
                         @Override
                         public void onFailure(Call call, Exception e, int id) {
-                            //loading.postValue(new LoadingEvent(false));
-                            error();
+                            loading.postValue(new LoadingEvent(false));
+                            error("该任务数据异常,请稍后重试");
                         }
                     });
         }
     }
 
     private void updateReadState() {
+        if (taskList == null || TextUtils.isEmpty(taskList.getId())) {
+            return;
+        }
         RequestParams params = new RequestParams(URLConstant.GET_CHANGE_STATE_NEW);
         params.addParameter("messageId", taskList.getId());
         JSONObject jsonObject = new JSONObject();
@@ -173,26 +193,33 @@ public class TaskListInfoViewModel extends BaseViewModel {
         });
     }
 
-    private void error() {
-        Toast.makeText(context, "该任务数据异常,请稍后重试", Toast.LENGTH_SHORT).show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ((TaskListInfoActivity) context).finish();
-                } catch (Exception e) {
-                    Log.e("TAG", "run: " + e.getMessage());
-                }
-            }
-        }, 1000);
+    private void error(String message) {
+        loading.postValue(new LoadingEvent(false));
+        Toast.makeText(context, TextUtils.isEmpty(message) ? "该任务数据异常,请稍后重试" : message, Toast.LENGTH_SHORT).show();
+        handler.removeCallbacks(finishRunnable);
+        handler.postDelayed(finishRunnable, ERROR_FINISH_DELAY);
+    }
+
+    private void finishSafely() {
+        if (!(context instanceof Activity)) {
+            return;
+        }
+        Activity activity = (Activity) context;
+        if (!activity.isFinishing()) {
+            activity.finish();
+        }
     }
 
     public void changeState(String ids) {
+        TaskList value = taskLists.getValue();
+        if (value == null || TextUtils.isEmpty(ids)) {
+            Toast.makeText(context, "该任务数据异常,请稍后重试", Toast.LENGTH_SHORT).show();
+            return;
+        }
         HhLog.e("ids " + ids);
         loading.postValue(new LoadingEvent(true, "加载中.."));
         CommonParams p = new CommonParams();
-        TaskList value = taskLists.getValue();
-        if (Objects.equals(Objects.requireNonNull(value).getStatus(), "0")) {
+        if (Objects.equals(value.getStatus(), "0")) {
             p.setStatus("1");
         } else if (Objects.equals(value.getStatus(), "1")) {
             p.setStatus("2");
@@ -211,5 +238,11 @@ public class TaskListInfoViewModel extends BaseViewModel {
                 postData(ids);
             }
         });
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        handler.removeCallbacks(finishRunnable);
     }
 }

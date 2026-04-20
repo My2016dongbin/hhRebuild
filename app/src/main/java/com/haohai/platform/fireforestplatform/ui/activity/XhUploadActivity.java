@@ -172,7 +172,7 @@ public class XhUploadActivity extends BaseLiveActivity<ActivityXhUploadBinding, 
         layoutParams.width = iconSize;
         layoutParams.height = iconSize;
         binding.topBar.rightIcon.setLayoutParams(layoutParams);
-        binding.topBar.rightIcon.setImageResource(R.drawable.ic_xh_upload_list);
+        binding.topBar.rightIcon.setImageResource(R.drawable.ic_menu_un);
         binding.topBar.rightIcon.setVisibility(View.VISIBLE);
         binding.topBar.right.setVisibility(View.GONE);
 

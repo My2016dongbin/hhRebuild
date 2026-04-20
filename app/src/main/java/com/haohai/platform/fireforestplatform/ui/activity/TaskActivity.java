@@ -4,13 +4,13 @@ import static me.drakeet.multitype.MultiTypeAsserts.assertHasTheSameAdapter;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.tabs.TabLayout;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.base.BaseLiveActivity;
 import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
@@ -33,7 +33,7 @@ import me.drakeet.multitype.MultiTypeAdapter;
 
 public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskViewModel> implements TaskListViewBinder.OnItemClickListener {
 
-    private TextView[] tabViews;
+    private static final String[] TAB_TITLES = {"全部", "未开始", "执行中", "已结束"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,11 +85,27 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
     }
 
     private void initTabs() {
-        tabViews = new TextView[]{binding.tabAll, binding.tabNotStarted, binding.tabInProgress, binding.tabFinished};
-        binding.tabAll.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_ALL));
-        binding.tabNotStarted.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_NOT_STARTED));
-        binding.tabInProgress.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_IN_PROGRESS));
-        binding.tabFinished.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_FINISHED));
+        binding.tabLayout.removeAllTabs();
+        for (String title : TAB_TITLES) {
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(title));
+        }
+        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab == null) {
+                    return;
+                }
+                switchTaskStatus(mapPositionToStatus(tab.getPosition()));
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
         updateTabSelection(obtainViewModel().status.getValue());
     }
 
@@ -98,27 +114,44 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
         if ((status == null && currentStatus == null) || (status != null && status.equals(currentStatus))) {
             return;
         }
-        updateTabSelection(status);
         obtainViewModel().switchStatus(status);
     }
 
     private void updateTabSelection(String status) {
-        if (tabViews == null) {
+        if (binding.tabLayout.getTabCount() == 0) {
             return;
         }
-        String currentStatus = status == null ? TaskViewModel.STATUS_ALL : status;
-        for (TextView tabView : tabViews) {
-            tabView.setSelected(false);
+        int position = mapStatusToPosition(status == null ? TaskViewModel.STATUS_ALL : status);
+        TabLayout.Tab tab = binding.tabLayout.getTabAt(position);
+        if (tab != null && !tab.isSelected()) {
+            tab.select();
         }
-        if (TaskViewModel.STATUS_ALL.equals(currentStatus)) {
-            binding.tabAll.setSelected(true);
-        } else if (TaskViewModel.STATUS_IN_PROGRESS.equals(currentStatus)) {
-            binding.tabInProgress.setSelected(true);
-        } else if (TaskViewModel.STATUS_FINISHED.equals(currentStatus)) {
-            binding.tabFinished.setSelected(true);
-        } else {
-            binding.tabNotStarted.setSelected(true);
+    }
+
+    private String mapPositionToStatus(int position) {
+        if (position == 1) {
+            return TaskViewModel.STATUS_NOT_STARTED;
         }
+        if (position == 2) {
+            return TaskViewModel.STATUS_IN_PROGRESS;
+        }
+        if (position == 3) {
+            return TaskViewModel.STATUS_FINISHED;
+        }
+        return TaskViewModel.STATUS_ALL;
+    }
+
+    private int mapStatusToPosition(String status) {
+        if (TaskViewModel.STATUS_NOT_STARTED.equals(status)) {
+            return 1;
+        }
+        if (TaskViewModel.STATUS_IN_PROGRESS.equals(status)) {
+            return 2;
+        }
+        if (TaskViewModel.STATUS_FINISHED.equals(status)) {
+            return 3;
+        }
+        return 0;
     }
 
     ///推送任务刷新
@@ -152,7 +185,7 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
     @Override
     protected void subscribeObserver() {
         super.subscribeObserver();
-
+        obtainViewModel().status.observe(this, this::updateTabSelection);
     }
 
     @Override

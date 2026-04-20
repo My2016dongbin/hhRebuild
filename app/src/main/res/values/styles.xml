@@ -55,6 +55,12 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="TaskTabTextStyle" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
 
     <style name="ActionSheetDialogStyle" parent="@android:style/Theme.Dialog">
 

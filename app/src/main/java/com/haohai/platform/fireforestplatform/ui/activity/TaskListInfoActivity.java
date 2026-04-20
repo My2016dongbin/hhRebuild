@@ -149,7 +149,12 @@ public class TaskListInfoActivity extends BaseLiveActivity<ActivityTaskListInfoB
         binding.lineTime.title.setText("开始时间");
         binding.lineTime.content.setText(StringData.parse19(taskList.getTaskStartTime()));
         binding.lineUser.title.setText("执行人");
-        binding.lineUser.content.setText(taskList.getOperatorName());
+        //未开始显示分配人，开始后显示更新人
+        if(taskList.getStatus()==null || taskList.getStatus().equals("0")){
+            binding.lineUser.content.setText(taskList.getOperatorName());
+        }else{
+            binding.lineUser.content.setText(taskList.getUpdateUser());
+        }
         binding.lineLngLat.title.setText("任务经纬度");
         try{
             binding.lineLngLat.content.setText(taskList.getPosition().getLng() + "," + taskList.getPosition().getLat());

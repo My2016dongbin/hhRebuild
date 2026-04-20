@@ -56,7 +56,12 @@ public class TaskListViewBinder extends ItemViewProvider<TaskList, TaskListViewB
 
         binding.title.setText(taskList.getTaskContent());
         binding.time.setText(parse19(taskList.getTaskStartTime()));
-        binding.recordNo.setText(parseOperatorName(taskList.getOperatorName()));
+        //未开始显示分配人，开始后显示更新人
+        if(taskList.getStatus()==null || taskList.getStatus().equals("0")){
+            binding.recordNo.setText(parseOperatorName(taskList.getOperatorName()));
+        }else{
+            binding.recordNo.setText(parseOperatorName(taskList.getUpdateUser()));
+        }
         Glide.with(context).load(parseFirst(taskList.getTaskImg()))
                 .apply(new RequestOptions()
                         .placeholder(R.drawable.ic_no_pic)

@@ -9,15 +9,15 @@ public class XhUploadRecord {
     private String eventTime;
     private String eventAddress;
     private String imageUrl;
-    private String recordNo;
+    private String createUser;
 
-    public XhUploadRecord(String id, String eventName, String eventTime, String eventAddress, String imageUrl, String recordNo) {
+    public XhUploadRecord(String id, String eventName, String eventTime, String eventAddress, String imageUrl, String createUser) {
         this.id = id;
         this.eventName = eventName;
         this.eventTime = eventTime;
         this.eventAddress = eventAddress;
         this.imageUrl = imageUrl;
-        this.recordNo = recordNo;
+        this.createUser = createUser;
     }
 
     public String getId() {
@@ -60,11 +60,11 @@ public class XhUploadRecord {
         this.imageUrl = imageUrl;
     }
 
-    public String getRecordNo() {
-        return recordNo;
+    public String getCreateUser() {
+        return createUser;
     }
 
-    public void setRecordNo(String recordNo) {
-        this.recordNo = recordNo;
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
     }
 }

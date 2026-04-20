@@ -10,6 +10,9 @@ import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.haohai.platform.fireforestplatform.BR;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.databinding.ItemXhUploadRecordBinding;
@@ -42,11 +45,13 @@ public class XhUploadRecordViewBinder extends ItemViewProvider<XhUploadRecord, X
         binding.eventName.setText(item.getEventName());
         binding.eventTime.setText(item.getEventTime());
         binding.eventAddress.setText(item.getEventAddress());
-        binding.recordNo.setText(item.getRecordNo());
+        binding.recordNo.setText(item.getCreateUser());
         Glide.with(context)
                 .load(item.getImageUrl())
-                .error(R.drawable.ic_no_pic)
-                .placeholder(R.drawable.ic_no_pic)
+                .apply(new RequestOptions()
+                        .placeholder(R.drawable.ic_no_pic)
+                        .error(R.drawable.ic_no_pic)
+                        .transform(new CenterCrop(), new RoundedCorners(20)))
                 .into(binding.icon);
     }
 

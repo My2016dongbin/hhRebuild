@@ -62,6 +62,7 @@ public class URLConstant {
     public static final String POST_HIDDEN_DANGER = BASE_PATH + "fire/api/dangerCheck";//隐患排查提交
     public static final String POST_FIRE_UPLOAD = BASE_PATH + "fire/api/reportFirealarm";//火情上报提交
     public static final String POST_XH_UPLOAD = BASE_PATH + "fire/api/reportAlgorithmAlarm";//巡护上报提交
+    public static final String POST_XH_UPLOAD_LIST = BASE_PATH + "fire/api/reportAlgorithmAlarm/page";//巡护上报列表分页
 
     public static final String PUT_CHANGE_PASSWORD = BASE_PATH + "auth/api/auth/user/modfiy/passwd";//修改密码
 

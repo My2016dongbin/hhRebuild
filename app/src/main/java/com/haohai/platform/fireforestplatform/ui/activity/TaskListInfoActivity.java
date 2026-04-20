@@ -148,6 +148,8 @@ public class TaskListInfoActivity extends BaseLiveActivity<ActivityTaskListInfoB
         binding.lineType.content.setText((taskList.getTaskContent()+"").contains("卡口")?"卡口报警任务":parseTaskType(taskList.getTaskType()));
         binding.lineTime.title.setText("开始时间");
         binding.lineTime.content.setText(StringData.parse19(taskList.getTaskStartTime()));
+        binding.lineUser.title.setText("执行人");
+        binding.lineUser.content.setText(taskList.getOperatorName());
         binding.lineLngLat.title.setText("任务经纬度");
         try{
             binding.lineLngLat.content.setText(taskList.getPosition().getLng() + "," + taskList.getPosition().getLat());

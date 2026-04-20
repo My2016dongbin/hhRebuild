@@ -121,7 +121,7 @@ public class TaskListInfoViewModel extends BaseViewModel {
                     .execute(new LoggedInStringCallback(this, context) {
                         @Override
                         public void onSuccess(String response, int id) {
-                            HhLog.e("postData " + ids);
+                            HhLog.e("postData " + URLConstant.GET_TASK_INFO+"?id="+ids);
                             HhLog.e("postData " + response);
                             try {
                                 JSONObject jsonObject = new JSONObject(response);

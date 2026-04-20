@@ -3,6 +3,7 @@ package com.haohai.platform.fireforestplatform.ui.viewmodel;
 import static me.drakeet.multitype.MultiTypeAsserts.assertAllRegistered;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.lifecycle.MutableLiveData;
@@ -32,6 +33,7 @@ import me.drakeet.multitype.MultiTypeAdapter;
 import okhttp3.Call;
 
 public class TaskViewModel extends BaseViewModel {
+    public static final String STATUS_ALL = "";
     public static final String STATUS_NOT_STARTED = "0";
     public static final String STATUS_IN_PROGRESS = "1";
     public static final String STATUS_FINISHED = "2";
@@ -41,8 +43,8 @@ public class TaskViewModel extends BaseViewModel {
     public String id;
     public List<TaskList> taskLists = new ArrayList<>();
     public List<Object> items = new ArrayList<>();
-    ///0未开始，1执行中，2已结束
-    public final MutableLiveData<String> status = new MutableLiveData<>(STATUS_NOT_STARTED);
+    ///空字符串全部，0未开始，1执行中，2已结束
+    public final MutableLiveData<String> status = new MutableLiveData<>(STATUS_ALL);
     public void start(Context context){
         this.context = context;
     }
@@ -59,7 +61,7 @@ public class TaskViewModel extends BaseViewModel {
 
     public void postData(){
         loading.setValue(new LoadingEvent(true,"加载中.."));
-        String content = new Gson().toJson(new CommonParams(id,status.getValue(),"", (String) SPUtils.get(context, SPValue.groupId, ""),"appInternet",new ArrayList<>()));
+        String content = buildRequestContent();
         HhHttp.postString()
                 .url(URLConstant.POST_TASK_LIST)
                 .content(content)
@@ -87,6 +89,23 @@ public class TaskViewModel extends BaseViewModel {
                         loading.setValue(new LoadingEvent(false));
                     }
                 });
+    }
+
+    private String buildRequestContent() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("appMessageId", id);
+            jsonObject.put("id", "");
+            jsonObject.put("groupId", (String) SPUtils.get(context, SPValue.groupId, ""));
+            jsonObject.put("type", "appInternet");
+            jsonObject.put("doubleList", new JSONArray());
+            if (!TextUtils.isEmpty(status.getValue())) {
+                jsonObject.put("status", status.getValue());
+            }
+        } catch (JSONException e) {
+            return new Gson().toJson(new CommonParams(id, status.getValue(), "", (String) SPUtils.get(context, SPValue.groupId, ""),"appInternet",new ArrayList<>()));
+        }
+        return jsonObject.toString();
     }
 
     public void updateData() {

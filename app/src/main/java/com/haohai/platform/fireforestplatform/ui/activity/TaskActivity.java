@@ -59,7 +59,7 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
         binding.recycle.setLayoutManager(linearLayoutManager);
         obtainViewModel().adapter = new MultiTypeAdapter(obtainViewModel().items);
         binding.recycle.setHasFixedSize(true);
-        binding.recycle.setNestedScrollingEnabled(false);//设置样式后面的背景颜色
+        binding.recycle.setNestedScrollingEnabled(true);
         binding.monitorFireSmart.setRefreshHeader(new ClassicsHeader(this));
 
         //设置监听器，包括顶部下拉刷新、底部上滑刷新
@@ -85,7 +85,8 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
     }
 
     private void initTabs() {
-        tabViews = new TextView[]{binding.tabNotStarted, binding.tabInProgress, binding.tabFinished};
+        tabViews = new TextView[]{binding.tabAll, binding.tabNotStarted, binding.tabInProgress, binding.tabFinished};
+        binding.tabAll.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_ALL));
         binding.tabNotStarted.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_NOT_STARTED));
         binding.tabInProgress.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_IN_PROGRESS));
         binding.tabFinished.setOnClickListener(v -> switchTaskStatus(TaskViewModel.STATUS_FINISHED));
@@ -93,7 +94,8 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
     }
 
     private void switchTaskStatus(String status) {
-        if (status.equals(obtainViewModel().status.getValue())) {
+        String currentStatus = obtainViewModel().status.getValue();
+        if ((status == null && currentStatus == null) || (status != null && status.equals(currentStatus))) {
             return;
         }
         updateTabSelection(status);
@@ -104,11 +106,13 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
         if (tabViews == null) {
             return;
         }
-        String currentStatus = status == null ? TaskViewModel.STATUS_NOT_STARTED : status;
+        String currentStatus = status == null ? TaskViewModel.STATUS_ALL : status;
         for (TextView tabView : tabViews) {
             tabView.setSelected(false);
         }
-        if (TaskViewModel.STATUS_IN_PROGRESS.equals(currentStatus)) {
+        if (TaskViewModel.STATUS_ALL.equals(currentStatus)) {
+            binding.tabAll.setSelected(true);
+        } else if (TaskViewModel.STATUS_IN_PROGRESS.equals(currentStatus)) {
             binding.tabInProgress.setSelected(true);
         } else if (TaskViewModel.STATUS_FINISHED.equals(currentStatus)) {
             binding.tabFinished.setSelected(true);

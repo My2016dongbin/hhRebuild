@@ -42,6 +42,9 @@
                         android:id="@+id/line_time"
                         layout="@layout/view_info_line"/>
                     <include
+                        android:id="@+id/line_user"
+                        layout="@layout/view_info_line"/>
+                    <include
                         android:id="@+id/line_lng_lat"
                         layout="@layout/view_info_line"/>
                     <include

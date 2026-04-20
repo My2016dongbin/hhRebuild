@@ -150,7 +150,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
             Integer value = obtainViewModel().deviceNumber.getValue();
             if(value !=null){
                 binding.deviceNumber.setText(String.valueOf(value));
-                binding.deviceOffline.setText(String.valueOf(value-integer));
+                binding.deviceOffline.setText(String.valueOf(Math.max(value-integer,0)));
             }
         });
         //Chart数据

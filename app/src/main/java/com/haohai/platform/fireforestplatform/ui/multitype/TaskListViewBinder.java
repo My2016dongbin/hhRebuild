@@ -12,9 +12,11 @@ import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.haohai.platform.fireforestplatform.BR;
 import com.haohai.platform.fireforestplatform.R;
-import com.haohai.platform.fireforestplatform.databinding.ItemMonitorFireBinding;
 import com.haohai.platform.fireforestplatform.databinding.ItemTaskListBinding;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 
@@ -54,8 +56,12 @@ public class TaskListViewBinder extends ItemViewProvider<TaskList, TaskListViewB
 
         binding.title.setText(taskList.getTaskContent());
         binding.time.setText(parse19(taskList.getTaskStartTime()));
+        binding.recordNo.setText(parseOperatorName(taskList.getOperatorName()));
         Glide.with(context).load(parseFirst(taskList.getTaskImg()))
-                .error(R.drawable.ic_no_pic)
+                .apply(new RequestOptions()
+                        .placeholder(R.drawable.ic_no_pic)
+                        .error(R.drawable.ic_no_pic)
+                        .transform(new CenterCrop(), new RoundedCorners(20)))
                 .into(binding.icon);
     }
 
@@ -78,6 +84,13 @@ public class TaskListViewBinder extends ItemViewProvider<TaskList, TaskListViewB
             HhLog.e(e.getMessage());
         }
         return r;
+    }
+
+    private String parseOperatorName(String operatorName) {
+        if (operatorName == null || operatorName.trim().isEmpty()) {
+            return "-";
+        }
+        return operatorName;
     }
 
     static class ViewHolder<B extends ViewDataBinding> extends RecyclerView.ViewHolder {

@@ -24,13 +24,20 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.Poi;
+import com.amap.api.maps.model.Polygon;
 import com.amap.api.maps.model.PolygonOptions;
+import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.PolylineOptions;
+import com.amap.api.maps.model.Text;
+import com.amap.api.maps.model.TextOptions;
 import com.amap.api.navi.NaviSetting;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.base.BaseFragment;
@@ -75,6 +82,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements OneBodyListDialog.OneBodyDialogListener, SatelliteListDialog.SatelliteDialogListener, OneBodyDetailDialog.OneBodyDetailDialogListener, SatelliteDetailDialog.SatelliteDetailDialogListener, ResourceDetailDialog.ResourceDetailDialogListener, ResourceListDialog.ResourceDialogListener, SatelliteSearchDialog.SatelliteSearchDialogListener, SatelliteSearchAdvancedDialog.SatelliteSearchAdvancedDialogListener, SheQuListDialog.SheQuDialogListener {
@@ -89,7 +97,21 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private ResourceListDialog resourceListDialog;
     private SheQuListDialog sheQuListDialog;
     private ResourceDetailDialog resourceDetailDialog;
+    private static final int MEASURE_MODE_NONE = 0;
+    private static final int MEASURE_MODE_DISTANCE = 1;
+    private static final int MEASURE_MODE_AREA = 2;
+    private static final int MAP_OVERLAY_TYPE_MEASURE = -100;
     private AMap aMap;
+    private int currentMeasureMode = MEASURE_MODE_NONE;
+    private final List<LatLng> distancePoints = new ArrayList<>();
+    private final List<Marker> distanceMarkers = new ArrayList<>();
+    private final List<Polyline> distancePolylines = new ArrayList<>();
+    private final List<Text> distanceTexts = new ArrayList<>();
+    private final List<LatLng> areaPoints = new ArrayList<>();
+    private final List<Marker> areaMarkers = new ArrayList<>();
+    private Polyline areaPolyline;
+    private Polygon areaPolygon;
+    private Text areaText;
 
     public static MapFragment newInstance(String param1) {
         Bundle args = new Bundle();
@@ -176,6 +198,9 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         binding.viewGridShequ.setOnClickListener(v -> {
             sheQuListDialog.show();
         });
+        binding.viewMeasureDistance.setOnClickListener(v -> toggleDistanceMeasure());
+        binding.viewMeasureArea.setOnClickListener(v -> toggleAreaMeasure());
+        updateMeasureButtonState();
     }
 
     private void delayDialog(Dialog dialog) {
@@ -296,12 +321,27 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             @Override
             public void onMapClick(LatLng latLng) {
                 closeInput(binding.editFind);
+                handleMeasureMapClick(latLng);
+            }
+        });
+        aMap.setOnPOIClickListener(new AMap.OnPOIClickListener() {
+            @Override
+            public void onPOIClick(Poi poi) {
+                closeInput(binding.editFind);
+                handleMeasureMapClick(poi.getCoordinate());
             }
         });
         aMap.setOnMarkerClickListener(marker -> {
-            Bundle extraInfo = (Bundle) marker.getObject();
+            Object markerObject = marker.getObject();
+            if (!(markerObject instanceof Bundle)) {
+                return false;
+            }
+            Bundle extraInfo = (Bundle) markerObject;
             String markerId = extraInfo.getString("id");
             int markerType = extraInfo.getInt("type");
+            if (markerType == MAP_OVERLAY_TYPE_MEASURE) {
+                return true;
+            }
             OneBodyFire oneBodyFire = new OneBodyFire();
             if(markerType == obtainViewModel().ONE_BODY){
                 List<OneBodyFire> oneBodyListValue = obtainViewModel().oneBodyList.getValue();
@@ -480,6 +520,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         if(obtainViewModel().sheQuCurrentList.getValue()!=null && !obtainViewModel().sheQuCurrentList.getValue().isEmpty()){
             sheQuMarker(Objects.requireNonNull(obtainViewModel().sheQuCurrentList.getValue()));
         }
+        redrawMeasureOverlays();
     }
 
     private void satelliteFireChanged(List<SatelliteFire> satelliteFires) {
@@ -791,6 +832,238 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         bundle.putString("id", "userLocation");
         bundle.putInt("type", obtainViewModel().USER_LOCATION);
         marker.setObject(bundle);
+    }
+
+    private void toggleDistanceMeasure() {
+        if (currentMeasureMode == MEASURE_MODE_DISTANCE) {
+            currentMeasureMode = MEASURE_MODE_NONE;
+            clearDistanceMeasurement();
+        } else {
+            currentMeasureMode = MEASURE_MODE_DISTANCE;
+            clearAreaMeasurement();
+            clearDistanceMeasurement();
+        }
+        updateMeasureButtonState();
+    }
+
+    private void toggleAreaMeasure() {
+        if (currentMeasureMode == MEASURE_MODE_AREA) {
+            currentMeasureMode = MEASURE_MODE_NONE;
+            clearAreaMeasurement();
+        } else {
+            currentMeasureMode = MEASURE_MODE_AREA;
+            clearDistanceMeasurement();
+            clearAreaMeasurement();
+        }
+        updateMeasureButtonState();
+    }
+
+    private void updateMeasureButtonState() {
+        updateMeasureButton(binding.viewMeasureDistance, currentMeasureMode == MEASURE_MODE_DISTANCE);
+        updateMeasureButton(binding.viewMeasureArea, currentMeasureMode == MEASURE_MODE_AREA);
+    }
+
+    private void updateMeasureButton(View button, boolean selected) {
+        button.setBackgroundResource(selected ? R.drawable.blue_conner : R.drawable.white_conner);
+        updateMeasureButtonTextColor(button, selected ? Color.WHITE : Color.BLACK);
+    }
+
+    private void updateMeasureButtonTextColor(View view, int color) {
+        if (view instanceof TextView) {
+            ((TextView) view).setTextColor(color);
+            return;
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                updateMeasureButtonTextColor(viewGroup.getChildAt(i), color);
+            }
+        }
+    }
+
+    private boolean handleMeasureMapClick(LatLng latLng) {
+        if (currentMeasureMode == MEASURE_MODE_DISTANCE) {
+            if (distancePoints.size() == 2) {
+                distancePoints.clear();
+            }
+            distancePoints.add(latLng);
+            renderDistanceMeasurement();
+            return true;
+        }
+        if (currentMeasureMode == MEASURE_MODE_AREA) {
+            areaPoints.add(latLng);
+            renderAreaMeasurement();
+            return true;
+        }
+        return false;
+    }
+
+    private void redrawMeasureOverlays() {
+        if (!distancePoints.isEmpty()) {
+            renderDistanceMeasurement();
+        }
+        if (!areaPoints.isEmpty()) {
+            renderAreaMeasurement();
+        }
+        updateMeasureButtonState();
+    }
+
+    private void clearDistanceMeasurement() {
+        distancePoints.clear();
+        clearDistanceRenderObjects();
+    }
+
+    private void clearDistanceRenderObjects() {
+        for (Marker marker : distanceMarkers) {
+            marker.remove();
+        }
+        distanceMarkers.clear();
+        for (Polyline polyline : distancePolylines) {
+            polyline.remove();
+        }
+        distancePolylines.clear();
+        for (Text text : distanceTexts) {
+            text.remove();
+        }
+        distanceTexts.clear();
+    }
+
+    private void renderDistanceMeasurement() {
+        clearDistanceRenderObjects();
+        for (LatLng point : distancePoints) {
+            distanceMarkers.add(addMeasureMarker(point));
+        }
+        if (distancePoints.size() < 2) {
+            return;
+        }
+        LatLng startPoint = distancePoints.get(0);
+        LatLng endPoint = distancePoints.get(1);
+        distancePolylines.add(aMap.addPolyline(new PolylineOptions()
+                .add(startPoint, endPoint)
+                .width(8)
+                .color(Color.parseColor("#FF3875C5"))));
+        float distance = AMapUtils.calculateLineDistance(startPoint, endPoint);
+        distanceTexts.add(aMap.addText(new TextOptions()
+                .position(getMidPoint(startPoint, endPoint))
+                .text(formatDistance(distance))
+                .fontColor(Color.WHITE)
+                .backgroundColor(Color.parseColor("#CC3875C5"))
+                .fontSize(32)));
+    }
+
+    private void clearAreaMeasurement() {
+        areaPoints.clear();
+        clearAreaRenderObjects();
+    }
+
+    private void clearAreaRenderObjects() {
+        for (Marker marker : areaMarkers) {
+            marker.remove();
+        }
+        areaMarkers.clear();
+        if (areaPolyline != null) {
+            areaPolyline.remove();
+            areaPolyline = null;
+        }
+        if (areaPolygon != null) {
+            areaPolygon.remove();
+            areaPolygon = null;
+        }
+        if (areaText != null) {
+            areaText.remove();
+            areaText = null;
+        }
+    }
+
+    private void renderAreaMeasurement() {
+        clearAreaRenderObjects();
+        for (LatLng point : areaPoints) {
+            areaMarkers.add(addMeasureMarker(point));
+        }
+        if (areaPoints.size() == 2) {
+            areaPolyline = aMap.addPolyline(new PolylineOptions()
+                    .addAll(areaPoints)
+                    .width(8)
+                    .color(Color.parseColor("#FFF28F25")));
+            return;
+        }
+        if (areaPoints.size() < 3) {
+            return;
+        }
+        areaPolygon = aMap.addPolygon(new PolygonOptions()
+                .addAll(areaPoints)
+                .strokeWidth(8)
+                .strokeColor(Color.parseColor("#FFF28F25"))
+                .fillColor(Color.parseColor("#66F28F25")));
+        areaText = aMap.addText(new TextOptions()
+                .position(getAreaLabelPoint(areaPoints))
+                .text(formatArea(calculateArea(areaPoints)))
+                .fontColor(Color.WHITE)
+                .backgroundColor(Color.parseColor("#CCF28F25"))
+                .fontSize(32));
+    }
+
+    private Marker addMeasureMarker(LatLng point) {
+        Marker marker = aMap.addMarker(new MarkerOptions()
+                .position(point)
+                .anchor(0.5f, 0.5f)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        Bundle bundle = new Bundle();
+        bundle.putString("id", "measure");
+        bundle.putInt("type", MAP_OVERLAY_TYPE_MEASURE);
+        marker.setObject(bundle);
+        return marker;
+    }
+
+    private LatLng getMidPoint(LatLng startPoint, LatLng endPoint) {
+        return new LatLng((startPoint.latitude + endPoint.latitude) / 2d, (startPoint.longitude + endPoint.longitude) / 2d);
+    }
+
+    private LatLng getAreaLabelPoint(List<LatLng> points) {
+        double lat = 0;
+        double lng = 0;
+        for (LatLng point : points) {
+            lat += point.latitude;
+            lng += point.longitude;
+        }
+        return new LatLng(lat / points.size(), lng / points.size());
+    }
+
+    private String formatDistance(float distance) {
+        if (distance > 100f) {
+            return String.format(Locale.getDefault(), "%.0f米", distance);
+        }
+        return String.format(Locale.getDefault(), "%.1f米", distance);
+    }
+
+    private String formatArea(double area) {
+        if (area > 100d) {
+            return String.format(Locale.getDefault(), "%.0f平方米", area);
+        }
+        return String.format(Locale.getDefault(), "%.1f平方米", area);
+    }
+
+    private double calculateArea(List<LatLng> points) {
+        if (points.size() < 3) {
+            return 0d;
+        }
+        double avgLat = 0d;
+        for (LatLng point : points) {
+            avgLat += Math.toRadians(point.latitude);
+        }
+        avgLat /= points.size();
+        double radius = 6378137d;
+        double area = 0d;
+        for (int i = 0; i < points.size(); i++) {
+            LatLng current = points.get(i);
+            LatLng next = points.get((i + 1) % points.size());
+            double currentX = Math.toRadians(current.longitude) * radius * Math.cos(avgLat);
+            double currentY = Math.toRadians(current.latitude) * radius;
+            double nextX = Math.toRadians(next.longitude) * radius * Math.cos(avgLat);
+            double nextY = Math.toRadians(next.latitude) * radius;
+            area += currentX * nextY - nextX * currentY;
+        }
+        return Math.abs(area) / 2d;
     }
 
 

@@ -165,7 +165,7 @@ public class TengxunReceiver extends XGPushBaseReceiver{
         context.startService(intent);
 
         EventBus.getDefault().post(new MessageRefresh());
-        if(CommonData.isUpdate){
+        /*if(CommonData.isUpdate){
             return;
         }
         String finalType = type;
@@ -182,7 +182,7 @@ public class TengxunReceiver extends XGPushBaseReceiver{
                     new InputDialog(parseMessageType(finalType) + "通知", finalContent, "反馈", "取消", context.getString(R.string.feedback))
                             .setCancelable(false)
                             .setOkButton((baseDialog, v2, inputStr) -> {
-                                if(inputStr.isEmpty() /*|| Objects.equals(inputStr, context.getString(R.string.feedback))*/) {
+                                if(inputStr.isEmpty() *//*|| Objects.equals(inputStr, context.getString(R.string.feedback))*//*) {
                                     Toast.makeText(context, "请输入反馈信息", Toast.LENGTH_SHORT).show();
                                     return true;
                                 }else{
@@ -193,7 +193,7 @@ public class TengxunReceiver extends XGPushBaseReceiver{
                             .show();
                     return false;
                 })
-                .show();
+                .show();*/
     }
 
     private String parseMessageType(String finalType) {

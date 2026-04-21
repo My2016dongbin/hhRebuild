@@ -121,5 +121,8 @@ public class URLConstant {
     public static final String POST_CODE_SEARCH = BASE_PATH +"auth/api/publicCode/subPage";//数据字典查询
 
 
+    public static final String GET_TEEM_LOCATION = BASE_PATH +"oa/api/trajectory/listOnlineTeammatesByGrid";//获取队友位置信息
+
+
 
 }

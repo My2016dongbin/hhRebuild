@@ -53,7 +53,7 @@ public class FgMessageViewModel extends BaseViewModel {
                 .execute(new LoggedInStringCallback(this,context) {
                     @Override
                     public void onSuccess(String response, int id) {
-                        HhLog.e("POST_MESSAGE_NEW" + response);
+                        //HhLog.e("POST_MESSAGE_NEW" + response);
                         loading.setValue(new LoadingEvent(false));
                         try {
                             JSONObject jsonObject = new JSONObject(response);

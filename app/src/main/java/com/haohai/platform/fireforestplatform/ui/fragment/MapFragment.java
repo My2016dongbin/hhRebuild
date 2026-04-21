@@ -52,6 +52,7 @@ import com.haohai.platform.fireforestplatform.permission.CommonPermission;
 import com.haohai.platform.fireforestplatform.ui.activity.SatelliteSettingActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.TaskActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.Resource;
+import com.haohai.platform.fireforestplatform.ui.bean.TeamMate;
 import com.haohai.platform.fireforestplatform.ui.cell.SheQuListDialog;
 import com.haohai.platform.fireforestplatform.ui.multitype.SheQu;
 import com.haohai.platform.fireforestplatform.ui.cell.SatelliteSearchAdvancedDialog;
@@ -63,6 +64,7 @@ import com.haohai.platform.fireforestplatform.ui.cell.ResourceListDialog;
 import com.haohai.platform.fireforestplatform.ui.cell.SatelliteDetailDialog;
 import com.haohai.platform.fireforestplatform.ui.cell.SatelliteListDialog;
 import com.haohai.platform.fireforestplatform.ui.cell.SatelliteSearchDialog;
+import com.haohai.platform.fireforestplatform.ui.cell.TeamMateDetailDialog;
 import com.haohai.platform.fireforestplatform.ui.multitype.ResourceType;
 import com.haohai.platform.fireforestplatform.ui.multitype.SatelliteFire;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.FgMapViewModel;
@@ -97,12 +99,14 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private ResourceListDialog resourceListDialog;
     private SheQuListDialog sheQuListDialog;
     private ResourceDetailDialog resourceDetailDialog;
+    private TeamMateDetailDialog teamMateDetailDialog;
     private static final int MEASURE_MODE_NONE = 0;
     private static final int MEASURE_MODE_DISTANCE = 1;
     private static final int MEASURE_MODE_AREA = 2;
     private static final int MAP_OVERLAY_TYPE_MEASURE = -100;
-    private AMap aMap;
+    private static final long TEAM_LOCATION_REFRESH_TIME = 10000L;
     private int currentMeasureMode = MEASURE_MODE_NONE;
+    private boolean teamLocationEnabled = false;
     private final List<LatLng> distancePoints = new ArrayList<>();
     private final List<Marker> distanceMarkers = new ArrayList<>();
     private final List<Polyline> distancePolylines = new ArrayList<>();
@@ -112,6 +116,17 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private Polyline areaPolyline;
     private Polygon areaPolygon;
     private Text areaText;
+    private final Handler teamLocationHandler = new Handler();
+    private final Runnable teamLocationRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!teamLocationEnabled) {
+                return;
+            }
+            obtainViewModel().getTeamMateData(false);
+            teamLocationHandler.postDelayed(this, TEAM_LOCATION_REFRESH_TIME);
+        }
+    };
 
     public static MapFragment newInstance(String param1) {
         Bundle args = new Bundle();
@@ -130,8 +145,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         NaviSetting.updatePrivacyShow(getActivity(), true, true);
         NaviSetting.updatePrivacyAgree(getActivity(), true);
         binding.aMapView.onCreate(savedInstanceState);
-        aMap = binding.aMapView.getMap();
-        aMap.setMapType(AMap.MAP_TYPE_SATELLITE);
+        obtainViewModel().aMap = binding.aMapView.getMap();
+        obtainViewModel().aMap.setMapType(AMap.MAP_TYPE_SATELLITE);
 
         init_();
         bind_();
@@ -195,12 +210,14 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
             userLocationMarker();
         });
+        binding.viewTeamLocation.setOnClickListener(v -> toggleTeamLocation());
         binding.viewGridShequ.setOnClickListener(v -> {
             sheQuListDialog.show();
         });
         binding.viewMeasureDistance.setOnClickListener(v -> toggleDistanceMeasure());
         binding.viewMeasureArea.setOnClickListener(v -> toggleAreaMeasure());
         updateMeasureButtonState();
+        updateToggleButton(binding.viewTeamLocation, teamLocationEnabled);
     }
 
     private void delayDialog(Dialog dialog) {
@@ -317,21 +334,21 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
 
         flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
-        aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
+        obtainViewModel().aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 closeInput(binding.editFind);
                 handleMeasureMapClick(latLng);
             }
         });
-        aMap.setOnPOIClickListener(new AMap.OnPOIClickListener() {
+        obtainViewModel().aMap.setOnPOIClickListener(new AMap.OnPOIClickListener() {
             @Override
             public void onPOIClick(Poi poi) {
                 closeInput(binding.editFind);
                 handleMeasureMapClick(poi.getCoordinate());
             }
         });
-        aMap.setOnMarkerClickListener(marker -> {
+        obtainViewModel().aMap.setOnMarkerClickListener(marker -> {
             Object markerObject = marker.getObject();
             if (!(markerObject instanceof Bundle)) {
                 return false;
@@ -369,6 +386,13 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                         return false;
                     }
                 }
+            }else if(markerType == obtainViewModel().TEAM_MATE){
+                TeamMate teamMate = getTeamMateById(markerId);
+                if (teamMate != null) {
+                    teamMateDetailDialog.setTeamMate(teamMate);
+                    delayDialog(teamMateDetailDialog);
+                }
+                return true;
             }
 
             return false;
@@ -392,6 +416,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         initSheQuListDialog();
         //资源点Marker详情Dialog
         initResourceDetailDialog();
+        //队友Marker详情Dialog
+        initTeamMateDetailDialog();
 
         //跳转当前位置
         new Handler().postDelayed(() -> {
@@ -403,7 +429,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
     private void flyBaiduMapZoom(double lat, double lng, int zoom) {
         //飞到精确点上
-        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.amap.api.maps.model.LatLng(lat, lng),zoom));
+        obtainViewModel().aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.amap.api.maps.model.LatLng(lat, lng),zoom));
     }
 
     @Override
@@ -411,18 +437,24 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         super.onResume();
         //在activity执行onResume时必须调用mMapView. onResume ()
         binding.aMapView.onResume();
+        if (teamLocationEnabled) {
+            teamLocationHandler.removeCallbacks(teamLocationRunnable);
+            teamLocationHandler.postDelayed(teamLocationRunnable, TEAM_LOCATION_REFRESH_TIME);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         binding.aMapView.onPause();
+        teamLocationHandler.removeCallbacks(teamLocationRunnable);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         binding.aMapView.onDestroy();
+        teamLocationHandler.removeCallbacks(teamLocationRunnable);
         EventBus.getDefault().unregister(this);
     }
 
@@ -447,10 +479,12 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         obtainViewModel().resourceTypeList.observe(requireActivity(), this::resourceTypeChanged);
         //资源数据
         obtainViewModel().resourceList.observe(requireActivity(), this::resourceChanged);
+        //队友位置数据
+        obtainViewModel().teamMateList.observe(requireActivity(), this::teamMateChanged);
     }
 
     private void oneBodyFireChanged(List<OneBodyFire> oneBodyFires) {
-        aMap.clear();
+        obtainViewModel().aMap.clear();
         //更新Dialog列表数据
         oneBodyListDialog.setOneBodyFireList(oneBodyFires,obtainViewModel().currentPage);
         //更新所有Marker
@@ -520,11 +554,15 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         if(obtainViewModel().sheQuCurrentList.getValue()!=null && !obtainViewModel().sheQuCurrentList.getValue().isEmpty()){
             sheQuMarker(Objects.requireNonNull(obtainViewModel().sheQuCurrentList.getValue()));
         }
+        //绘制队友位置Marker
+        if(teamLocationEnabled && obtainViewModel().teamMateList.getValue()!=null){
+            teamMateMarker(Objects.requireNonNull(obtainViewModel().teamMateList.getValue()));
+        }
         redrawMeasureOverlays();
     }
 
     private void satelliteFireChanged(List<SatelliteFire> satelliteFires) {
-        aMap.clear();
+        obtainViewModel().aMap.clear();
         //更新Dialog列表数据
         satelliteListDialog.setSatelliteFireList(satelliteFires);
         //更新所有Marker
@@ -539,7 +577,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
     }
     private void resourceChanged(List<Resource> resources) {
-        aMap.clear();
+        obtainViewModel().aMap.clear();
         //更新所有Marker
         updateMarkers();
         //跳转第一火点
@@ -569,12 +607,20 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
     private void sheQuCurrentChanged(List<ArrayList<Double>> points) {
         //更新地图图层数据
-        aMap.clear();
+        obtainViewModel().aMap.clear();
         updateMarkers();
     }
     private void resourceTypeChanged(List<ResourceType> resourceTypes) {
         //更新Dialog列表数据
         resourceListDialog.setResourceTypeList(resourceTypes);
+    }
+
+    private void teamMateChanged(List<TeamMate> teamMates) {
+        if (!teamLocationEnabled) {
+            return;
+        }
+        obtainViewModel().aMap.clear();
+        updateMarkers();
     }
 
     private void oneBodyMarker(List<OneBodyFire> oneBodyFires) {
@@ -607,7 +653,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 continue;
             }
         }
-        List<Marker> markers = aMap.addMarkers(options, false);
+        List<Marker> markers = obtainViewModel().aMap.addMarkers(options, false);
 
         try{
             for (int i = 0; i < markers.size(); i++) {
@@ -635,7 +681,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         polygonOptions.strokeWidth(15) // 多边形的边框
                 .strokeColor(Color.parseColor("#AAf28f25"))// 边框颜色
                 .fillColor(Color.parseColor("#AAf28f25"));   // 多边形的填充色
-        aMap.addPolygon(polygonOptions);
+        obtainViewModel().aMap.addPolygon(polygonOptions);
 
         //跳转到第一个点
         LatLng latLng = points.get(0);
@@ -659,7 +705,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 continue;
             }
         }
-        List<Marker> markers = aMap.addMarkers(options, false);
+        List<Marker> markers = obtainViewModel().aMap.addMarkers(options, false);
 
         try{
             for (int i = 0; i < markers.size(); i++) {
@@ -807,7 +853,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 continue;
             }
         }
-        List<Marker> markers = aMap.addMarkers(options, false);
+        List<Marker> markers = obtainViewModel().aMap.addMarkers(options, false);
 
         try{
             for (int i = 0; i < markers.size(); i++) {
@@ -827,11 +873,74 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         MarkerOptions option = new MarkerOptions()
                 .position(point)
                 .icon(btm);
-        Marker marker = aMap.addMarker(option);
+        Marker marker = obtainViewModel().aMap.addMarker(option);
         Bundle bundle = new Bundle();
         bundle.putString("id", "userLocation");
         bundle.putInt("type", obtainViewModel().USER_LOCATION);
         marker.setObject(bundle);
+    }
+
+    private void teamMateMarker(List<TeamMate> teamMates){
+        ArrayList<MarkerOptions> options = new ArrayList<>();
+        BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_friend);
+        for (TeamMate teamMate : teamMates) {
+            if(teamMate.getPosition()==null){
+                continue;
+            }
+            try {
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(teamMate.getPosition().getLat(), teamMate.getPosition().getLng());
+                LatLng point = new LatLng(doubles[0], doubles[1]);
+                MarkerOptions option = new MarkerOptions()
+                        .position(point)
+                        .icon(btm);
+                options.add(option);
+            }catch (Exception e){
+                Log.e(TAG, "teamMateMarker: " + e.getMessage());
+            }
+        }
+        List<Marker> markers = obtainViewModel().aMap.addMarkers(options, false);
+        int markerIndex = 0;
+        for (TeamMate teamMate : teamMates) {
+            if(teamMate.getPosition()==null){
+                continue;
+            }
+            if(markerIndex >= markers.size()){
+                break;
+            }
+            Bundle bundle = new Bundle();
+            bundle.putString("id", teamMate.getId());
+            bundle.putInt("type", obtainViewModel().TEAM_MATE);
+            markers.get(markerIndex).setObject(bundle);
+            markerIndex++;
+        }
+    }
+
+    private TeamMate getTeamMateById(String teamMateId){
+        List<TeamMate> teamMates = obtainViewModel().teamMateList.getValue();
+        if(teamMates == null){
+            return null;
+        }
+        for (TeamMate teamMate : teamMates) {
+            if(Objects.equals(teamMate.getId(), teamMateId)){
+                return teamMate;
+            }
+        }
+        return null;
+    }
+
+    private void toggleTeamLocation() {
+        teamLocationEnabled = !teamLocationEnabled;
+        updateToggleButton(binding.viewTeamLocation, teamLocationEnabled);
+        if(teamLocationEnabled){
+            obtainViewModel().getTeamMateData(true);
+            teamLocationHandler.removeCallbacks(teamLocationRunnable);
+            teamLocationHandler.postDelayed(teamLocationRunnable, TEAM_LOCATION_REFRESH_TIME);
+        }else{
+            teamLocationHandler.removeCallbacks(teamLocationRunnable);
+            obtainViewModel().teamMateList.postValue(new ArrayList<>());
+            obtainViewModel().aMap.clear();
+            updateMarkers();
+        }
     }
 
     private void toggleDistanceMeasure() {
@@ -864,6 +973,25 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void updateMeasureButton(View button, boolean selected) {
+        if (button == binding.viewMeasureDistance) {
+            binding.distance.setImageResource(selected ? R.drawable.measure_distance : R.drawable.measure_distance_un);
+            binding.distanceText.setTextColor(requireActivity().getResources().getColor(selected ? R.color.theme_color_blue : R.color.black90));
+            return;
+        }
+        if (button == binding.viewMeasureArea) {
+            binding.area.setImageResource(selected ? R.drawable.measure_area : R.drawable.measure_area_un);
+            binding.areaText.setTextColor(requireActivity().getResources().getColor(selected ? R.color.theme_color_blue : R.color.black90));
+            return;
+        }
+        updateToggleButton(button, selected);
+    }
+
+    private void updateToggleButton(View button, boolean selected) {
+        if (button == binding.viewTeamLocation) {
+            binding.teamLocationIcon.setImageResource(selected ? R.drawable.marker_friend : R.drawable.marker_friend_un);
+            binding.teamLocationText.setTextColor(requireActivity().getResources().getColor(selected ? R.color.theme_color_blue : R.color.black90));
+            return;
+        }
         button.setBackgroundResource(selected ? R.drawable.blue_conner : R.drawable.white_conner);
         updateMeasureButtonTextColor(button, selected ? Color.WHITE : Color.BLACK);
     }
@@ -938,16 +1066,16 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
         LatLng startPoint = distancePoints.get(0);
         LatLng endPoint = distancePoints.get(1);
-        distancePolylines.add(aMap.addPolyline(new PolylineOptions()
+        distancePolylines.add(obtainViewModel().aMap.addPolyline(new PolylineOptions()
                 .add(startPoint, endPoint)
                 .width(8)
                 .color(Color.parseColor("#FF3875C5"))));
         float distance = AMapUtils.calculateLineDistance(startPoint, endPoint);
-        distanceTexts.add(aMap.addText(new TextOptions()
+        distanceTexts.add(obtainViewModel().aMap.addText(new TextOptions()
                 .position(getMidPoint(startPoint, endPoint))
                 .text(formatDistance(distance))
                 .fontColor(Color.WHITE)
-                .backgroundColor(Color.parseColor("#CC3875C5"))
+                .backgroundColor(Color.parseColor("#00000000"))
                 .fontSize(32)));
     }
 
@@ -981,7 +1109,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             areaMarkers.add(addMeasureMarker(point));
         }
         if (areaPoints.size() == 2) {
-            areaPolyline = aMap.addPolyline(new PolylineOptions()
+            areaPolyline = obtainViewModel().aMap.addPolyline(new PolylineOptions()
                     .addAll(areaPoints)
                     .width(8)
                     .color(Color.parseColor("#FFF28F25")));
@@ -990,21 +1118,21 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         if (areaPoints.size() < 3) {
             return;
         }
-        areaPolygon = aMap.addPolygon(new PolygonOptions()
+        areaPolygon = obtainViewModel().aMap.addPolygon(new PolygonOptions()
                 .addAll(areaPoints)
                 .strokeWidth(8)
                 .strokeColor(Color.parseColor("#FFF28F25"))
                 .fillColor(Color.parseColor("#66F28F25")));
-        areaText = aMap.addText(new TextOptions()
+        areaText = obtainViewModel().aMap.addText(new TextOptions()
                 .position(getAreaLabelPoint(areaPoints))
                 .text(formatArea(calculateArea(areaPoints)))
                 .fontColor(Color.WHITE)
-                .backgroundColor(Color.parseColor("#CCF28F25"))
+                .backgroundColor(Color.parseColor("#00000000"))
                 .fontSize(32));
     }
 
     private Marker addMeasureMarker(LatLng point) {
-        Marker marker = aMap.addMarker(new MarkerOptions()
+        Marker marker = obtainViewModel().aMap.addMarker(new MarkerOptions()
                 .position(point)
                 .anchor(0.5f, 0.5f)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
@@ -1229,6 +1357,23 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             resourceDetailDialog.create();
         }
     }
+    private void initTeamMateDetailDialog() {
+        teamMateDetailDialog = new TeamMateDetailDialog(requireActivity(), R.style.ActionSheetDialogStyle);
+        Window dialogWindow = teamMateDetailDialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        WindowManager wm = (WindowManager) requireActivity()
+                .getSystemService(Context.WINDOW_SERVICE);
+        int height = wm.getDefaultDisplay().getHeight();
+        int width = wm.getDefaultDisplay().getWidth();
+        lp.width = width;
+//        lp.height = (int) (height * 0.22);
+        dialogWindow.setAttributes(lp);
+        teamMateDetailDialog.setCanceledOnTouchOutside(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            teamMateDetailDialog.create();
+        }
+    }
 
     @Override
     public void onOneBodyDialogRefresh() {
@@ -1247,7 +1392,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         obtainViewModel().oneBodyFilterState = state;
 
 
-        aMap.clear();
+        obtainViewModel().aMap.clear();
         //更新所有Marker
         updateMarkers();
     }

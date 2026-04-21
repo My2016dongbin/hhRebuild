@@ -208,7 +208,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:src="@drawable/nsdk_ic_route_result_traffic_light_normal"
+                    android:src="@drawable/measure"
                     android:layout_width="24dp"
                     android:layout_height="24dp"/>
                 <TextView
@@ -231,10 +231,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:src="@drawable/ic_menu"
+                    android:id="@+id/distance"
+                    android:src="@drawable/measure_distance_un"
                     android:layout_width="22dp"
                     android:layout_height="18dp"/>
                 <TextView
+                    android:id="@+id/distance_text"
                     android:text="距离"
                     android:layout_marginTop="2dp"
                     android:textSize="12sp"
@@ -254,10 +256,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:src="@drawable/ic_no"
+                    android:id="@+id/area"
+                    android:src="@drawable/measure_area_un"
                     android:layout_width="22dp"
                     android:layout_height="18dp"/>
                 <TextView
+                    android:id="@+id/area_text"
                     android:text="面积"
                     android:layout_marginTop="2dp"
                     android:textSize="12sp"
@@ -278,13 +282,15 @@
             android:layout_width="45dp"
             android:layout_height="wrap_content">
             <ImageView
-                android:src="@drawable/ic_task"
+                android:id="@+id/team_location_icon"
+                android:src="@drawable/marker_friend_un"
                 android:scaleType="fitXY"
-                android:layout_width="32dp"
-                android:layout_height="30dp"/>
+                android:layout_width="26dp"
+                android:layout_height="26dp"/>
             <TextView
+                android:id="@+id/team_location_text"
                 android:text="队友"
-                android:textColor="@color/theme_color_blue"
+                android:textColor="@color/black90"
                 android:textSize="12sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -474,13 +480,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:src="@drawable/ic_task"
+                    android:src="@drawable/map_task"
                     android:scaleType="fitXY"
-                    android:layout_width="32dp"
-                    android:layout_height="30dp"/>
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"/>
                 <TextView
                     android:text="任务"
-                    android:textColor="@color/theme_color_blue"
+                    android:textColor="@color/black90"
                     android:textSize="12sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>

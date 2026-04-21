@@ -303,7 +303,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
 
         MainFgMenuViewBinder menuViewBinder = new MainFgMenuViewBinder(requireActivity());
         menuViewBinder.setListener(mainFgMenu -> {
-            if(mainFgMenu.getTitle().equals("火情上报")){
+            if(mainFgMenu.getTitle().equals("事件上报")){
                 requireActivity().startActivity(new Intent(requireActivity(), FireUploadActivity.class));
             }
             if(mainFgMenu.getTitle().equals("隐患排查")){
@@ -314,7 +314,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
                 obtainViewModel().getMainDeviceData();
                 mainDeviceListDialog.show();
             }
-            if(mainFgMenu.getTitle().equals("报警管理")){
+            if(mainFgMenu.getTitle().equals("预警监测")){
                 EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"oneBody"));
             }
             if(mainFgMenu.getTitle().equals("卫星遥感")){

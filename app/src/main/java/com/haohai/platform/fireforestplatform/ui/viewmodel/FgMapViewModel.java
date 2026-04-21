@@ -6,6 +6,8 @@ import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.haohai.platform.fireforestplatform.HhApplication;
@@ -18,6 +20,7 @@ import com.haohai.platform.fireforestplatform.event.Search;
 import com.haohai.platform.fireforestplatform.old.bean.Grid;
 import com.haohai.platform.fireforestplatform.ui.bean.Resource;
 import com.haohai.platform.fireforestplatform.ui.bean.SatelliteParams;
+import com.haohai.platform.fireforestplatform.ui.bean.TeamMate;
 import com.haohai.platform.fireforestplatform.ui.multitype.SheQu;
 import com.haohai.platform.fireforestplatform.ui.multitype.OneBodyFire;
 import com.haohai.platform.fireforestplatform.ui.multitype.ResourceType;
@@ -26,6 +29,7 @@ import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.DbConfig;
 import com.haohai.platform.fireforestplatform.utils.GetJsonDataUtil;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
+import com.haohai.platform.fireforestplatform.utils.LatLngChangeNew;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
 
@@ -57,10 +61,12 @@ public class FgMapViewModel extends BaseViewModel {
     public final int ONE_BODY = 101;
     public final int SATELLITE = 102;
     public final int RESOURCE = 103;
+    public final int TEAM_MATE = 104;
     public final int defaultFindTime = 500;//默认查询距离当前时间前N小时数据
     public String startTime = "";
     public String endTime = "";
     public String search = "";
+    public AMap aMap;
     public int oneBodyFilterState = 1;//0全部  1未处理  2真实火点  3疑似火点
     public List<Grid> gridList = new ArrayList<>();
     public final MutableLiveData<List<SheQu>> sheQuGridList = new MutableLiveData<>();
@@ -69,6 +75,7 @@ public class FgMapViewModel extends BaseViewModel {
     public final MutableLiveData<List<ResourceType>> resourceTypeList = new MutableLiveData<>();
     public final MutableLiveData<List<Resource>> resourceList = new MutableLiveData<>();
     public final MutableLiveData<List<SatelliteFire>> satelliteList = new MutableLiveData<>();
+    public final MutableLiveData<List<TeamMate>> teamMateList = new MutableLiveData<>();
     public void start(Context context){
         this.context = context;
     }
@@ -442,6 +449,52 @@ public class FgMapViewModel extends BaseViewModel {
             }
         }
         sheQuGridList.postValue(value);
+    }
+
+    public void getTeamMateData(boolean jump) {
+        RequestParams params = new RequestParams(URLConstant.GET_TEEM_LOCATION);
+        HhHttp.getX(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    HhLog.e("getTeamMateData " + result);
+                    JSONObject jsonObject = new JSONObject(result);
+                    String code = jsonObject.optString("code");
+                    if (Objects.equals(code, "200") || Objects.equals(code, "200.0")) {
+                        JSONArray data = jsonObject.optJSONArray("data");
+                        if (data == null) {
+                            teamMateList.postValue(new ArrayList<>());
+                            return;
+                        }
+                        List<TeamMate> teamMates = new Gson().fromJson(String.valueOf(data), new TypeToken<List<TeamMate>>() {
+                        }.getType());
+                        if(jump){
+                            TeamMate team = teamMates.get(0);
+                            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(team.getPosition().getLat(), team.getPosition().getLng());
+                            aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.amap.api.maps.model.LatLng(doubles[0], doubles[1]),15));
+                        }
+                        teamMateList.postValue(teamMates);
+                    }
+                } catch (Exception e) {
+                    HhLog.e("getTeamMateData catch " + e);
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                HhLog.e("getTeamMateData onError " + ex);
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
     }
     public void updateResEvent(ResourceType resourceType) {
         //移除选中类型数据

@@ -105,7 +105,7 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
     private int adcode;
 
     private void init_() {
-        binding.topBar.title.setText("火情上报");
+        binding.topBar.title.setText("事件上报");
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         binding.photeRecycle.setLayoutManager(gridLayoutManager);

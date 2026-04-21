@@ -323,6 +323,7 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
 
         if (currentTabIndex != this.index) {
             binding.botBar.setFirstSelectedPosition(index).initialise();
+            refreshBottomBarStyle();
             FragmentTransaction trx = getSupportFragmentManager().beginTransaction();
             trx.hide(fragments[currentTabIndex]);
             if (!fragments[this.index].isAdded()) {
@@ -402,7 +403,7 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
         binding.botBar.setFirstSelectedPosition(0)
                 .initialise();//一定要放在 所有设置的最后一项
 
-        BottomBarUtils.setBottomNavigationItem(binding.botBar, 10, 26, 13, this);
+        refreshBottomBarStyle();
 
         if(CommonData.hasMainApp)mainFragment = MainFragment.newInstance("首页");
         if(CommonData.hasMainVideo)videoFragment = VideoFragment.newInstance("视频");
@@ -489,7 +490,6 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
     public void onTabSelected(int position) {
         FragmentManager fm = getSupportFragmentManager();
         CommonData.mainTabIndex = position;
-        EventBus.getDefault().post(new MainTabChange(position));
         //开启事务
         FragmentTransaction transaction = fm.beginTransaction();
         switch (position) {
@@ -557,6 +557,7 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
             trx.show(fragments[index]).commit();
         }
         currentTabIndex = index;
+        EventBus.getDefault().post(new MainTabChange(position));
 
         //  transaction.commit();// 事务提交
     }
@@ -577,6 +578,10 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
     @Override
     public void onTabReselected(int position) {
 
+    }
+
+    private void refreshBottomBarStyle() {
+        binding.botBar.post(() -> BottomBarUtils.setBottomNavigationItem(binding.botBar, 10, 26, 13, MainActivity.this));
     }
 
     private void requestNotificationPermission() {

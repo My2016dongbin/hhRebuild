@@ -2,12 +2,14 @@ package com.haohai.platform.fireforestplatform.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,8 +32,10 @@ import com.haohai.platform.fireforestplatform.event.LoadingEvent;
 import com.haohai.platform.fireforestplatform.event.MainTabChange;
 import com.haohai.platform.fireforestplatform.event.VideoStream;
 import com.haohai.platform.fireforestplatform.permission.CommonPermission;
+import com.haohai.platform.fireforestplatform.ui.activity.VideoStreamActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.VideoDeleteModel;
 import com.haohai.platform.fireforestplatform.ui.cell.VideoTreeDialog;
+import com.haohai.platform.fireforestplatform.ui.view.VideoPlayerControllerView;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.DialogTreeViewModel;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.FgVideoViewModel;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
@@ -130,6 +135,15 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     private OrientationUtils orientationUtils;
     private VideoTreeDialog treeDialog;
+    private final ArrayList<PlayerControllerHolder> playerControllerHolders = new ArrayList<>();
+    private final SparseBooleanArray pausedStateArray = new SparseBooleanArray();
+    private final Handler controllerHandler = new Handler();
+    private final Runnable hideControllerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            hideAllControllers();
+        }
+    };
 
     public static VideoFragment newInstance(String param1) {
         Bundle args = new Bundle();
@@ -139,6 +153,16 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         return fragment;
     }
 
+    private static class PlayerControllerHolder {
+        private final int slotIndex;
+        private final VideoPlayerControllerView controllerView;
+
+        PlayerControllerHolder(int slotIndex, VideoPlayerControllerView controllerView) {
+            this.slotIndex = slotIndex;
+            this.controllerView = controllerView;
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -146,20 +170,34 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         EventBus.getDefault().register(this);
         init_();
         click_();
-        binding.sfVideoNine1.setZOrderOnTop(true);
-        binding.sfVideoNine2.setZOrderOnTop(true);
-        binding.sfVideoNine3.setZOrderOnTop(true);
-        binding.sfVideoNine4.setZOrderOnTop(true);
-        binding.sfVideoNine5.setZOrderOnTop(true);
-        binding.sfVideoNine6.setZOrderOnTop(true);
-        binding.sfVideoNine7.setZOrderOnTop(true);
-        binding.sfVideoNine8.setZOrderOnTop(true);
-        binding.sfVideoNine9.setZOrderOnTop(true);
-        binding.sfVideoFour1.setZOrderOnTop(true);
-        binding.sfVideoFour2.setZOrderOnTop(true);
-        binding.sfVideoFour3.setZOrderOnTop(true);
-        binding.sfVideoFour4.setZOrderOnTop(true);
-        binding.sfVideoOne1.setZOrderOnTop(true);
+        binding.sfVideoNine1.setZOrderOnTop(false);
+        binding.sfVideoNine2.setZOrderOnTop(false);
+        binding.sfVideoNine3.setZOrderOnTop(false);
+        binding.sfVideoNine4.setZOrderOnTop(false);
+        binding.sfVideoNine5.setZOrderOnTop(false);
+        binding.sfVideoNine6.setZOrderOnTop(false);
+        binding.sfVideoNine7.setZOrderOnTop(false);
+        binding.sfVideoNine8.setZOrderOnTop(false);
+        binding.sfVideoNine9.setZOrderOnTop(false);
+        binding.sfVideoFour1.setZOrderOnTop(false);
+        binding.sfVideoFour2.setZOrderOnTop(false);
+        binding.sfVideoFour3.setZOrderOnTop(false);
+        binding.sfVideoFour4.setZOrderOnTop(false);
+        binding.sfVideoOne1.setZOrderOnTop(false);
+        binding.sfVideoNine1.setZOrderMediaOverlay(false);
+        binding.sfVideoNine2.setZOrderMediaOverlay(false);
+        binding.sfVideoNine3.setZOrderMediaOverlay(false);
+        binding.sfVideoNine4.setZOrderMediaOverlay(false);
+        binding.sfVideoNine5.setZOrderMediaOverlay(false);
+        binding.sfVideoNine6.setZOrderMediaOverlay(false);
+        binding.sfVideoNine7.setZOrderMediaOverlay(false);
+        binding.sfVideoNine8.setZOrderMediaOverlay(false);
+        binding.sfVideoNine9.setZOrderMediaOverlay(false);
+        binding.sfVideoFour1.setZOrderMediaOverlay(false);
+        binding.sfVideoFour2.setZOrderMediaOverlay(false);
+        binding.sfVideoFour3.setZOrderMediaOverlay(false);
+        binding.sfVideoFour4.setZOrderMediaOverlay(false);
+        binding.sfVideoOne1.setZOrderMediaOverlay(false);
 
         return binding.getRoot();
     }
@@ -176,6 +214,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             binding.statusOne1.setVisibility(View.VISIBLE);
             binding.statusFour1.setVisibility(View.VISIBLE);
             binding.statusNine1.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(1);
         });
         binding.sfVideoFour1.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 1;
@@ -184,6 +223,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             binding.statusOne1.setVisibility(View.VISIBLE);
             binding.statusFour1.setVisibility(View.VISIBLE);
             binding.statusNine1.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(1);
         });
         binding.sfVideoFour2.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 2;
@@ -191,6 +231,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             hideStatus();
             binding.statusFour2.setVisibility(View.VISIBLE);
             binding.statusNine2.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(2);
         });
         binding.sfVideoFour3.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 3;
@@ -198,6 +239,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             hideStatus();
             binding.statusFour3.setVisibility(View.VISIBLE);
             binding.statusNine3.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(3);
         });
         binding.sfVideoFour4.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 4;
@@ -205,6 +247,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             hideStatus();
             binding.statusFour4.setVisibility(View.VISIBLE);
             binding.statusNine4.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(4);
         });
         binding.sfVideoNine1.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 1;
@@ -213,6 +256,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             binding.statusOne1.setVisibility(View.VISIBLE);
             binding.statusFour1.setVisibility(View.VISIBLE);
             binding.statusNine1.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(1);
         });
         binding.sfVideoNine2.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 2;
@@ -220,6 +264,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             hideStatus();
             binding.statusFour2.setVisibility(View.VISIBLE);
             binding.statusNine2.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(2);
         });
         binding.sfVideoNine3.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 3;
@@ -227,6 +272,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             hideStatus();
             binding.statusFour3.setVisibility(View.VISIBLE);
             binding.statusNine3.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(3);
         });
         binding.sfVideoNine4.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 4;
@@ -234,36 +280,42 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             hideStatus();
             binding.statusFour4.setVisibility(View.VISIBLE);
             binding.statusNine4.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(4);
         });
         binding.sfVideoNine5.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 5;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusNine5.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(5);
         });
         binding.sfVideoNine6.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 6;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusNine6.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(6);
         });
         binding.sfVideoNine7.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 7;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusNine7.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(7);
         });
         binding.sfVideoNine8.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 8;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusNine8.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(8);
         });
         binding.sfVideoNine9.setOnClickListener(v -> {
             CommonData.videoDeleteIndex = 9;
             parseVideoDeleteChanged(CommonData.videoDeleteIndex);
             hideStatus();
             binding.statusNine9.setVisibility(View.VISIBLE);
+            toggleControllerVisibility(9);
         });
 
         binding.viewZoomIn.setOnTouchListener((v, event) -> {
@@ -415,6 +467,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     private void init_() {
         initTreeDialog();
+        initPlayerControllers();
         initBindingListener();
     }
 
@@ -427,6 +480,228 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
     private String url7 = "";
     private String url8 = "";
     private String url9 = "";
+
+    private void initPlayerControllers() {
+        playerControllerHolders.clear();
+        addPlayerController((FrameLayout) binding.sfVideoOne1.getParent(), 1);
+        addPlayerController((FrameLayout) binding.sfVideoFour1.getParent(), 1);
+        addPlayerController((FrameLayout) binding.sfVideoFour2.getParent(), 2);
+        addPlayerController((FrameLayout) binding.sfVideoFour3.getParent(), 3);
+        addPlayerController((FrameLayout) binding.sfVideoFour4.getParent(), 4);
+        addPlayerController((FrameLayout) binding.sfVideoNine1.getParent(), 1);
+        addPlayerController((FrameLayout) binding.sfVideoNine2.getParent(), 2);
+        addPlayerController((FrameLayout) binding.sfVideoNine3.getParent(), 3);
+        addPlayerController((FrameLayout) binding.sfVideoNine4.getParent(), 4);
+        addPlayerController((FrameLayout) binding.sfVideoNine5.getParent(), 5);
+        addPlayerController((FrameLayout) binding.sfVideoNine6.getParent(), 6);
+        addPlayerController((FrameLayout) binding.sfVideoNine7.getParent(), 7);
+        addPlayerController((FrameLayout) binding.sfVideoNine8.getParent(), 8);
+        addPlayerController((FrameLayout) binding.sfVideoNine9.getParent(), 9);
+        refreshPlayerControllers();
+    }
+
+    private void addPlayerController(FrameLayout container, int slotIndex) {
+        VideoPlayerControllerView controllerView = new VideoPlayerControllerView(requireContext());
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dpToPx(52)
+        );
+        params.gravity = Gravity.BOTTOM;
+        controllerView.setLayoutParams(params);
+        controllerView.setVisibility(View.GONE);
+        controllerView.setOnPlayClickListener(v -> {
+            togglePlayer(slotIndex);
+            showControllerTemporarily(slotIndex);
+        });
+        controllerView.setOnFullScreenClickListener(v -> {
+            showControllerTemporarily(slotIndex);
+            openFullScreen(slotIndex);
+        });
+        container.addView(controllerView);
+        controllerView.bringToFront();
+        playerControllerHolders.add(new PlayerControllerHolder(slotIndex, controllerView));
+    }
+
+    private void refreshPlayerControllers() {
+        for (int i = 0; i < playerControllerHolders.size(); i++) {
+            PlayerControllerHolder holder = playerControllerHolders.get(i);
+            boolean hasVideo = hasVideoUrl(holder.slotIndex);
+            if (!hasVideo) {
+                holder.controllerView.setVisibility(View.GONE);
+                pausedStateArray.delete(holder.slotIndex);
+            }
+            holder.controllerView.setActionEnabled(hasVideo);
+            holder.controllerView.setPlaying(!isSlotPaused(holder.slotIndex));
+            holder.controllerView.setFullScreenMode(false);
+            holder.controllerView.bringToFront();
+        }
+    }
+
+    private void togglePlayer(int slotIndex) {
+        MediaPlayer currentPlayer = getCurrentPlayer(slotIndex);
+        if (currentPlayer == null || !hasVideoUrl(slotIndex)) {
+            return;
+        }
+        if (isSlotPaused(slotIndex)) {
+            currentPlayer.play();
+            setSlotPaused(slotIndex, false);
+        } else {
+            currentPlayer.pause();
+            setSlotPaused(slotIndex, true);
+        }
+        refreshPlayerControllers();
+    }
+
+    private void openFullScreen(int slotIndex) {
+        String playUrl = getUrlByIndex(slotIndex);
+        if (playUrl == null || playUrl.isEmpty()) {
+            Toast.makeText(requireActivity(), "当前没有可播放的视频", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        setSlotPaused(slotIndex, false);
+        refreshPlayerControllers();
+        startActivity(new Intent(requireActivity(), VideoStreamActivity.class)
+                .putExtra(VideoStreamActivity.EXTRA_URL, playUrl)
+                .putExtra(VideoStreamActivity.EXTRA_FULL_SCREEN, true));
+    }
+
+    private boolean hasVideoUrl(int slotIndex) {
+        String playUrl = getUrlByIndex(slotIndex);
+        return playUrl != null && !playUrl.isEmpty();
+    }
+
+    private boolean isSlotPlaying(int slotIndex) {
+        MediaPlayer currentPlayer = getCurrentPlayer(slotIndex);
+        return currentPlayer != null && currentPlayer.isPlaying();
+    }
+
+    private boolean isSlotPaused(int slotIndex) {
+        return pausedStateArray.get(slotIndex, false);
+    }
+
+    private void setSlotPaused(int slotIndex, boolean paused) {
+        pausedStateArray.put(slotIndex, paused);
+    }
+
+    private MediaPlayer getCurrentPlayer(int slotIndex) {
+        Integer viewCount = obtainViewModel().viewCount.getValue();
+        if (viewCount == null) {
+            return null;
+        }
+        if (viewCount == 1) {
+            return slotIndex == 1 ? mediaPlayer : null;
+        }
+        if (viewCount == 4) {
+            switch (slotIndex) {
+                case 1:
+                    return mediaPlayer_Four1;
+                case 2:
+                    return mediaPlayer_Four2;
+                case 3:
+                    return mediaPlayer_Four3;
+                case 4:
+                    return mediaPlayer_Four4;
+                default:
+                    return null;
+            }
+        }
+        switch (slotIndex) {
+            case 1:
+                return mediaPlayer_Nine1;
+            case 2:
+                return mediaPlayer_Nine2;
+            case 3:
+                return mediaPlayer_Nine3;
+            case 4:
+                return mediaPlayer_Nine4;
+            case 5:
+                return mediaPlayer_Nine5;
+            case 6:
+                return mediaPlayer_Nine6;
+            case 7:
+                return mediaPlayer_Nine7;
+            case 8:
+                return mediaPlayer_Nine8;
+            case 9:
+                return mediaPlayer_Nine9;
+            default:
+                return null;
+        }
+    }
+
+    private String getUrlByIndex(int slotIndex) {
+        switch (slotIndex) {
+            case 1:
+                return url1;
+            case 2:
+                return url2;
+            case 3:
+                return url3;
+            case 4:
+                return url4;
+            case 5:
+                return url5;
+            case 6:
+                return url6;
+            case 7:
+                return url7;
+            case 8:
+                return url8;
+            case 9:
+                return url9;
+            default:
+                return "";
+        }
+    }
+
+    private int dpToPx(int dp) {
+        return (int) (dp * requireContext().getResources().getDisplayMetrics().density);
+    }
+
+    private void toggleControllerVisibility(int slotIndex) {
+        VideoPlayerControllerView currentController = getVisibleController(slotIndex);
+        if (currentController == null || !hasVideoUrl(slotIndex)) {
+            return;
+        }
+        if (currentController.isShowing()) {
+            hideAllControllers();
+            controllerHandler.removeCallbacks(hideControllerRunnable);
+        } else {
+            showControllerTemporarily(slotIndex);
+        }
+    }
+
+    private void showControllerTemporarily(int slotIndex) {
+        hideAllControllers();
+        for (int i = 0; i < playerControllerHolders.size(); i++) {
+            PlayerControllerHolder holder = playerControllerHolders.get(i);
+            if (holder.slotIndex == slotIndex && hasVideoUrl(slotIndex)) {
+                holder.controllerView.bringToFront();
+                holder.controllerView.setVisibility(View.VISIBLE);
+            }
+        }
+        controllerHandler.removeCallbacks(hideControllerRunnable);
+        controllerHandler.postDelayed(hideControllerRunnable, 3000);
+    }
+
+    private void hideAllControllers() {
+        for (int i = 0; i < playerControllerHolders.size(); i++) {
+            playerControllerHolders.get(i).controllerView.setVisibility(View.GONE);
+        }
+    }
+
+    private VideoPlayerControllerView getVisibleController(int slotIndex) {
+        for (int i = 0; i < playerControllerHolders.size(); i++) {
+            PlayerControllerHolder holder = playerControllerHolders.get(i);
+            if (holder.slotIndex == slotIndex && holder.controllerView.getParent() instanceof View) {
+                View parent = (View) holder.controllerView.getParent();
+                if (parent.isShown()) {
+                    return holder.controllerView;
+                }
+            }
+        }
+        return null;
+    }
 
     ///视频流播放
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -447,6 +722,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         }
         if (event.getIndex() == 1) {
             url1 = event.getUrl();
+            setSlotPaused(1, false);
             if(obtainViewModel().viewCount.getValue() == 1){
                 releaseVLC_ONE();
                 binding.sfBack.setVisibility(View.VISIBLE);
@@ -468,6 +744,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         }
         if (event.getIndex() == 2) {
             url2 = event.getUrl();
+            setSlotPaused(2, false);
             if(obtainViewModel().viewCount.getValue() == 4){
                 releaseVLC_FOUR();
                 binding.sfBackFour2.setVisibility(View.VISIBLE);
@@ -483,6 +760,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         }
         if (event.getIndex() == 3) {
             url3 = event.getUrl();
+            setSlotPaused(3, false);
             if(obtainViewModel().viewCount.getValue() == 4){
                 releaseVLC_FOUR();
                 binding.sfBackFour3.setVisibility(View.VISIBLE);
@@ -498,6 +776,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         }
         if (event.getIndex() == 4) {
             url4 = event.getUrl();
+            setSlotPaused(4, false);
             if(obtainViewModel().viewCount.getValue() == 4){
                 releaseVLC_FOUR();
                 binding.sfBackFour4.setVisibility(View.VISIBLE);
@@ -513,6 +792,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         }
         if (event.getIndex() == 5) {
             url5 = event.getUrl();
+            setSlotPaused(5, false);
 
             releaseVLC_NINE();
             binding.sfBackNine5.setVisibility(View.VISIBLE);
@@ -521,6 +801,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         }
         if (event.getIndex() == 6) {
             url6 = event.getUrl();
+            setSlotPaused(6, false);
 
             releaseVLC_NINE();
             binding.sfBackNine6.setVisibility(View.VISIBLE);
@@ -529,6 +810,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         }
         if (event.getIndex() == 7) {
             url7 = event.getUrl();
+            setSlotPaused(7, false);
 
             releaseVLC_NINE();
             binding.sfBackNine7.setVisibility(View.VISIBLE);
@@ -537,6 +819,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         }
         if (event.getIndex() == 8) {
             url8 = event.getUrl();
+            setSlotPaused(8, false);
 
             releaseVLC_NINE();
             binding.sfBackNine8.setVisibility(View.VISIBLE);
@@ -545,12 +828,15 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         }
         if (event.getIndex() == 9) {
             url9 = event.getUrl();
+            setSlotPaused(9, false);
 
             releaseVLC_NINE();
             binding.sfBackNine9.setVisibility(View.VISIBLE);
             startPlayerNine9();
             binding.addNine9.setVisibility(View.GONE);
         }
+        refreshPlayerControllers();
+        showControllerTemporarily(event.getIndex());
     }
 
     ///Tab切换
@@ -573,7 +859,9 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             binding.sfBackAll.setVisibility(View.VISIBLE);
             hideSurfaceView();
             releaseVLC();
+            hideAllControllers();
         }
+        refreshPlayerControllers();
     }
 
     private void showSurfaceView() {
@@ -657,6 +945,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             try {
                 if (CommonData.videoDeleteIndex == 1) {
                     url1 = "";
+                    pausedStateArray.delete(1);
                     if (obtainViewModel().viewCount.getValue() == 1) {
                         releasePlayer();
                     }
@@ -676,6 +965,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
                 }
                 if (CommonData.videoDeleteIndex == 2) {
                     url2 = "";
+                    pausedStateArray.delete(2);
                     if (obtainViewModel().viewCount.getValue() == 4) {
                         releasePlayer_Four2();
                     }
@@ -690,6 +980,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
                 }
                 if (CommonData.videoDeleteIndex == 3) {
                     url3 = "";
+                    pausedStateArray.delete(3);
                     if (obtainViewModel().viewCount.getValue() == 4) {
                         releasePlayer_Four3();
                     }
@@ -704,6 +995,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
                 }
                 if (CommonData.videoDeleteIndex == 4) {
                     url4 = "";
+                    pausedStateArray.delete(4);
                     if (obtainViewModel().viewCount.getValue() == 4) {
                         releasePlayer_Four4();
                     }
@@ -718,6 +1010,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
                 }
                 if (CommonData.videoDeleteIndex == 5) {
                     url5 = "";
+                    pausedStateArray.delete(5);
                     releasePlayer_Nine5();
                     binding.addNine5.setVisibility(View.VISIBLE);
                     binding.sfVideoNine5.setVisibility(View.GONE);
@@ -725,6 +1018,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
                 }
                 if (CommonData.videoDeleteIndex == 6) {
                     url6 = "";
+                    pausedStateArray.delete(6);
                     releasePlayer_Nine6();
                     binding.addNine6.setVisibility(View.VISIBLE);
                     binding.sfVideoNine6.setVisibility(View.GONE);
@@ -732,6 +1026,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
                 }
                 if (CommonData.videoDeleteIndex == 7) {
                     url7 = "";
+                    pausedStateArray.delete(7);
                     releasePlayer_Nine7();
                     binding.addNine7.setVisibility(View.VISIBLE);
                     binding.sfVideoNine7.setVisibility(View.GONE);
@@ -739,6 +1034,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
                 }
                 if (CommonData.videoDeleteIndex == 8) {
                     url8 = "";
+                    pausedStateArray.delete(8);
                     releasePlayer_Nine8();
                     binding.addNine8.setVisibility(View.VISIBLE);
                     binding.sfVideoNine8.setVisibility(View.GONE);
@@ -746,12 +1042,14 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
                 }
                 if (CommonData.videoDeleteIndex == 9) {
                     url9 = "";
+                    pausedStateArray.delete(9);
                     releasePlayer_Nine9();
                     binding.addNine9.setVisibility(View.VISIBLE);
                     binding.sfVideoNine9.setVisibility(View.GONE);
                     hideStatus();
                 }
                 CommonData.videoPlayingIndexList.remove(Integer.valueOf(CommonData.videoDeleteIndex));
+                refreshPlayerControllers();
             } catch (Exception e) {
                 HhLog.e("error " + e.getMessage());
             }
@@ -921,6 +1219,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
                 binding.addNine9.setVisibility(View.GONE);
             }
         }
+        refreshPlayerControllers();
     }
 
     private void initGSY() {
@@ -1227,6 +1526,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayer() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(1, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer();
@@ -1315,6 +1615,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerFour1() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(1, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Four1();
@@ -1404,6 +1705,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerNine1() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(1, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Nine1();
@@ -1493,6 +1795,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerFour2() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(2, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Four2();
@@ -1582,6 +1885,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerNine2() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(2, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Nine2();
@@ -1671,6 +1975,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerFour3() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(3, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Four3();
@@ -1760,6 +2065,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerNine3() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(3, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Nine3();
@@ -1849,6 +2155,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerFour4() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(4, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Four4();
@@ -1938,6 +2245,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerNine4() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(4, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Nine4();
@@ -2027,6 +2335,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerNine5() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(5, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Nine5();
@@ -2116,6 +2425,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerNine6() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(6, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Nine6();
@@ -2205,6 +2515,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerNine7() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(7, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Nine7();
@@ -2294,6 +2605,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerNine8() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(8, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Nine8();
@@ -2383,6 +2695,7 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
 
     void startPlayerNine9() {
         final ArrayList<String> options = new ArrayList<>();
+        setSlotPaused(9, false);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         releasePlayer_Nine9();
@@ -2487,6 +2800,8 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         super.onDestroy();
         CommonData.videoPlayingIndexList.clear();
         EventBus.getDefault().unregister(this);
+        controllerHandler.removeCallbacks(hideControllerRunnable);
+        hideAllControllers();
 
         releaseVLC();
 

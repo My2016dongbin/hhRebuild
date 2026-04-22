@@ -18,6 +18,7 @@
             binding:onLeftClick ="@{viewModel.barLeftClick}"/>
 
         <FrameLayout
+            android:id="@+id/video_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/black"
@@ -44,6 +45,13 @@
                 android:layout_gravity="center"
                 android:layout_width="60dp"
                 android:layout_height="60dp"/>
+
+            <com.haohai.platform.fireforestplatform.ui.view.VideoPlayerControllerView
+                android:id="@+id/video_controller"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_gravity="bottom"
+                android:visibility="gone" />
         </FrameLayout>
     </LinearLayout>
 </layout>

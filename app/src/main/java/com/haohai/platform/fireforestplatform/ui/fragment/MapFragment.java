@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -207,7 +208,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             startActivity(new Intent(requireActivity(), TaskActivity.class));
         });
         binding.viewLocation.setOnClickListener(v -> {
-            flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
+            double[] loc = LatLngChangeNew.calBD09toGCJ02(CommonData.lat, CommonData.lng);
+            flyBaiduMapZoom(loc[0], loc[1], 14);
             userLocationMarker();
         });
         binding.viewTeamLocation.setOnClickListener(v -> toggleTeamLocation());
@@ -217,7 +219,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         binding.viewMeasureDistance.setOnClickListener(v -> toggleDistanceMeasure());
         binding.viewMeasureArea.setOnClickListener(v -> toggleAreaMeasure());
         updateMeasureButtonState();
-        updateToggleButton(binding.viewTeamLocation, teamLocationEnabled);
+        updateTeamButton(binding.viewTeamLocation, teamLocationEnabled);
     }
 
     private void delayDialog(Dialog dialog) {
@@ -869,7 +871,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
     private void userLocationMarker(){
         BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.user);
-        LatLng point = new LatLng(CommonData.lat, CommonData.lng);
+        double[] loc = LatLngChangeNew.calBD09toGCJ02(CommonData.lat, CommonData.lng);
+        LatLng point = new LatLng(loc[0], loc[1]);
         MarkerOptions option = new MarkerOptions()
                 .position(point)
                 .icon(btm);
@@ -930,7 +933,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
     private void toggleTeamLocation() {
         teamLocationEnabled = !teamLocationEnabled;
-        updateToggleButton(binding.viewTeamLocation, teamLocationEnabled);
+        updateTeamButton(binding.viewTeamLocation, teamLocationEnabled);
         if(teamLocationEnabled){
             obtainViewModel().getTeamMateData(true);
             teamLocationHandler.removeCallbacks(teamLocationRunnable);
@@ -976,20 +979,23 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         if (button == binding.viewMeasureDistance) {
             binding.distance.setImageResource(selected ? R.drawable.measure_distance : R.drawable.measure_distance_un);
             binding.distanceText.setTextColor(requireActivity().getResources().getColor(selected ? R.color.theme_color_blue : R.color.black90));
+            binding.distanceText.setTypeface(null, selected ? Typeface.BOLD:Typeface.NORMAL);
             return;
         }
         if (button == binding.viewMeasureArea) {
             binding.area.setImageResource(selected ? R.drawable.measure_area : R.drawable.measure_area_un);
             binding.areaText.setTextColor(requireActivity().getResources().getColor(selected ? R.color.theme_color_blue : R.color.black90));
+            binding.areaText.setTypeface(null, selected ? Typeface.BOLD:Typeface.NORMAL);
             return;
         }
-        updateToggleButton(button, selected);
+        updateTeamButton(button, selected);
     }
 
-    private void updateToggleButton(View button, boolean selected) {
+    private void updateTeamButton(View button, boolean selected) {
         if (button == binding.viewTeamLocation) {
             binding.teamLocationIcon.setImageResource(selected ? R.drawable.marker_friend : R.drawable.marker_friend_un);
             binding.teamLocationText.setTextColor(requireActivity().getResources().getColor(selected ? R.color.theme_color_blue : R.color.black90));
+            binding.teamLocationText.setTypeface(null, selected ? Typeface.BOLD:Typeface.NORMAL);
             return;
         }
         button.setBackgroundResource(selected ? R.drawable.blue_conner : R.drawable.white_conner);

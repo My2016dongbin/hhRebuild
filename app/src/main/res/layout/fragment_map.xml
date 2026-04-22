@@ -233,8 +233,8 @@
                 <ImageView
                     android:id="@+id/distance"
                     android:src="@drawable/measure_distance_un"
-                    android:layout_width="22dp"
-                    android:layout_height="18dp"/>
+                    android:layout_width="26dp"
+                    android:layout_height="22dp"/>
                 <TextView
                     android:id="@+id/distance_text"
                     android:text="距离"
@@ -258,8 +258,8 @@
                 <ImageView
                     android:id="@+id/area"
                     android:src="@drawable/measure_area_un"
-                    android:layout_width="22dp"
-                    android:layout_height="18dp"/>
+                    android:layout_width="26dp"
+                    android:layout_height="22dp"/>
                 <TextView
                     android:id="@+id/area_text"
                     android:text="面积"

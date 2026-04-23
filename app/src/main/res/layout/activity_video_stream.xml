@@ -31,9 +31,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="300dp" />
 
-            <SurfaceView
+            <View
                 android:id="@+id/sf_back"
-                android:gravity="center"
                 android:visibility="gone"
                 android:background="@color/black"
                 android:layout_width="match_parent"

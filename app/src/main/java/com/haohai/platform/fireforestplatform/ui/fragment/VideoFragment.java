@@ -844,22 +844,9 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
     public void onGetMessage(MainTabChange event) {
         int index = event.getIndex();
         if (index == 1) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(CommonData.videoPlayingIndexList == null || CommonData.videoPlayingIndexList.isEmpty()){
-                        binding.sfBackAll.setVisibility(View.GONE);
-                    }
-                    onViewCountChanged();
-                    showSurfaceView();
-                }
-            },500);
-
+            scheduleRestoreVideoContent();
         } else {
-            binding.sfBackAll.setVisibility(View.VISIBLE);
-            hideSurfaceView();
-            releaseVLC();
-            hideAllControllers();
+            prepareVideoContentForRestore();
         }
         refreshPlayerControllers();
     }
@@ -896,6 +883,31 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
         binding.sfVideoNine7.setVisibility(View.GONE);
         binding.sfVideoNine8.setVisibility(View.GONE);
         binding.sfVideoNine9.setVisibility(View.GONE);
+    }
+
+    private void restoreVideoContent() {
+        if (CommonData.videoPlayingIndexList == null || CommonData.videoPlayingIndexList.isEmpty()) {
+            binding.sfBackAll.setVisibility(View.GONE);
+            return;
+        }
+        onViewCountChanged();
+        showSurfaceView();
+    }
+
+    private void scheduleRestoreVideoContent() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                restoreVideoContent();
+            }
+        },500);
+    }
+
+    private void prepareVideoContentForRestore() {
+        binding.sfBackAll.setVisibility(View.VISIBLE);
+        hideSurfaceView();
+        releaseVLC();
+        hideAllControllers();
     }
 
     private void initBindingListener() {
@@ -1070,11 +1082,12 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    binding.sfBackAll.setVisibility(View.GONE);
                     obtainViewModel().loading.postValue(new LoadingEvent(false));
                     //binding.sfBack.setVisibility(View.GONE);
                 }
             }, 6000);
+        } else {
+            binding.sfBackAll.setVisibility(View.GONE);
         }
         if (obtainViewModel().viewCount.getValue() == 1) {
             binding.imageOne.setImageResource(R.drawable.ic_one_selected);
@@ -2787,12 +2800,20 @@ public class VideoFragment extends BaseFragment<FgVideo, FgVideoViewModel> imple
     public void onPause() {
         super.onPause();
         binding.gsyPlayerOne1.getCurrentPlayer().onVideoPause();
+        if (CommonData.videoPlayingIndexList != null && !CommonData.videoPlayingIndexList.isEmpty()) {
+            prepareVideoContentForRestore();
+        }
+        hideAllControllers();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         binding.gsyPlayerOne1.getCurrentPlayer().onVideoResume(false);
+        if (CommonData.videoPlayingIndexList != null && !CommonData.videoPlayingIndexList.isEmpty()) {
+            prepareVideoContentForRestore();
+            scheduleRestoreVideoContent();
+        }
     }
 
     @Override

@@ -73,10 +73,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <SurfaceView
+                <View
                     android:id="@+id/sf_back"
                     android:layout_marginBottom="5dp"
-                    android:gravity="center"
                     android:visibility="gone"
                     android:background="@color/black"
                     android:layout_width="match_parent"
@@ -129,10 +128,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_four1"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -172,10 +170,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_four2"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -220,10 +217,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_four3"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -263,10 +259,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_four4"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -320,10 +315,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_nine1"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -363,10 +357,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_nine2"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -406,10 +399,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_nine3"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -454,10 +446,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_nine4"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -497,10 +488,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_nine5"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -540,10 +530,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_nine6"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -588,10 +577,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_nine7"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -631,10 +619,9 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_nine8"
                             android:layout_marginBottom="5dp"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:background="@color/black"
                             android:layout_width="match_parent"
@@ -674,9 +661,8 @@
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-                        <SurfaceView
+                        <View
                             android:id="@+id/sf_back_nine9"
-                            android:gravity="center"
                             android:visibility="gone"
                             android:layout_marginBottom="5dp"
                             android:background="@color/black"
@@ -706,9 +692,8 @@
             </LinearLayout>
 
 
-            <SurfaceView
+            <View
                 android:id="@+id/sf_back_all"
-                android:gravity="center"
                 android:visibility="gone"
                 android:background="@color/black"
                 android:layout_width="match_parent"

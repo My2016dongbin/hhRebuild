@@ -123,7 +123,7 @@ public class LoginViewModel extends BaseViewModel {
                                 Set<String> tagSet = new LinkedHashSet<>();
                                 tagSet.add(userJsonObj.getString("id"));
                                 tagSet.add(userJsonObj.getString("gridNo"));
-                                tagSet.add("xian_" + userJsonObj.getString("groupId"));
+                                tagSet.add("xianss_" + userJsonObj.getString("groupId"));
                                 String roleId = userJsonObj.getString("roleId");
                                 String[] roleIdList;
                                 try{
@@ -136,8 +136,8 @@ public class LoginViewModel extends BaseViewModel {
                                     tagSet.add(userJsonObj.getString("roleId")+"");
                                     HhLog.e("Arrays.asList(roleIdList) catch roleId " + userJsonObj.getString("roleId"));
                                 }
-                                tagSet.add("xian_logout_" + CommonData.sessionKey);
-                                tagSet.add("xian_" + CommonData.sessionKey);
+                                tagSet.add("xianss_logout_" + CommonData.sessionKey);
+                                tagSet.add("xianss_" + CommonData.sessionKey);
                                 tagSet.add("debug20240304");
                                 XGPushManager.setTags(context, "setTag", tagSet, new XGIOperateCallback() {
                                     @Override

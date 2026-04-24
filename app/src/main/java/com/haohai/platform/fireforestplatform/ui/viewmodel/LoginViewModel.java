@@ -154,9 +154,9 @@ public class LoginViewModel extends BaseViewModel {
                                 tagSet.add(userJsonObj.getString("id"));
                                 tagSet.add(userJsonObj.getString("gridNo"));
                                 //tagSet.add(userJsonObj.getString("groupId"));
-                                tagSet.add("mdj_" + userJsonObj.getString("groupId"));
+                                tagSet.add("tongren_" + userJsonObj.getString("groupId"));
                                 //tagSet.add(CommonData.pushFlag);
-                                tagSet.add("mdj_20251016");
+                                tagSet.add("tongren_20251016");
                                 XGPushManager.setTags(context, "setTag", tagSet);
 
 

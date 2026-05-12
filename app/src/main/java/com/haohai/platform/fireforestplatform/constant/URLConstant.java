@@ -97,7 +97,8 @@ public class URLConstant {
     public static final String GET_MESSAGE_CLEAR = BASE_PATH +"fire/api/appMessage/updateUnread";//"fire/api/appMessage/updateUnread";//清除全部未读
 
     public static final String GET_VIDEO_TREES = BASE_PATH +"resource/api/grid/listGridTreesNew";//视频树 已收藏 "sheetType","collection" /*"NetworkType","Internet"*/
-    public static final String GET_VIDEO_LIVE_URL = BASE_PATH +"resource/api/mediaKit/getLiveUrl";//视频流 /*"cameraId",gridCamera.getId(),"manufacturer","2","streamType","2","protocolType","rtsp"*/
+//    public static final String GET_VIDEO_LIVE_URL = BASE_PATH +"resource/api/mediaKit/getLiveUrl";//视频流 /*"cameraId",gridCamera.getId(),"manufacturer","2","streamType","2","protocolType","rtsp"*/
+    public static final String GET_VIDEO_LIVE_URL = BASE_PATH +"resource/api/mediaKit/getStreamAndroidByOut";//视频流 /*"cameraId",gridCamera.getId(),"manufacturer","2","streamType","2","protocolType","rtsp"*/
     public static final String POST_STREAM = BASE_PATH +"resource/api/mediaKit/streamNotFoundwebHookNew";//流媒体提前手动拉流
     public static final String GET_CONTROL = BASE_PATH +"resource/api/liveVideo/control";//视频设备控制
     public static final String POST_VIDEO_COLLECTION = BASE_PATH +"resource/api/cameraCollection";//收藏 /*PostStar(gridCamera.getId(),gridCamera.getName(),null,gridCamera.getMonitorId())*/

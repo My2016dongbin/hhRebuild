@@ -2,8 +2,8 @@ plugins {
     id 'com.android.application'
 }
 
-def VERSION_CODE = 37
-def VERSION_NAME = "2.3.7"
+def VERSION_CODE = 38
+def VERSION_NAME = "2.3.8"
 def keyfile = file('s.keystore.temp')
 ext{
     routerApiVersion = '1.5.0'

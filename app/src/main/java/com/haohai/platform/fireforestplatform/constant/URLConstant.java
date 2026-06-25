@@ -12,6 +12,7 @@ public class URLConstant {
     public static final String PERMISSION_MAIN = BASE_PATH + "auth/api/auth/auth/user/auth";
     public static final String PERMISSION_PER = BASE_PATH + "auth/api/auth/auth/list/element/from/menu";
 
+    public static final String AUTO_LOGIN = BASE_PATH + "auth/api/userAttendance/loginAttendance";
 
     //接口请求状态
     public static final String STATES_SUCCESS = "success";   // 密码登录
@@ -90,6 +91,7 @@ public class URLConstant {
     public static final String PUT_MESSAGE_KK_STATE = BASE_PATH + "fire/api/kakouAlarm";//更改卡口报警信息已读状态
 
     public static final String POST_SIGN_STATISTICS = BASE_PATH + "oa/api/attendance/record/month";//考勤统计-列表 {startTime: "2023-12-01 00:00:00", endTime: "2023-12-31 23:59:59", ids: [], attendanceStatus: ""}
+    public static final String POST_SIGN_STATISTICS_NEW = BASE_PATH + "auth/api/userAttendance/stat/page";//考勤统计-列表 {startTime: "2023-12-01 00:00:00", endTime: "2023-12-31 23:59:59", ids: [], attendanceStatus: ""}
 
     public static final String POST_MESSAGE_LEVEL = BASE_PATH + "fire/api/fireLevelApp/list";//获取火警等级信息列表
     public static final String GET_MESSAGE_LEVEL_INFO = BASE_PATH + "fire/api/fireLevelApp";//获取火警等级信息列表详情

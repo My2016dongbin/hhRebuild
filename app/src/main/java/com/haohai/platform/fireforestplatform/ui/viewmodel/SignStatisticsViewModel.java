@@ -1,6 +1,7 @@
 package com.haohai.platform.fireforestplatform.ui.viewmodel;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 
 import androidx.lifecycle.MutableLiveData;
@@ -22,6 +23,7 @@ import com.haohai.platform.fireforestplatform.ui.multitype.SignModel;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
+import com.zhy.http.okhttp.builder.GetBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +47,7 @@ public class SignStatisticsViewModel extends BaseViewModel {
     public int year = 2023;
     public int month = 12;
     public int day = 1;
-    public String attendanceStatus = "";//"" 全部  "1" 有考勤  "0" 无考勤
+    public String attendanceStatus = "";//"" 全部  "HAS" 有考勤  "NO" 无考勤
     public int limit = 1000;
     public int page = 1;
     public int all_person = 0;
@@ -65,6 +67,55 @@ public class SignStatisticsViewModel extends BaseViewModel {
     }
 
     public void postData(){
+        loading.setValue(new LoadingEvent(true,"加载中.."));
+        String content = new Gson().toJson(new StatisticsParams(page,limit,new StatisticsParams.Dto(date.toString(),endDate.toString(),new ArrayList<>(),attendanceStatus)));
+        GetBuilder url = HhHttp.get()
+                .url(URLConstant.POST_SIGN_STATISTICS_NEW);
+        url.addParams("current",page+"")
+                .addParams("size",limit+"")
+                .addParams("startDate",date.toString())
+                .addParams("endDate",endDate.toString())
+                .addParams("attendanceFilter",attendanceStatus);
+        Log.e("TAG","POST_SIGN_STATISTICS_NEW url " + url.toString());
+        url.build()
+                .connTimeOut(10000)
+                .execute(new LoggedInStringCallback(this,context) {
+                    @Override
+                    public void onSuccess(String response, int id) {
+                        Log.e("TAG","POST_SIGN_STATISTICS_NEW response " + response);
+                        loading.setValue(new LoadingEvent(false));
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            JSONObject data = jsonObject.getJSONObject("data");
+                            JSONArray dataList = data.getJSONArray("dataList");
+                            all_person = data.getInt("totalSize");
+                            signLists = new Gson().fromJson(String.valueOf(dataList), new TypeToken<List<SignModel>>() {
+                            }.getType());
+                            for (int i = 0; i < signLists.size(); i++) {
+                                SignModel signModel = signLists.get(i);
+                                signModel.setIndex((page-1)*limit+i+1);
+                                if(signModel.getLastPatrolDate()!=null){
+                                    sign_person++;
+                                }
+                                walk_distance = signModel.getTotalPatrolLength() + walk_distance;
+                                sign_count = signModel.getAttendanceTimes() + sign_count;
+                            }
+                            updateState.postValue(new Random().nextInt(1000));
+                            updateData();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Exception e, int id) {
+                        loading.setValue(new LoadingEvent(false));
+                        Log.e("TAG","POST_SIGN_STATISTICS_NEW e " + e.getMessage());
+                    }
+                });
+    }
+    public void postDataOld(){
         loading.setValue(new LoadingEvent(true,"加载中.."));
         String content = new Gson().toJson(new StatisticsParams(page,limit,new StatisticsParams.Dto(date.toString(),endDate.toString(),new ArrayList<>(),attendanceStatus)));
         HhHttp.postString()

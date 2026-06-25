@@ -159,6 +159,7 @@ public class LoginViewModel extends BaseViewModel {
 
 
                                 getUserPermission();
+                                loginAutoSign(userJsonObj.getString("userCode"));
 
                                 /*msg.setValue("登录成功");
                                 new Handler().postDelayed(new Runnable() {
@@ -180,6 +181,27 @@ public class LoginViewModel extends BaseViewModel {
                     public void onFailure(Call call, Exception e, int id) {
                         HhLog.e("onFailure: " + e.toString());
                         msg.setValue(e.getMessage());
+                        loading.setValue(new LoadingEvent(false, ""));
+                    }
+                });
+    }
+
+    private void loginAutoSign(String userCode) {
+        Log.e("TAG", "onSuccess: loginAutoSign = " + URLConstant.GET_LOGIN + "?userCode" + userCode);
+        HhHttp.get()
+                .url(URLConstant.AUTO_LOGIN)
+                .addParams("userCode", userCode)
+                .build()
+                .connTimeOut(10000)
+                .execute(new LoggedInStringCallback(this, context) {
+                    @Override
+                    public void onSuccess(String response, int id) {
+                        Log.e("TAG", "onSuccess: loginAutoSign = " + response);
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Exception e, int id) {
+                        Log.e("TAG","onFailure: loginAutoSign = " + e.toString());
                         loading.setValue(new LoadingEvent(false, ""));
                     }
                 });

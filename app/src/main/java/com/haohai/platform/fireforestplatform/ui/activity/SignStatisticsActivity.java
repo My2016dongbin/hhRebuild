@@ -152,7 +152,7 @@ public class SignStatisticsActivity extends BaseLiveActivity<ActivitySignStatist
                         return false;
                     })
                     .setCancelButtonClickListener((dialog, v1) -> {
-                        obtainViewModel().attendanceStatus = "0";
+                        obtainViewModel().attendanceStatus = "NO";
                         binding.filter.setText("无考勤");
                         obtainViewModel().page = 1;
 
@@ -164,7 +164,7 @@ public class SignStatisticsActivity extends BaseLiveActivity<ActivitySignStatist
                         return false;
                     })
                     .setOtherButtonClickListener((dialog, v1) -> {
-                        obtainViewModel().attendanceStatus = "1";
+                        obtainViewModel().attendanceStatus = "HAS";
                         binding.filter.setText("有考勤");
                         obtainViewModel().page = 1;
 

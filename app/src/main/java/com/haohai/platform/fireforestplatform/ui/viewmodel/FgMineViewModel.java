@@ -17,6 +17,7 @@ import com.haohai.platform.fireforestplatform.event.Ext;
 import com.haohai.platform.fireforestplatform.old.AutoStartActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.ChangePassWordActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.LoginActivity;
+import com.haohai.platform.fireforestplatform.ui.activity.StudyActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.MineMenu;
 import com.haohai.platform.fireforestplatform.ui.bean.VideoDeleteModel;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
@@ -99,7 +100,7 @@ public class FgMineViewModel extends BaseViewModel {
         context.startActivity(new Intent(context, AutoStartActivity.class));
     }
     public void onStudyClick(View v){
-
+        context.startActivity(new Intent(context, StudyActivity.class));
     }
     public void onPositionClick(View v){
         locationUpload = !locationUpload;

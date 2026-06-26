@@ -1,19 +1,16 @@
 package com.haohai.platform.fireforestplatform.ui.multitype;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.databinding.ItemSignModelBinding;
-import com.haohai.platform.fireforestplatform.utils.HhLog;
 
 import me.drakeet.multitype.ItemViewProvider;
 
@@ -40,63 +37,24 @@ public class SignModelViewBinder extends ItemViewProvider<SignModel, SignModelVi
         return new ViewHolder(dataBinding);
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder viewHolder, @NonNull final SignModel signModel) {
 
         ItemSignModelBinding binding = (ItemSignModelBinding) viewHolder.getBinding();
-        binding.index.setText(signModel.getIndex()+"");
-        binding.name.setText(signModel.getName());
-        binding.time.setText(parse9(signModel.getLastPatrolDate()));
-        binding.distance.setText(parseDistance(signModel.getTotalPatrolLength())+"km");
-        binding.count.setText(signModel.getAttendanceTimes()+"");
+        binding.account.setText(getValue(signModel.getUserCode()));
+        binding.name.setText(getValue(signModel.getFullName()));
+        binding.count.setText(String.valueOf(signModel.getTotalAttendance()));
+        binding.alarm.setText(String.valueOf(signModel.getTotalAlarm()));
+        binding.area.setText(getValue(signModel.getManageArea()));
         if(signModel.getIndex()%2==1){
             binding.background.setBackgroundColor(context.getResources().getColor(R.color.c));
         }else{
             binding.background.setBackgroundColor(context.getResources().getColor(R.color.white));
         }
-        binding.backViewIn.setOnClickListener(v -> {
-            onItemClick(signModel);
-        });
-
     }
 
-    private String parseDistance(int distance) {
-        float a = distance*1.0f/1000;
-        String str = a+"";
-        if(str.contains(".")){
-            int index = str.indexOf(".");
-            try{
-                str = str.substring(0,index+3);
-            }catch (Exception e){
-                HhLog.e(e.getMessage());
-            }
-        }
-        return str;
-    }
-
-    private String parseFirst(String taskImg) {
-        String str = taskImg;
-        try{
-            int i = taskImg.indexOf(",");
-            str = taskImg.substring(0,i);
-        }catch (Exception e){
-            Log.e("TAG", "parseFirst: " + e.getMessage() );
-        }
-        return str;
-    }
-
-    private String parse9(String str) {
-        if(str == null){
-            return "暂无记录";
-        }
-        String r = str;
-        try{
-            r = str.substring(0,10).replace("T"," ");
-        }catch (Exception e){
-            HhLog.e(e.getMessage());
-        }
-        return r;
+    private String getValue(String value) {
+        return value == null || value.length() == 0 ? "--" : value;
     }
 
     static class ViewHolder<B extends ViewDataBinding> extends RecyclerView.ViewHolder {
@@ -109,11 +67,6 @@ public class SignModelViewBinder extends ItemViewProvider<SignModel, SignModelVi
         public B getBinding() {
             return mBinding;
         }
-    }
-
-
-    public void onItemClick(SignModel signModel){
-        listener.onItemClick(signModel);
     }
 
     public interface OnItemClickListener{

@@ -65,27 +65,26 @@ public class SignStatisticsActivity extends BaseLiveActivity<ActivitySignStatist
         binding.recycle.setHasFixedSize(true);
         binding.recycle.setNestedScrollingEnabled(false);//设置样式后面的背景颜色
         binding.smart.setRefreshHeader(new ClassicsHeader(this));
-        //binding.smart.setRefreshFooter(new ClassicsFooter(this));
+        binding.smart.setRefreshFooter(new ClassicsFooter(this));
 
         //设置监听器，包括顶部下拉刷新、底部上滑刷新
         binding.smart.setOnMultiPurposeListener(new SimpleMultiPurposeListener(){
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-                obtainViewModel().all_person = 0;
-                obtainViewModel().sign_person = 0;
-                obtainViewModel().walk_distance = 0;
-                obtainViewModel().sign_count = 0;
-
+                obtainViewModel().cityUserNum = 0;
+                obtainViewModel().areaUserNum = 0;
+                obtainViewModel().gridUserNum = 0;
+                obtainViewModel().lawUserNum = 0;
+                obtainViewModel().abnormalNum = 0;
+                binding.smart.setNoMoreData(false);
                 obtainViewModel().page = 1;
                 obtainViewModel().postData();
-                refreshLayout.finishRefresh(1000);
             }
 
             @Override
             public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
                 obtainViewModel().page++;
                 obtainViewModel().postData();
-                refreshLayout.finishLoadMore(1000);
             }
         });
 
@@ -144,10 +143,11 @@ public class SignStatisticsActivity extends BaseLiveActivity<ActivitySignStatist
                         binding.filter.setText("全部");
                         obtainViewModel().page = 1;
 
-                        obtainViewModel().all_person = 0;
-                        obtainViewModel().sign_person = 0;
-                        obtainViewModel().walk_distance = 0;
-                        obtainViewModel().sign_count = 0;
+                        obtainViewModel().cityUserNum = 0;
+                        obtainViewModel().areaUserNum = 0;
+                        obtainViewModel().gridUserNum = 0;
+                        obtainViewModel().lawUserNum = 0;
+                        obtainViewModel().abnormalNum = 0;
                         obtainViewModel().postData();
                         return false;
                     })
@@ -156,10 +156,11 @@ public class SignStatisticsActivity extends BaseLiveActivity<ActivitySignStatist
                         binding.filter.setText("无考勤");
                         obtainViewModel().page = 1;
 
-                        obtainViewModel().all_person = 0;
-                        obtainViewModel().sign_person = 0;
-                        obtainViewModel().walk_distance = 0;
-                        obtainViewModel().sign_count = 0;
+                        obtainViewModel().cityUserNum = 0;
+                        obtainViewModel().areaUserNum = 0;
+                        obtainViewModel().gridUserNum = 0;
+                        obtainViewModel().lawUserNum = 0;
+                        obtainViewModel().abnormalNum = 0;
                         obtainViewModel().postData();
                         return false;
                     })
@@ -168,10 +169,11 @@ public class SignStatisticsActivity extends BaseLiveActivity<ActivitySignStatist
                         binding.filter.setText("有考勤");
                         obtainViewModel().page = 1;
 
-                        obtainViewModel().all_person = 0;
-                        obtainViewModel().sign_person = 0;
-                        obtainViewModel().walk_distance = 0;
-                        obtainViewModel().sign_count = 0;
+                        obtainViewModel().cityUserNum = 0;
+                        obtainViewModel().areaUserNum = 0;
+                        obtainViewModel().gridUserNum = 0;
+                        obtainViewModel().lawUserNum = 0;
+                        obtainViewModel().abnormalNum = 0;
                         obtainViewModel().postData();
                         return false;
                     })
@@ -310,29 +312,24 @@ public class SignStatisticsActivity extends BaseLiveActivity<ActivitySignStatist
     @Override
     protected void subscribeObserver() {
         super.subscribeObserver();
-        //天气数据
         obtainViewModel().updateState.observe(this, integer -> upDateUi());
+        obtainViewModel().refreshEvent.observe(this, value -> binding.smart.finishRefresh());
+        obtainViewModel().loadMoreEvent.observe(this, value -> binding.smart.finishLoadMore());
+        obtainViewModel().noMoreData.observe(this, noMore -> {
+            if (Boolean.TRUE.equals(noMore)) {
+                binding.smart.finishLoadMoreWithNoMoreData();
+            } else {
+                binding.smart.setNoMoreData(false);
+            }
+        });
     }
 
     private void upDateUi() {
-        binding.hlUser.setText(obtainViewModel().all_person+"");
-        binding.signUser.setText(obtainViewModel().sign_person+"");
-        binding.xhCount.setText(obtainViewModel().sign_count+"");
-        binding.xhDistance.setText(parseDistance(obtainViewModel().walk_distance)+"");
-    }
-
-    private String parseDistance(int distance) {
-        float a = distance*1.0f/1000;
-        String str = a+"";
-        if(str.contains(".")){
-            int index = str.indexOf(".");
-            try{
-                str = str.substring(0,index+3);
-            }catch (Exception e){
-                HhLog.e(e.getMessage());
-            }
-        }
-        return str;
+        binding.tvCityUserNum.setText(obtainViewModel().cityUserNum+"");
+        binding.tvAreaUserNum.setText(obtainViewModel().areaUserNum+"");
+        binding.tvGridUserNum.setText(obtainViewModel().gridUserNum+"");
+        binding.tvLawUserNum.setText(obtainViewModel().lawUserNum+"");
+        binding.tvAbnormalNum.setText(obtainViewModel().abnormalNum+"");
     }
 
     @Override

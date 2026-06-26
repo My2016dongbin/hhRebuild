@@ -56,6 +56,7 @@ public class FgMineViewModel extends BaseViewModel {
         mineMenuList.add(new MineMenu(context.getResources().getDrawable(R.drawable.jiazai),"版本更新","",true,true));
         mineMenuList.add(new MineMenu(context.getResources().getDrawable(R.drawable.mima),"修改密码","",false,true));
         mineMenuList.add(new MineMenu(context.getResources().getDrawable(R.drawable.anquan),"权限开启","",false,true));
+        mineMenuList.add(new MineMenu(context.getResources().getDrawable(R.drawable.study),"使用教程","",false,true));
         mineMenuList.add(new MineMenu(context.getResources().getDrawable(R.drawable.ic_location),"实时位置上传","",false,true));
         mineMenuList.add(new MineMenu(context.getResources().getDrawable(R.drawable.yinliangda),"语音播报","",false,true));
         mineMenuListListener.setValue(mineMenuList);
@@ -97,16 +98,19 @@ public class FgMineViewModel extends BaseViewModel {
     public void onRootClick(View v){
         context.startActivity(new Intent(context, AutoStartActivity.class));
     }
+    public void onStudyClick(View v){
+
+    }
     public void onPositionClick(View v){
         locationUpload = !locationUpload;
-        mineMenuList.get(3).setContent(locationUpload?"开":"关");
+        mineMenuList.get(4).setContent(locationUpload?"开":"关");
         mineMenuListListener.setValue(mineMenuList);
         SPUtils.put(context,SPValue.upload,locationUpload);
         Toast.makeText(context, "修改成功", Toast.LENGTH_SHORT).show();
     }
     public void onVoiceClick(View v){
         voice = !voice;
-        mineMenuList.get(4).setContent(voice?"开":"关");
+        mineMenuList.get(5).setContent(voice?"开":"关");
         mineMenuListListener.setValue(mineMenuList);
         SPUtils.put(context,SPValue.voice,voice);
         Toast.makeText(context, "修改成功", Toast.LENGTH_SHORT).show();

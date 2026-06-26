@@ -14,9 +14,14 @@ public class SignModel {
     private int attendanceTimes;
     private String lastPatrolDate;
     private int totalPatrolLength;
+    private String userCode;
+    private String fullName;
+    private int totalAttendance;
+    private int totalAlarm;
+    private String manageArea;
 
     public String getName() {
-        return name;
+        return fullName == null || fullName.length() == 0 ? name : fullName;
     }
 
     public int getIndex() {
@@ -40,7 +45,7 @@ public class SignModel {
     }
 
     public String getArea() {
-        return area;
+        return manageArea == null || manageArea.length() == 0 ? area : manageArea;
     }
 
     public void setArea(String area) {
@@ -56,7 +61,7 @@ public class SignModel {
     }
 
     public int getAttendanceTimes() {
-        return attendanceTimes;
+        return totalAttendance != 0 ? totalAttendance : attendanceTimes;
     }
 
     public void setAttendanceTimes(int attendanceTimes) {
@@ -77,5 +82,45 @@ public class SignModel {
 
     public void setTotalPatrolLength(int totalPatrolLength) {
         this.totalPatrolLength = totalPatrolLength;
+    }
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
+    }
+
+    public String getFullName() {
+        return fullName == null || fullName.length() == 0 ? name : fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public int getTotalAttendance() {
+        return totalAttendance != 0 ? totalAttendance : attendanceTimes;
+    }
+
+    public void setTotalAttendance(int totalAttendance) {
+        this.totalAttendance = totalAttendance;
+    }
+
+    public int getTotalAlarm() {
+        return totalAlarm;
+    }
+
+    public void setTotalAlarm(int totalAlarm) {
+        this.totalAlarm = totalAlarm;
+    }
+
+    public String getManageArea() {
+        return manageArea == null || manageArea.length() == 0 ? area : manageArea;
+    }
+
+    public void setManageArea(String manageArea) {
+        this.manageArea = manageArea;
     }
 }

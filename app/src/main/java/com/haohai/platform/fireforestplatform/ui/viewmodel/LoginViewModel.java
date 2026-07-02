@@ -122,7 +122,7 @@ public class LoginViewModel extends BaseViewModel {
 
                                 Set<String> tagSet = new LinkedHashSet<>();
                                 tagSet.add(userJsonObj.getString("id"));
-                                tagSet.add(userJsonObj.getString("gridNo"));
+                                tagSet.add("xianss_" + userJsonObj.getString("gridNo"));
                                 tagSet.add("xianss_" + userJsonObj.getString("groupId"));
                                 String roleId = userJsonObj.getString("roleId");
                                 String[] roleIdList;

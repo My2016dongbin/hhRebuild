@@ -152,11 +152,11 @@ public class LoginViewModel extends BaseViewModel {
 
                                 Set<String> tagSet = new LinkedHashSet<>();
                                 tagSet.add(userJsonObj.getString("id"));
-                                tagSet.add(userJsonObj.getString("gridNo"));
+                                tagSet.add("zb_" + userJsonObj.getString("gridNo"));
                                 //tagSet.add(userJsonObj.getString("groupId"));
-                                tagSet.add("zibo_" + userJsonObj.getString("groupId"));
+                                tagSet.add("zb_" + userJsonObj.getString("groupId"));
                                 //tagSet.add(CommonData.pushFlag);
-                                tagSet.add("zibo_20251015");
+                                tagSet.add("zb_20251015");
                                 XGPushManager.setTags(context, "setTag", tagSet);
 
 

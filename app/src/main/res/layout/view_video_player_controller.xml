@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_video_controller_bar"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp">
+
+        <FrameLayout
+            android:id="@+id/video_controller_play"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+            <View
+                android:id="@+id/video_controller_play_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_video_pause" />
+        </FrameLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <FrameLayout
+            android:id="@+id/video_controller_full_screen"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+            <View
+                android:id="@+id/video_controller_full_screen_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_video_fullscreen" />
+        </FrameLayout>
+    </LinearLayout>
+</merge>

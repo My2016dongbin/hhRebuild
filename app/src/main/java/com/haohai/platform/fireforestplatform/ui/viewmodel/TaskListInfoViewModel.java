@@ -64,7 +64,7 @@ public class TaskListInfoViewModel extends BaseViewModel {
             error("该任务数据异常,请稍后重试");
             return;
         }
-        HhLog.e("ids " + ids);
+        Log.e("INFO","ids " + ids);
         loading.postValue(new LoadingEvent(true, "加载中.."));
         handler.removeCallbacks(finishRunnable);
         if (message) {

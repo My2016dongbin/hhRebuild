@@ -37,6 +37,7 @@
                         layout="@layout/view_info_line"/>
                     <include
                         android:id="@+id/line_type"
+                        android:visibility="gone"
                         layout="@layout/view_info_line"/>
                     <include
                         android:id="@+id/line_time"
@@ -52,6 +53,7 @@
                         layout="@layout/view_info_line"/>
                     <include
                         android:id="@+id/line_handle"
+                        android:visibility="gone"
                         layout="@layout/view_info_line"/>
                     <include
                         android:id="@+id/line_handle_time"

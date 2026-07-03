@@ -108,7 +108,7 @@ public class URLConstant {
     public static final String GET_GRID_TREES = BASE_PATH + "resource/api/grid/listGridNewTrees";//网格(防火员)
     public static final String POST_GRID_TREES = BASE_PATH + "resource/api/grid/gridUser/list";//网格(防火员)
 
-    public static final String POST_TASK_LIST = BASE_PATH + "oa/api/taskManagement/listNew?type=appInternet";//任务列表
+    public static final String POST_TASK_LIST = BASE_PATH + "oa/api/taskManagement/page?type=appInternet";//任务列表
     public static final String GET_TASK_INFO = BASE_PATH + "oa/api/taskManagement?type=appInternet";//获取任务详情
     public static final String PUT_TASK_STATE = BASE_PATH + "oa/api/taskManagement";//改变任务单状态
     public static final String POST_TASK_ROOM = BASE_PATH + "resource/api/meeting/room/plot/step/list";//任务查询房间id

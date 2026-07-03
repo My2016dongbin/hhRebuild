@@ -22,6 +22,7 @@ import com.haohai.platform.fireforestplatform.ui.multitype.TaskList;
 import com.haohai.platform.fireforestplatform.ui.multitype.TaskListViewBinder;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.TaskViewModel;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.scwang.smartrefresh.layout.listener.SimpleMultiPurposeListener;
 
@@ -43,7 +44,7 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
         obtainViewModel().id = intent.getStringExtra("id");
         init_();
         bind_();
-        obtainViewModel().postData();
+        obtainViewModel().refreshData();
     }
 
     @Override
@@ -61,18 +62,19 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
         binding.recycle.setHasFixedSize(true);
         binding.recycle.setNestedScrollingEnabled(true);
         binding.monitorFireSmart.setRefreshHeader(new ClassicsHeader(this));
+        binding.monitorFireSmart.setRefreshFooter(new ClassicsFooter(this));
 
         //设置监听器，包括顶部下拉刷新、底部上滑刷新
         binding.monitorFireSmart.setOnMultiPurposeListener(new SimpleMultiPurposeListener(){
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-                obtainViewModel().postData();
-                refreshLayout.finishRefresh(1000);
+                binding.monitorFireSmart.setNoMoreData(false);
+                obtainViewModel().refreshData();
             }
 
             @Override
             public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-                refreshLayout.finishLoadMore(1000);
+                obtainViewModel().loadMoreData();
             }
         });
 
@@ -157,7 +159,7 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
     ///推送任务刷新
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetMessage(MessageRefresh event) {
-        obtainViewModel().postData();
+        obtainViewModel().refreshData();
     }
 
     private void bind_() {
@@ -186,6 +188,15 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
     protected void subscribeObserver() {
         super.subscribeObserver();
         obtainViewModel().status.observe(this, this::updateTabSelection);
+        obtainViewModel().refreshEvent.observe(this, value -> binding.monitorFireSmart.finishRefresh());
+        obtainViewModel().loadMoreEvent.observe(this, value -> binding.monitorFireSmart.finishLoadMore());
+        obtainViewModel().noMoreData.observe(this, noMore -> {
+            if (Boolean.TRUE.equals(noMore)) {
+                binding.monitorFireSmart.finishLoadMoreWithNoMoreData();
+            } else {
+                binding.monitorFireSmart.setNoMoreData(false);
+            }
+        });
     }
 
     @Override

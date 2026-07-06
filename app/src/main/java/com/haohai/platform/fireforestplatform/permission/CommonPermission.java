@@ -18,22 +18,24 @@ public class CommonPermission {
     public static final String MAIN_MY = "app-setting";//主菜单-我的
 
 
-    public static final String APP_BANNER = "app-application-btn-banner";//首页-轮播图
-    public static final String APP_ALARM = "app-application-btn-fireAlarm";//首页-报警管理
-    public static final String APP_SATELLITE = "app-application-btn-satelliteFireAlarm";//首页-卫星遥感
-    public static final String APP_DANGER = "app-application-btn-danger";//首页-隐患排查
-    public static final String APP_UPLOAD = "app-application-btn-fire";//首页-火情上报
-    public static final String APP_VIDEO = "app-application-btn-video";//首页-视频监控
-    public static final String APP_TASK = "app-application-btn-task";//首页-任务单
-    public static final String APP_RANGER = "app-application-btn-ranger";//首页-防火员
-    public static final String APP_NEWS = "app-application-btn-news";//首页-要闻
-    public static final String APP_SIGN = "app-application-btn-sign";//首页-考勤管理
-    public static final String APP_WEATHER = "app-application-btn-weather";//首页-天气
-    public static final String APP_IDENTIFY = "app-application-btn-identify";//首页-识别管理
-    public static final String APP_HANDLE = "app-application-btn-handle";//首页-处置管理
-    public static final String APP_CHECK = "app-application-btn-check";//首页-督导核实
-    public static final String APP_XH_UPLOAD = "app-application-btn-xhUpload";//首页-巡护上报
-    public static final String APP_ALARM_INFO = "app-application-btn-alarmInfo";//首页-报警信息
+    public static final String APP_BANNER = "app-application-btn-banner";//首页-轮播图-
+    public static final String APP_ALARM = "app-application-btn-fireAlarm";//首页-报警管理-
+    public static final String APP_SATELLITE = "app-application-btn-satelliteFireAlarm";//首页-卫星遥感-
+    public static final String APP_DANGER = "app-application-btn-danger";//首页-隐患排查-
+    public static final String APP_UPLOAD = "app-application-btn-fire";//首页-火情上报-
+    public static final String APP_VIDEO = "app-application-btn-video";//首页-视频监控-
+    public static final String APP_TASK = "app-application-btn-task";//首页-任务单-
+    public static final String APP_RANGER = "app-application-btn-ranger";//首页-防火员-
+    public static final String APP_NEWS = "app-application-btn-news";//首页-要闻-
+    public static final String APP_SIGN = "app-application-btn-sign";//首页-考勤管理-
+    public static final String APP_WEATHER = "app-application-btn-weather";//首页-天气-
+    public static final String APP_IDENTIFY = "app-application-btn-identify";//首页-识别管理-
+    public static final String APP_IDENTIFY_DD = "app-application-identify-dd";//首页-识别管理-督导按钮-
+    public static final String APP_HANDLE = "app-application-btn-handle";//首页-处置管理-
+    public static final String APP_HANDLE_DD = "app-application-handle-dd";//首页-处置管理-督导按钮-
+    public static final String APP_CHECK = "app-application-btn-check";//首页-督导核实-
+    public static final String APP_XH_UPLOAD = "app-application-btn-xhUpload";//首页-巡护上报-
+    public static final String APP_ALARM_INFO = "app-application-btn-alarmInfo";//首页-报警信息-
 
     public static final String VIDEO_CONTROL = "app-video-btn-control";//视频-控制
     public static final String VIDEO_STAR = "app-video-btn-star";//视频-收藏
@@ -56,8 +58,8 @@ public class CommonPermission {
     public static final String MY_AUDIO = "app-setting-btn-audio";//语音播报
 
     public static boolean hasPermission(Context context, String code){
-//        String mt = (String) SPUtils.get(context, SPValue.permission, "");
-//        return mt.contains(code);
-        return  true;
+        String mt = (String) SPUtils.get(context, SPValue.permission, "");
+        return mt.contains(code);
+//        return  true;
     }
 }

@@ -27,6 +27,7 @@ import com.haohai.platform.fireforestplatform.base.BaseLiveActivity;
 import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
 import com.haohai.platform.fireforestplatform.databinding.ActivityHandleDetailBinding;
 import com.haohai.platform.fireforestplatform.databinding.ActivityIdentifyDetailBinding;
+import com.haohai.platform.fireforestplatform.permission.CommonPermission;
 import com.haohai.platform.fireforestplatform.ui.bean.CheckResult;
 import com.haohai.platform.fireforestplatform.ui.bean.DisposeResult;
 import com.haohai.platform.fireforestplatform.ui.bean.HandleResult;
@@ -128,6 +129,7 @@ public class HandleDetailActivity extends BaseLiveActivity<ActivityHandleDetailB
             checkDialog.setCheckResult(obtainViewModel().checkResult);
             checkDialog.show();
         });
+        binding.check.setVisibility(CommonUtil.hasPermission(this, CommonPermission.APP_HANDLE_DD)?View.VISIBLE:View.GONE);
     }
 
     private boolean isNew = false;

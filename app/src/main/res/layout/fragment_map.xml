@@ -23,7 +23,7 @@
         <!--检索栏-->
         <FrameLayout
             android:id="@+id/top_search"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_margin="15dp"
             android:background="@drawable/white_conner"
             android:layout_width="match_parent"

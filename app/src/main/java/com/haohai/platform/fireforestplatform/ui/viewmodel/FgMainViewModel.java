@@ -603,7 +603,9 @@ public class FgMainViewModel extends BaseViewModel {
             @Override
             public void onSuccess(String response, int id) {
                 loading.postValue(new LoadingEvent(false));
-                //HhLog.e("getMainDeviceData " + response);
+                HhLog.e("getMainDeviceData " + URLConstant.GET_MAIN_DEVICE_LIST);
+                HhLog.e("getMainDeviceData " + "?status=" + mainDeviceStatus);
+                HhLog.e("getMainDeviceData " + response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     JSONArray data = jsonObject.getJSONArray("data");

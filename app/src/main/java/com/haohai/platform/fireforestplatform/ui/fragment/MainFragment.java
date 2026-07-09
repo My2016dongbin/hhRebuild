@@ -486,7 +486,8 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
         });
         //报警信息-查看更多
         binding.moreWarn.setOnClickListener(v -> {
-            EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"oneBody"));
+//            EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"oneBody"));
+            EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(requireActivity(),SPValue.mapIndex,3),"landFire"));
         });
         //天气信息-查看更多
         binding.moreWeather.setOnClickListener(v -> {

@@ -174,7 +174,7 @@ public class LandDetailDialog extends Dialog implements INaviInfoCallback {
         binding.date.setText(StringData.parse19(oneBodyFire.getWriteTime()));
         binding.lngLat.setText(oneBodyFire.getLongitude() + "、" + oneBodyFire.getLatitude());
         binding.address.setText(oneBodyFire.getAddress());
-        binding.real.setText(parseReal(oneBodyFire.getIsReal()) + " " +oneBodyFire.getFireType());
+        binding.real.setText(parseReal(oneBodyFire.getIsReal(),oneBodyFire.getTrueAlarmType(),oneBodyFire.getUnrealType()));
         Glide.with(context).load(oneBodyFire.getImg1())
                 .error(context.getResources().getDrawable(R.drawable.ic_no_pic))
                 .into(binding.lightPic);
@@ -497,7 +497,7 @@ public class LandDetailDialog extends Dialog implements INaviInfoCallback {
         });
     }
 
-    private String parseReal(String isReal) {
+    private String parseReal(String isReal,String trueType,String unType) {
         String str = "";
         if (isReal == null || Objects.equals(isReal, "null")) {
             str = "未处理";
@@ -507,14 +507,57 @@ public class LandDetailDialog extends Dialog implements INaviInfoCallback {
         } else {
             if (Objects.equals(isReal, "1")) {
                 str = "真实火情";
+                str = str + " " + parseTrueType(trueType);
             } else {
                 str = "疑似火情";
+                str = str + " " + parseUnType(unType);
             }
             binding.real.setVisibility(View.VISIBLE);
             binding.yes.setVisibility(View.GONE);
             binding.no.setVisibility(View.GONE);
         }
         return str;
+    }
+
+    private String parseTrueType(String trueType) {
+        if (trueType == null || trueType.length() == 0 || Objects.equals(trueType, "null")) {
+            return "";
+        }
+        return parseFireTypeByValue(trueType, fireTypesReal);
+    }
+    private String parseUnType(String unType) {
+        if (unType == null || unType.length() == 0 || Objects.equals(unType, "null")) {
+            return "";
+        }
+        return parseFireTypeByValue(unType, fireTypesFuck);
+    }
+
+    private String parseFireTypeByValue(String typeValue, List<FireType> fireTypes) {
+        if (fireTypes == null || fireTypes.isEmpty()) {
+            return "";
+        }
+        String[] values = typeValue.split(",");
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String value : values) {
+            String currentValue = value == null ? "" : value.trim();
+            if (currentValue.length() == 0) {
+                continue;
+            }
+            for (int i = 0; i < fireTypes.size(); i++) {
+                FireType fireType = fireTypes.get(i);
+                if (fireType == null) {
+                    continue;
+                }
+                if (Objects.equals(currentValue, fireType.getValue())) {
+                    if (stringBuilder.length() > 0) {
+                        stringBuilder.append("、");
+                    }
+                    stringBuilder.append(fireType.getDescription());
+                    break;
+                }
+            }
+        }
+        return stringBuilder.toString();
     }
 
     @Override

@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -31,7 +30,6 @@ import com.genew.base.net.bean.NiuxinResultInfo;
 import com.genew.base.utils.ToastUtils;
 import com.genew.mpublic.router.api.Api;
 import com.haohai.platform.fireforestplatform.HhApplication;
-import com.haohai.platform.fireforestplatform.MainActivity;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.base.BaseFragment;
 import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
@@ -43,7 +41,6 @@ import com.haohai.platform.fireforestplatform.nusdk.ErrorCode;
 import com.haohai.platform.fireforestplatform.nusdk.NuSDKMainActivity;
 import com.haohai.platform.fireforestplatform.nusdk.permission.PermissionListener;
 import com.haohai.platform.fireforestplatform.nusdk.permission.PermissionsUtil;
-import com.haohai.platform.fireforestplatform.old.SignMonthActivity;
 import com.haohai.platform.fireforestplatform.old.WeatherActivity;
 import com.haohai.platform.fireforestplatform.permission.CommonPermission;
 import com.haohai.platform.fireforestplatform.ui.activity.FireUploadActivity;
@@ -323,9 +320,6 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
             }
             if(mainFgMenu.getTitle().equals("要闻")){
                 requireActivity().startActivity(new Intent(requireActivity(), NewsActivity.class));
-            }
-            if(mainFgMenu.getTitle().equals("考勤管理")){
-                requireActivity().startActivity(new Intent(requireActivity(), SignMonthActivity.class));
             }
             if(mainFgMenu.getTitle().equals("天气")){
                 requireActivity().startActivity(new Intent(requireActivity(), WeatherActivity.class));

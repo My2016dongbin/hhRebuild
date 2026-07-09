@@ -8,9 +8,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.base.BaseLiveActivity;
 import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
-import com.haohai.platform.fireforestplatform.databinding.ActivitySignBinding;
 import com.haohai.platform.fireforestplatform.databinding.ActivityWeatherBinding;
-import com.haohai.platform.fireforestplatform.ui.viewmodel.SignViewModel;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.WeatherViewModel;
 
 public class WeatherActivity extends BaseLiveActivity<ActivityWeatherBinding, WeatherViewModel> {

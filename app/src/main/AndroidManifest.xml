@@ -107,11 +107,8 @@
         <activity android:name=".ui.activity.LevelFireMessageListActivity" />
         <activity android:name=".ui.activity.VideoActivity" />
         <activity android:name=".ui.activity.NewsInfoActivity" />
-        <activity android:name=".ui.activity.SignStatisticsActivity" />
-        <activity android:name=".ui.activity.SignActivity" />
         <activity android:name=".ui.activity.WeatherActivity" />
         <activity android:name=".old.FireMapActivity" />
-        <activity android:name=".old.SignMonthActivity" />
         <activity android:name=".old.WeatherActivity" />
         <activity android:name=".old.AutoStartActivity" />
         <activity android:name=".old.HistoryLineActivity" />

@@ -140,5 +140,13 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:text="主办单位：青岛市城阳区应急管理局"
+            android:textSize="12sp"
+            android:textColor="@color/text_color5"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"/>
     </FrameLayout>
 </layout>

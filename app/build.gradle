@@ -76,7 +76,7 @@ android {
             manifestPlaceholders = [
                     APP_ICON: "@drawable/ic_icon",//app图标
                     CHANNEL_NAME: "haohaiVersion",
-                    APP_NAME: "森林防灭火一体化智慧管理平台",//城阳应急
+                    APP_NAME: "城阳区森林防灭火一体化智慧管理平台",//城阳应急
 //                    APP_NAME: "浩海森林防火预警平台软件",//上架
                     AUTHORITIES: "com.haohai.platform.fireforestplatform.fileprovider",
             ]
@@ -88,7 +88,7 @@ android {
             manifestPlaceholders = [
                     APP_ICON: "@drawable/ic_icon",//app图标
                     CHANNEL_NAME: "onceVersion",
-                    APP_NAME: "森林防灭火一体化智慧管理平台临时测试版${defaultConfig.versionName}",
+                    APP_NAME: "城阳区森林防灭火一体化智慧管理平台临时测试版${defaultConfig.versionName}",
                     AUTHORITIES: "com.haohai.platform.fireforestplatform.fileprovider",
             ]
         }

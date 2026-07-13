@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.databinding.ItemMainDeviceBinding;
+import com.haohai.platform.fireforestplatform.utils.CommonUtil;
 
 import java.util.Objects;
 
@@ -47,9 +48,9 @@ public class MainDeviceViewBinder extends ItemViewProvider<MainDevice, MainDevic
 
         ItemMainDeviceBinding binding = (ItemMainDeviceBinding) viewHolder.getBinding();
         binding.index.setText(mainDevice.getIndex()+"");
-        binding.name.setText(mainDevice.getName());
-        binding.area.setText(mainDevice.getGridName()+"");
-        binding.state.setText(Objects.equals(mainDevice.getIsOnline(), "1") ?"在线":"离线");
+        binding.name.setText(CommonUtil.parseNullString(mainDevice.getDeviceName(),""));
+        binding.area.setText(CommonUtil.parseNullString(mainDevice.getGridName(),"") +"");
+        binding.state.setText(Objects.equals(mainDevice.getIsOnline(), "offline") ?"离线":"在线");
         if(mainDevice.getIndex()%2==1){
             binding.click.setBackgroundColor(context.getResources().getColor(R.color.c));
         }else{

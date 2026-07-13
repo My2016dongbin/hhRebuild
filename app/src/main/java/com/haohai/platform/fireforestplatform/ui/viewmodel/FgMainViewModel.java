@@ -596,15 +596,24 @@ public class FgMainViewModel extends BaseViewModel {
 
     public void getMainDeviceData(){
         loading.postValue(new LoadingEvent(true,"加载中.."));
-        HhHttp.get()
-                .url(URLConstant.GET_MAIN_DEVICE_LIST)
-                .addParams("status",mainDeviceStatus)
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if(!mainDeviceStatus.isEmpty()){
+                jsonObject.put("isOnline",mainDeviceStatus);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        HhHttp.postString()
+                .url(URLConstant.GET_MAIN_DEVICE_LIST2)
+                .content(jsonObject.toString())
+//                .addParams("status",mainDeviceStatus)
                 .build().execute(new LoggedInStringCallback(this,context) {
             @Override
             public void onSuccess(String response, int id) {
                 loading.postValue(new LoadingEvent(false));
-                HhLog.e("getMainDeviceData " + URLConstant.GET_MAIN_DEVICE_LIST);
-                HhLog.e("getMainDeviceData " + "?status=" + mainDeviceStatus);
+                HhLog.e("getMainDeviceData " + URLConstant.GET_MAIN_DEVICE_LIST2);
+                HhLog.e("getMainDeviceData " + "?jsonObject=" + jsonObject);
                 HhLog.e("getMainDeviceData " + response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);

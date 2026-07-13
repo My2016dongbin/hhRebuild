@@ -10,7 +10,7 @@ import java.util.List;
 public class MainDevice {
     private int index;
     private String id;
-    private String name;
+    private String deviceName;
     private String gridNo;
     private String gridName;
     private String isOnline;
@@ -32,12 +32,12 @@ public class MainDevice {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getDeviceName() {
+        return deviceName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
     public String getGridNo() {
@@ -126,7 +126,7 @@ public class MainDevice {
         return "MainDevice{" +
                 "index=" + index +
                 ", id='" + id + '\'' +
-                ", name='" + name + '\'' +
+                ", deviceName='" + deviceName + '\'' +
                 ", gridNo='" + gridNo + '\'' +
                 ", gridName='" + gridName + '\'' +
                 ", isOnline='" + isOnline + '\'' +

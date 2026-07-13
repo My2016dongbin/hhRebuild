@@ -246,20 +246,20 @@ public class TaskListInfoActivity extends BaseLiveActivity<ActivityTaskListInfoB
 
     private String parseFireType(String fireType) {
         String type = fireType;
-        if(Objects.equals(fireType, "monitor")){
-            type = "监控报警";
-        }
         if(Objects.equals(fireType, "MONITOR")){
             type = "监控报警";
         }
+        if(Objects.equals(fireType, "SURFACE")){
+            type = "地表火报警";
+        }
+        if(Objects.equals(fireType, "SURFACEFIRE")){
+            type = "地表火报警";
+        }
+        if(Objects.equals(fireType, "DRONEFIRE")){
+            type = "无人机报警";
+        }
         if(Objects.equals(fireType, "SATELLITE")){
             type = "卫星报警";
-        }
-        if(Objects.equals(fireType, "REPORT")){
-            type = "人员上报";
-        }
-        if(Objects.equals(fireType, "2")){
-            type = "卡口报警";
         }
         return type;
     }

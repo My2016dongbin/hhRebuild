@@ -362,7 +362,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
 
     @Override
     public void onMainDeviceDialogItemClick(MainDevice mainDevice) {
-        if(!Objects.equals(mainDevice.getIsOnline(), "1")){
+        if(Objects.equals(mainDevice.getIsOnline(), "offline")){
             Toast.makeText(requireActivity(), "设备离线", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -383,7 +383,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
             left= dto_left.getName();
             TextInfo okTextInfo = new TextInfo();
             okTextInfo.setFontColor(requireActivity().getResources().getColor(R.color.c7));
-            MessageDialog.show(mainDevice.getName(), "",left)
+            MessageDialog.show(mainDevice.getDeviceName(), "",left)
                     .setButtonOrientation(LinearLayout.VERTICAL)
                     .setOkTextInfo(okTextInfo)
                     .setOkButtonClickListener((dialog, v1) -> {
@@ -402,7 +402,7 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
             right= dto_right.getName();
             TextInfo okTextInfo = new TextInfo();
             okTextInfo.setFontColor(requireActivity().getResources().getColor(R.color.c7));
-            MessageDialog.show(mainDevice.getName(), "",left,right)
+            MessageDialog.show(mainDevice.getDeviceName(), "",left,right)
                     .setButtonOrientation(LinearLayout.VERTICAL)
                     .setOkTextInfo(okTextInfo)
                     .setCancelTextInfo(okTextInfo)
@@ -474,13 +474,13 @@ public class MainFragment extends BaseFragment<FgMain, FgMainViewModel> implemen
         });
         //在线数
         binding.deviceOnlineView.setOnClickListener(v -> {
-            obtainViewModel().mainDeviceStatus = "1";
+            obtainViewModel().mainDeviceStatus = "online";
             obtainViewModel().getMainDeviceData();
             mainDeviceListDialog.show();
         });
         //离线数
         binding.deviceOfflineView.setOnClickListener(v -> {
-            obtainViewModel().mainDeviceStatus = "0";
+            obtainViewModel().mainDeviceStatus = "offline";
             obtainViewModel().getMainDeviceData();
             mainDeviceListDialog.show();
         });

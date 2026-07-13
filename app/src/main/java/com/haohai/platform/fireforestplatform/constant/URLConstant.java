@@ -50,6 +50,7 @@ public class URLConstant {
     public static final String GET_MONITOR_ONLINE_COUNT = BASE_PATH + "resource/api/camera/getOnlineDevices";//查询监控设备在线数量
 
     public static final String GET_MAIN_DEVICE_LIST = BASE_PATH + "resource/api/camera/getDevicesByOnlineStatus";//主页查询在线离线设备列表
+    public static final String GET_MAIN_DEVICE_LIST2 = BASE_PATH + "resource/api/surfaceFireDevice/list";//主页查询在线离线设备列表-新
     public static final String GET_MAIN_SIGN_INFO = BASE_PATH + "oa/api/attendance/myAttRecordByTime";//主页查询签到详情
 
 

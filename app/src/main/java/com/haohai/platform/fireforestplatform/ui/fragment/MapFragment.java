@@ -73,6 +73,8 @@ import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.GetJsonDataUtil;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.LatLngChangeNew;
+import com.haohai.platform.fireforestplatform.utils.SPUtils;
+import com.haohai.platform.fireforestplatform.utils.SPValue;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -211,6 +213,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             double[] loc = LatLngChangeNew.calBD09toGCJ02(CommonData.lat, CommonData.lng);
             flyBaiduMapZoom(loc[0], loc[1], 14);
             userLocationMarker();
+            //EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(getActivity(), SPValue.mapIndex,3),"oneBody","a4234f24-440f-4642-a764-01a0f9dd3af1"));
         });
         binding.viewTeamLocation.setOnClickListener(v -> toggleTeamLocation());
         binding.viewGridShequ.setOnClickListener(v -> {
@@ -233,8 +236,23 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         int index = event.getIndex();
         String type = event.getType();
         if(index == 3 && Objects.equals(type, "oneBody")){
-            obtainViewModel().getOneBodyData();
-            oneBodyListDialog.show();
+            if(event.getId()!=null && !event.getId().isEmpty()){
+                //打开详情
+                obtainViewModel().getOneBodyData();
+                obtainViewModel().getOneBodyDetail(event.getId(),new FgMapViewModel.OnResultListener(){
+                    @Override
+                    public void onSuccess(OneBodyFire data) {
+                        double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(data.getAlarmLatitude()), Double.parseDouble(data.getAlarmLongitude()));
+                        flyBaiduMapZoom(doubles[0],doubles[1], 14);
+                        oneBodyDetailDialog.setOneBodyFire(data);
+                        delayDialog(oneBodyDetailDialog);
+                    }
+                });
+            }else{
+                //打开列表
+                obtainViewModel().getOneBodyData();
+                oneBodyListDialog.show();
+            }
         }else if(index == 3 && Objects.equals(type,"satellite")){
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Calendar c = Calendar.getInstance();

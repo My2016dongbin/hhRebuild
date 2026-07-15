@@ -8,6 +8,7 @@ package com.haohai.platform.fireforestplatform.event;
 public class MainTabChange {
     private int index;
     private String type;
+    private String id;
 
     public MainTabChange() {
     }
@@ -15,6 +16,20 @@ public class MainTabChange {
     public MainTabChange(int index, String type) {
         this.index = index;
         this.type = type;
+    }
+
+    public MainTabChange(int index, String type,String id) {
+        this.index = index;
+        this.type = type;
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public MainTabChange(int index) {

@@ -123,9 +123,10 @@
                 android:textColor="@color/text_color3"/>
         </LinearLayout>
         <View
+            android:layout_marginTop="5dp"
             android:layout_gravity="bottom"
             android:layout_width="match_parent"
-            android:background="@color/back_color_line"
+            android:background="@color/gray1"
             android:layout_height="0.5dp"/>
 
     </LinearLayout>

@@ -46,7 +46,6 @@ import org.xutils.x;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -818,5 +817,44 @@ public class FgMapViewModel extends BaseViewModel {
         }else{
             Toast.makeText(context, "请输入搜索内容", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void getOneBodyDetail(String id, OnResultListener onResultListener) {
+        HhHttp.get()
+                .url(URLConstant.POST_MAP_ONE_BODY_DETAIL)
+                .addParams("id",id)
+                .build()
+                .connTimeOut(10000)
+                .execute(new LoggedInStringCallback(this, context) {
+                    @Override
+                    public void onSuccess(String response, int id) {
+                        HhLog.e("POST_MAP_ONE_BODY_DETAIL " + URLConstant.POST_MAP_ONE_BODY_DETAIL + id + " , " + response);
+                        try {
+                            loading.postValue(new LoadingEvent(false, ""));
+                            JSONObject jsonObject = new JSONObject(response);
+                            JSONArray data = jsonObject.getJSONArray("data");
+                            if(data.length()>0){
+                                JSONObject obj = (JSONObject) data.get(0);
+                                OneBodyFire oneBodyFire = new Gson().fromJson(obj.toString(), OneBodyFire.class);
+                                onResultListener.onSuccess(oneBodyFire);
+
+
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Exception e, int id) {
+                        HhLog.e("onFailure: " + e.toString());
+                        msg.setValue(e.getMessage());
+                        loading.setValue(new LoadingEvent(false, ""));
+                    }
+                });
+    }
+    public interface OnResultListener {
+        void onSuccess(OneBodyFire data);
     }
 }

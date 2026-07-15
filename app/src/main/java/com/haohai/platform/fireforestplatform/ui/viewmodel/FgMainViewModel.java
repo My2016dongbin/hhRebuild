@@ -451,118 +451,35 @@ public class FgMainViewModel extends BaseViewModel {
                         JSONObject obj = (JSONObject) data.get(0);
                         JSONObject userDTO = obj.getJSONObject("userDTO");
                         String roleId = userDTO.getString("roleId");
-                        //判断是否为领导账号
-                        SPUtils.put(HhApplication.getInstance(), SPValue.manager, roleId.contains(leaderRoleId));
-                        if(roleId.contains(leaderRoleId)){
-                            //领导账号
-                            //先获取fireIds
-                            String userId = String.valueOf(SPUtils.get(context, SPValue.id, ""));
-                            HhHttp.get()
-                                    .url(URLConstant.GET_FIRE_COUNT_FIRE_IDS)
-                                    .addParams("resaveId", userId)
-                                    .build().execute(new LoggedInStringCallback(FgMainViewModel.this,context) {
-                                @Override
-                                public void onSuccess(String response, int id) {
-                                    HhLog.e("GET_FIRE_COUNT_FIRE_IDS " + userId + response );
-                                    try {
-                                        String fireIds = "";
-                                        JSONObject jsonObject = new JSONObject(response);
-                                        JSONArray data = jsonObject.getJSONArray("data");
-                                        if(data.length()>0){
-                                            for (int i = 0; i < data.length(); i++) {
-                                                JSONObject o = (JSONObject) data.get(i);
-                                                if(fireIds.isEmpty()){
-                                                    fireIds+=o.getString("fireId");
-                                                }else{
-                                                    fireIds = fireIds + "," + o.getString("fireId");
-                                                }
+
+                        HhHttp.get()
+                                .url(URLConstant.GET_FIRE_COUNT)
+                                .build().execute(new LoggedInStringCallback(FgMainViewModel.this,context) {
+                                    @Override
+                                    public void onSuccess(String response, int id) {
+                                        HhLog.e("GET_FIRE_COUNT USER groupId " + response );
+                                        try {
+                                            JSONObject jsonObject = new JSONObject(response);
+                                            JSONArray data = jsonObject.getJSONArray("data");
+                                            if(data.length()>0){
+                                                JSONObject obj = (JSONObject) data.get(0);
+                                                int fireUntreatedCount = obj.getInt("notProcessed");
+                                                int fireSrocessedCount = obj.getInt("processed");
+                                                handle = Float.parseFloat(fireSrocessedCount + "");
+                                                noHandle = Float.parseFloat(fireUntreatedCount + "");
                                             }
+                                            handleData.postValue(handle);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
                                         }
-
-                                        //然后查询
-                                        String finalFireIds = fireIds;
-                                        HhHttp.get()
-                                                .url(URLConstant.GET_FIRE_COUNT)
-                                                .addParams("groupId", groupId)//"001021")
-                                                .addParams("provinceCode",gridNo)//"370214")
-                                                .addParams("fireIds",fireIds)
-                                                .addParams("ip","0")
-                                                .addParams("isAndroid","0")
-                                                .build().execute(new LoggedInStringCallback(FgMainViewModel.this,context) {
-                                            @Override
-                                            public void onSuccess(String response, int id) {
-                                                HhLog.e("GET_FIRE_COUNT LEADER groupId " + groupId + " ,gridNo " + gridNo + " ， fireIds "  + finalFireIds +" , " + response );
-                                                try {
-                                                    JSONObject jsonObject = new JSONObject(response);
-                                                    JSONArray data = jsonObject.getJSONArray("data");
-                                                    if(data.length()>0){
-                                                        JSONObject obj = (JSONObject) data.get(0);
-                                                        int fireUntreatedCount = obj.getInt("fireUntreatedCount");
-                                                        int fireSrocessedCount = obj.getInt("fireSrocessedCount");
-                                                        handle = Float.parseFloat(fireSrocessedCount + "");
-                                                        noHandle = Float.parseFloat(fireUntreatedCount + "");
-                                                    }
-                                                    handleData.postValue(handle);
-                                                } catch (JSONException e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onFailure(Call call, Exception e, int id) {
-                                                handleData.postValue(handle);
-                                            }
-                                        });
-
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
                                     }
-                                }
 
-                                @Override
-                                public void onFailure(Call call, Exception e, int id) {
-                                    HhLog.e(e.getMessage());
-                                    handleData.postValue(handle);
-                                }
-                            });
-
-
-                        }else{
-                            //普通用户
-                            //直接查询
-                            HhHttp.get()
-                                    .url(URLConstant.GET_FIRE_COUNT)
-                                    .addParams("groupId", groupId)//"001021")
-                                    .addParams("provinceCode",gridNo)//"370214")
-                                    .addParams("ip","0")
-                                    .addParams("isAndroid","0")
-                                    .build().execute(new LoggedInStringCallback(FgMainViewModel.this,context) {
-                                @Override
-                                public void onSuccess(String response, int id) {
-                                    HhLog.e("GET_FIRE_COUNT USER groupId " + groupId + " ,gridNo " + gridNo + " ， " + response );
-                                    try {
-                                        JSONObject jsonObject = new JSONObject(response);
-                                        JSONArray data = jsonObject.getJSONArray("data");
-                                        if(data.length()>0){
-                                            JSONObject obj = (JSONObject) data.get(0);
-                                            int fireUntreatedCount = obj.getInt("fireUntreatedCount");
-                                            int fireSrocessedCount = obj.getInt("fireSrocessedCount");
-                                            handle = Float.parseFloat(fireSrocessedCount + "");
-                                            noHandle = Float.parseFloat(fireUntreatedCount + "");
-                                        }
+                                    @Override
+                                    public void onFailure(Call call, Exception e, int id) {
                                         handleData.postValue(handle);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
                                     }
-                                }
+                                });
 
-                                @Override
-                                public void onFailure(Call call, Exception e, int id) {
-                                    handleData.postValue(handle);
-                                }
-                            });
-
-                        }
                     }
 
                 } catch (JSONException e) {

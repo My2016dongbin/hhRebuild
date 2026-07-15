@@ -116,7 +116,7 @@ public class TengxunReceiver extends XGPushBaseReceiver{
             }
 
             if(Objects.equals(type, "12")){
-                EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(context, SPValue.mapIndex,3),"oneBody"));
+                EventBus.getDefault().post(new MainTabChange((Integer) SPUtils.get(context, SPValue.mapIndex,3),"oneBody",id));
             }else if(Objects.equals(type, "4")){
                 Intent intent = new Intent(HhApplication.getInstance(), NewsActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

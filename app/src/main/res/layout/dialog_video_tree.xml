@@ -50,7 +50,7 @@
                 android:layout_weight="1">
                 <TextView
                     android:id="@+id/tv_mid"
-                    android:text="卡口"
+                    android:text="卡点"
                     android:textStyle="bold"
                     android:textColor="@color/c5"
                     android:textSize="20sp"

@@ -120,6 +120,12 @@ public class SignMonthActivity extends BaseActivity implements
         walkInfo();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        walkInfo();
+    }
+
     ///巡护距离更新
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetMessage(WalkEvent event) {
@@ -923,5 +929,4 @@ public class SignMonthActivity extends BaseActivity implements
     }
 
 }
-
 

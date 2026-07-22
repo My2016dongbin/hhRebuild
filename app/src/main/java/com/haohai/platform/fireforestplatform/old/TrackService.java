@@ -72,6 +72,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -80,6 +81,7 @@ import okhttp3.Call;
 public class TrackService extends Service implements SensorEventListener {
 
     private static final String TAG = TrackService.class.getSimpleName();
+    private static final double MAX_VALID_DISTANCE_KM = 0.2d;
 
     public LocationClient mLocationClient = null;
     private MyLocationListener myListener = new MyLocationListener();
@@ -190,44 +192,42 @@ public class TrackService extends Service implements SensorEventListener {
         }, 10000);
     }
 
-    private boolean disState = false;
     private void parseDistance() {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm");
-        String format = simpleDateFormat.format(new Date());
-        Log.e(TAG, "changeUserPosition: date = " + format);
-        if (format.contains("00:00")) {//跨天清零
-            CommonData.walkDistance = 0;
-            //通知UI刷新巡护距离
-            EventBus.getDefault().post(new WalkEvent());
+        syncWalkDistanceDay();
+        Log.e(TAG, "changeUserPosition: date = " + getWalkDayKey());
+        if (CommonData.lat == 0 || CommonData.lng == 0) {
+            CommonData.dis_int = 0;
+            return;
+        }
+        if (CommonData.lat_old == 0 || CommonData.lng_old == 0) {
+            updateLastLocation();
+            CommonData.dis_int = 0;
+            return;
+        }
+        double distance = CommonUtil.distance(CommonData.lng_old, CommonData.lat_old, CommonData.lng, CommonData.lat);
+        HhLog.e("距离 distance " + distance + "千米，new: " + CommonData.lng + "，" + CommonData.lat + " old: " + CommonData.lng_old + "," + CommonData.lat_old);
+        if (distance <= 0) {
+            CommonData.dis_int = 0;
+            updateLastLocation();
+            return;
+        }
+        if (distance > MAX_VALID_DISTANCE_KM) {
+            CommonData.dis_int = 0;
+            Log.e(TAG, "changeUserPosition: " + distance + " out testInfo");
+            updateLastLocation();
+            return;
+        }
+        CommonData.dis_int = parseDistanceMeter(distance);
+        if (CommonData.hasSign && CommonData.dis_int > 0) {
+            CommonData.walkDistance += CommonData.dis_int;
             SPUtils.put(this, SPValue.walk, CommonData.walkDistance);
+            HhLog.e("当前巡护距离 " + CommonData.walkDistance + " 米，较上次 " + CommonData.dis_int + "米");
+            EventBus.getDefault().post(new WalkEvent());
+            Log.e(TAG, "changeUserPosition: " + distance + " in testInfo");
         }
-        if (CommonData.lat_old != 0 && CommonData.lng_old != 0) {
-            double distance = CommonUtil.distance(CommonData.lng_old, CommonData.lat_old, CommonData.lng, CommonData.lat);
-            HhLog.e("距离 distance " + distance + "米，new: " + CommonData.lng + "，" + CommonData.lat + " old: " + CommonData.lng_old + "," + CommonData.lat_old);
-            if (distance <= 0.2 && distance > 0) {
-                disState = true;
-                /*if (!CommonData.hasSensor *//*|| CommonData.hasMove*//*) {//没有传感器或者传感器检测到了移动*/
-                double dis_double = distance * 1000;
-                String dis_str = dis_double + "";
-                CommonData.dis_int = Integer.parseInt(dis_str.substring(0, dis_str.indexOf("."))) + 1;
-                CommonData.walkDistance += CommonData.dis_int;
-                //Toast.makeText(this, "当前巡护距离 " + CommonData.walkDistance + " 米，较上次 " + CommonData.dis_int + "米", Toast.LENGTH_SHORT).show();
-                HhLog.e("当前巡护距离 " + CommonData.walkDistance + " 米，较上次 " + CommonData.dis_int + "米");
-                //通知UI刷新巡护距离
-                EventBus.getDefault().post(new WalkEvent());
-                //Toast.makeText(this, distance+" in testInfo", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "changeUserPosition: " + distance + " in testInfo");
-                /*} else {
-                    CommonData.dis_int = 0;
-                }*/
-            } else {
-                CommonData.dis_int = 0;
-                Log.e(TAG, "changeUserPosition: " + distance + " out testInfo");
-            }
-            Log.e(TAG, "changeUserPosition: distance = " + distance);
-            Log.e(TAG, "changeUserPosition: LatLng = " + CommonData.lng_old + "," + CommonData.lat_old + " | " + CommonData.lng + "," + CommonData.lat);
-
-        }
+        Log.e(TAG, "changeUserPosition: distance = " + distance);
+        Log.e(TAG, "changeUserPosition: LatLng = " + CommonData.lng_old + "," + CommonData.lat_old + " | " + CommonData.lng + "," + CommonData.lat);
+        updateLastLocation();
     }
 
     private void uploadLocation() {
@@ -259,12 +259,6 @@ public class TrackService extends Service implements SensorEventListener {
                     @Override
                     public void onSuccess(String response, int id) {
                         HhLog.e("position " + response);
-                        //TODO 判断移动距离有效后再替换旧坐标
-                        if(disState || CommonData.lng_old==0){
-                            CommonData.lng_old = CommonData.lng;
-                            CommonData.lat_old = CommonData.lat;
-                            disState = false;
-                        }
                     }
 
                     @Override
@@ -379,6 +373,40 @@ public class TrackService extends Service implements SensorEventListener {
     private void getBaiduLocation() {
         mLocationClient.start();
         HhLog.e("getBaiduLocation");
+    }
+
+    private void syncWalkDistanceDay() {
+        String today = getWalkDayKey();
+        String walkDay = String.valueOf(SPUtils.get(this, SPValue.walkDay, ""));
+        if ("".equals(walkDay) || "null".equals(walkDay)) {
+            SPUtils.put(this, SPValue.walkDay, today);
+            return;
+        }
+        if (!today.equals(walkDay)) {
+            CommonData.walkDistance = 0;
+            CommonData.dis_int = 0;
+            SPUtils.put(this, SPValue.walk, CommonData.walkDistance);
+            SPUtils.put(this, SPValue.walkDay, today);
+            EventBus.getDefault().post(new WalkEvent());
+        }
+    }
+
+    private String getWalkDayKey() {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        return simpleDateFormat.format(new Date());
+    }
+
+    private int parseDistanceMeter(double distanceKm) {
+        int distanceMeter = (int) Math.round(distanceKm * 1000d);
+        if (distanceMeter <= 0 && distanceKm > 0) {
+            return 1;
+        }
+        return distanceMeter;
+    }
+
+    private void updateLastLocation() {
+        CommonData.lng_old = CommonData.lng;
+        CommonData.lat_old = CommonData.lat;
     }
 
     private void requestLocation() {

@@ -522,53 +522,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private void updateMarkers() {
         //绘制一体机火点Marker
         if(obtainViewModel().oneBodyList.getValue()!=null){
-            List<OneBodyFire> value = obtainViewModel().oneBodyList.getValue();
-            List<OneBodyFire> list = new ArrayList<>();
-            if(value!=null && value.size()>0){
-                //0全部  1未处理  2真实火情  3疑似火情  4误报
-                if(obtainViewModel().oneBodyFilterState == 0){
-                    /*for (int i = 0; i < value.size(); i++) {
-                        OneBodyFire fire = value.get(i);
-                        if(!Objects.equals(fire.getIsReal(), "0")){
-                            list.add(fire);
-                        }
-                    }*/
-                    list.addAll(value);
-                }
-                if(obtainViewModel().oneBodyFilterState == 1){
-                    for (int i = 0; i < value.size(); i++) {
-                        OneBodyFire fire = value.get(i);
-                        if(fire.getIsReal() == null){
-                            list.add(fire);
-                        }
-                    }
-                }
-                if(obtainViewModel().oneBodyFilterState == 2){
-                    for (int i = 0; i < value.size(); i++) {
-                        OneBodyFire fire = value.get(i);
-                        if(Objects.equals(fire.getIsReal(), "1")){
-                            list.add(fire);
-                        }
-                    }
-                }
-                if(obtainViewModel().oneBodyFilterState == 3){
-                    for (int i = 0; i < value.size(); i++) {
-                        OneBodyFire fire = value.get(i);
-                        if(Objects.equals(fire.getIsReal(), "0")){
-                            list.add(fire);
-                        }
-                    }
-                }
-                if(obtainViewModel().oneBodyFilterState == 4){
-                    for (int i = 0; i < value.size(); i++) {
-                        OneBodyFire fire = value.get(i);
-                        if(Objects.equals(fire.getIsReal(), "3")){
-                            list.add(fire);
-                        }
-                    }
-                }
-            }
-            oneBodyMarker(list);
+            oneBodyMarker(Objects.requireNonNull(obtainViewModel().oneBodyList.getValue()));
         }
         //绘制卫星火点Marker
         if(obtainViewModel().satelliteList.getValue()!=null){
@@ -1420,13 +1374,10 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
     @Override
     public void onOneBodyDialogFilterState(int state) {
-        //0全部  1未处理  2真实火点  3疑似火点
+        //0全部  1未处理  2真实火点  3疑似火点  4误报
         obtainViewModel().oneBodyFilterState = state;
-
-
-        obtainViewModel().aMap.clear();
-        //更新所有Marker
-        updateMarkers();
+        obtainViewModel().currentPage = 1;
+        obtainViewModel().getOneBodyData();
     }
 
     @Override

@@ -68,41 +68,8 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
     }
 
     public void setOneBodyFireList(List<OneBodyFire> oneBodyFireList,int page) {
-        if(page>1){
-            this.oneBodyFireList.addAll(oneBodyFireList);
-        }else{
-            this.oneBodyFireList = oneBodyFireList;
-        }
-        filterData();
-    }
-
-    private void filterData() {
-        filterList = new ArrayList<>();
-        for (int i = 0; i < oneBodyFireList.size(); i++) {
-            OneBodyFire oneBodyFire = oneBodyFireList.get(i);
-            if(filterState == 0){
-                /*if(oneBodyFire.getIsReal()==null || Objects.equals(oneBodyFire.getIsReal(), "1")){
-                    filterList.add(oneBodyFire);
-                }*/
-                filterList.add(oneBodyFire);
-            }
-            if(filterState == 1){
-                if(oneBodyFire.getIsReal()==null){
-                    filterList.add(oneBodyFire);
-                }
-            }
-            if(filterState == 2){
-                if(Objects.equals(oneBodyFire.getIsReal(), "1")){
-                    filterList.add(oneBodyFire);
-                }
-            }
-            if(filterState == 3){
-                if(Objects.equals(oneBodyFire.getIsReal(), "0")){
-                    filterList.add(oneBodyFire);
-                }
-            }
-        }
-
+        this.oneBodyFireList = oneBodyFireList;
+        filterList = new ArrayList<>(oneBodyFireList);
         updateData();
     }
 
@@ -152,7 +119,6 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
                                 filterState = 0;
                                 updateFilterState();
                                 dialogListener.onOneBodyDialogFilterState(0);
-                                filterData();
                                 dialog.dismiss();
                             }
                         });
@@ -163,7 +129,6 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
                                 filterState = 1;
                                 updateFilterState();
                                 dialogListener.onOneBodyDialogFilterState(1);
-                                filterData();
                                 dialog.dismiss();
                             }
                         });
@@ -174,7 +139,6 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
                                 filterState = 2;
                                 updateFilterState();
                                 dialogListener.onOneBodyDialogFilterState(2);
-                                filterData();
                                 dialog.dismiss();
                             }
                         });
@@ -185,7 +149,6 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
                                 filterState = 3;
                                 updateFilterState();
                                 dialogListener.onOneBodyDialogFilterState(3);
-                                filterData();
                                 dialog.dismiss();
                             }
                         });
@@ -196,7 +159,6 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
                                 filterState = 4;
                                 updateFilterState();
                                 dialogListener.onOneBodyDialogFilterState(4);
-                                filterData();
                                 dialog.dismiss();
                             }
                         });
@@ -257,6 +219,9 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
         }
         if(filterState == 3){
             binding.filterText.setText("疑似火点");
+        }
+        if(filterState == 4){
+            binding.filterText.setText("误报");
         }
     }
 

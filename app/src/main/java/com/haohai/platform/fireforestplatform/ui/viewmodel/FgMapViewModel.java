@@ -66,7 +66,7 @@ public class FgMapViewModel extends BaseViewModel {
     public String endTime = "";
     public String search = "";
     public AMap aMap;
-    public int oneBodyFilterState = 1;//0全部  1未处理  2真实火点  3疑似火点
+    public int oneBodyFilterState = 1;//0全部  1未处理  2真实火点  3疑似火点  4误报
     public List<Grid> gridList = new ArrayList<>();
     public final MutableLiveData<List<SheQu>> sheQuGridList = new MutableLiveData<>();
     public final MutableLiveData<List<ArrayList<Double>>> sheQuCurrentList = new MutableLiveData<>();
@@ -177,28 +177,54 @@ public class FgMapViewModel extends BaseViewModel {
             jsonObject.put("dto", dto);
             jsonObject.put("limit", 100);
             jsonObject.put("page", currentPage);
-            //dto.put("isReal", isReal);
+            if(oneBodyFilterState == 1){
+                dto.put("isHandle", "0");
+            }
+            if(oneBodyFilterState == 2){
+                dto.put("isHandle", "1");
+                dto.put("isReal", "1");
+            }
+            if(oneBodyFilterState == 3){
+                dto.put("isHandle", "1");
+                dto.put("isReal", "0");
+            }
+            if(oneBodyFilterState == 4){
+                dto.put("isHandle", "1");
+                dto.put("isReal", "3");
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
         HhLog.e("oneBody params " + jsonObject.toString());
-        RequestParams params = new RequestParams(URLConstant.POST_MAP_ONE_BODY);
+        RequestParams params = new RequestParams(URLConstant.POST_MAP_ONE_BODY2);
         params.setBodyContent(jsonObject.toString());
         HhHttp.postX(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 try {
-                    HhLog.e("POST_MAP_ONE_BODY" + currentPage + " , " + result);
+                    HhLog.e("POST_MAP_ONE_BODY2 " + currentPage + " , " + result);
                     loading.postValue(new LoadingEvent(false, ""));
                     JSONObject jsonObject = new JSONObject(result);
-                    JSONArray data = jsonObject.getJSONArray("data");
-                    if(data.length()>0){
-                        JSONObject obj = (JSONObject) data.get(0);
-                        JSONArray dataList = obj.getJSONArray("dataList");
-                        oneBodyList.postValue(new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<OneBodyFire>>(){}.getType()));
+                    JSONArray dataList = parseOneBodyDataList(jsonObject);
+                    if(dataList.length()>0){
+                        List<OneBodyFire> list = new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<OneBodyFire>>(){}.getType());
+                        if(currentPage > 1){
+                            List<OneBodyFire> value = oneBodyList.getValue();
+                            if(value == null){
+                                value = new ArrayList<>();
+                            }else{
+                                value = new ArrayList<>(value);
+                            }
+                            value.addAll(list);
+                            oneBodyList.postValue(value);
+                        }else{
+                            oneBodyList.postValue(list);
+                        }
                                 /*卫星暂用一体机数据
                                 satelliteList.postValue(new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<SatelliteFire>>(){}.getType()));*/
+                    }else if(currentPage == 1){
+                        oneBodyList.postValue(new ArrayList<>());
                     }
 
                 } catch (Exception e) {
@@ -224,6 +250,39 @@ public class FgMapViewModel extends BaseViewModel {
 
             }
         });
+    }
+
+    private JSONArray parseOneBodyDataList(JSONObject jsonObject) {
+        Object dataObj = jsonObject.opt("data");
+        if(dataObj instanceof JSONArray){
+            JSONArray data = (JSONArray) dataObj;
+            if(data.length()>0){
+                JSONObject obj = data.optJSONObject(0);
+                if(obj != null){
+                    JSONArray dataList = obj.optJSONArray("dataList");
+                    if(dataList != null){
+                        return dataList;
+                    }
+                    JSONArray records = obj.optJSONArray("records");
+                    if(records != null){
+                        return records;
+                    }
+                }
+            }
+            return data;
+        }
+        if(dataObj instanceof JSONObject){
+            JSONObject data = (JSONObject) dataObj;
+            JSONArray dataList = data.optJSONArray("dataList");
+            if(dataList != null){
+                return dataList;
+            }
+            JSONArray records = data.optJSONArray("records");
+            if(records != null){
+                return records;
+            }
+        }
+        return new JSONArray();
     }
     public void getResourceTypeData() {
         resourceTypeList.postValue(new ArrayList<>());

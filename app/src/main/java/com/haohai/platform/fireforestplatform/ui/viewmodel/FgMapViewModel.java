@@ -224,38 +224,6 @@ public class FgMapViewModel extends BaseViewModel {
 
             }
         });
-        /*HhHttp.postString()
-                .url(URLConstant.POST_MAP_ONE_BODY)
-                .content(jsonObject.toString())
-                .build()
-                .connTimeOut(30000)
-                .execute(new LoggedInStringCallback(this, context) {
-                    @Override
-                    public void onSuccess(String response, int id) {
-                        try {
-                            loading.postValue(new LoadingEvent(false, ""));
-                            JSONObject jsonObject = new JSONObject(response);
-                            JSONArray data = jsonObject.getJSONArray("data");
-                            if(data.length()>0){
-                                JSONObject obj = (JSONObject) data.get(0);
-                                JSONArray dataList = obj.getJSONArray("dataList");
-                                oneBodyList.postValue(new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<OneBodyFire>>(){}.getType()));
-                                *//*卫星暂用一体机数据
-                                satelliteList.postValue(new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<SatelliteFire>>(){}.getType()));*//*
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call call, Exception e, int id) {
-                        HhLog.e("onFailure: " + e.toString());
-                        msg.setValue(e.getMessage());
-                        loading.setValue(new LoadingEvent(false, ""));
-                    }
-                });*/
     }
     public void getResourceTypeData() {
         resourceTypeList.postValue(new ArrayList<>());

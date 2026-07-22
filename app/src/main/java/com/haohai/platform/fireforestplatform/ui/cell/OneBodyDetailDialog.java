@@ -81,7 +81,7 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
     private OneBodyDetailDialogListener dialogListener;
     private final DialogOneBodyDetailListBinding binding;
     private OneBodyFire oneBodyFire;
-    public int isRelease = 2;  //0疑似火情  1是真实火情  2是未处理
+    public int isRelease = 2;  //0疑似火情  1是真实火情  2是未处理  3是误报
     public List<FireType> fireTypesReal = new ArrayList<>();
     public List<FireType> fireTypesFuck = new ArrayList<>();
     private String valueReal;
@@ -546,8 +546,10 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
         } else {
             if (Objects.equals(isReal, "1")) {
                 str = "真实火情";
-            } else {
+            } else if (Objects.equals(isReal, "0")){
                 str = "疑似火情";
+            } else {
+                str = "误报";
             }
             binding.real.setVisibility(View.VISIBLE);
             binding.yes.setVisibility(View.GONE);

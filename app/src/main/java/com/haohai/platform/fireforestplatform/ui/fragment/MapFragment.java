@@ -525,7 +525,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             List<OneBodyFire> value = obtainViewModel().oneBodyList.getValue();
             List<OneBodyFire> list = new ArrayList<>();
             if(value!=null && value.size()>0){
-                //0全部  1未处理  2真实火点  3疑似火点
+                //0全部  1未处理  2真实火情  3疑似火情  4误报
                 if(obtainViewModel().oneBodyFilterState == 0){
                     /*for (int i = 0; i < value.size(); i++) {
                         OneBodyFire fire = value.get(i);
@@ -555,6 +555,14 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                     for (int i = 0; i < value.size(); i++) {
                         OneBodyFire fire = value.get(i);
                         if(Objects.equals(fire.getIsReal(), "0")){
+                            list.add(fire);
+                        }
+                    }
+                }
+                if(obtainViewModel().oneBodyFilterState == 4){
+                    for (int i = 0; i < value.size(); i++) {
+                        OneBodyFire fire = value.get(i);
+                        if(Objects.equals(fire.getIsReal(), "3")){
                             list.add(fire);
                         }
                     }

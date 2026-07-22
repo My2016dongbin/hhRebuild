@@ -126,7 +126,7 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
     }
 
 
-    private int filterState = 1;//0全部  1未处理  2真实火点  3疑似火点
+    private int filterState = 1;//0全部  1未处理  2真实火情  3疑似火情  4误报
     private void bind_() {
         binding.filterLinear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,10 +139,12 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
                         TextView real;
                         TextView noHandle;
                         TextView fake;
+                        TextView notReal;
                         all = v.findViewById(R.id.all);
                         real = v.findViewById(R.id.real);
                         noHandle = v.findViewById(R.id.no_handle);
                         fake = v.findViewById(R.id.fake);
+                        notReal = v.findViewById(R.id.notReal);
                         all.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -183,6 +185,17 @@ public class OneBodyListDialog extends Dialog implements OneBodyFireViewBinder.O
                                 filterState = 3;
                                 updateFilterState();
                                 dialogListener.onOneBodyDialogFilterState(3);
+                                filterData();
+                                dialog.dismiss();
+                            }
+                        });
+                        notReal.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                show();
+                                filterState = 4;
+                                updateFilterState();
+                                dialogListener.onOneBodyDialogFilterState(4);
                                 filterData();
                                 dialog.dismiss();
                             }

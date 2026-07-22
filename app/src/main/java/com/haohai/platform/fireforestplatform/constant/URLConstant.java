@@ -27,6 +27,7 @@ public class URLConstant {
     public static final String GET_NAME_BY_TOKEN = BASE_PATH + "auth/api/platformConfig/getDefaultConfig";//获取项目名称
     public static final String GET_LOGIN = BASE_PATH + "auth/oauth/token";//登录
     public static final String GET_USER_INFO = BASE_PATH + "auth/api/auth/user/get/userinfo";//个人信息
+    public static final String GET_USER_AREA_NEW = BASE_PATH + "auth/api/auth/user/get/userAreaNew";//用户地图边界线
     
     public static final String GET_VERSION = BASE_PATH + "auth/api/androidUpgrade/getCurrent";//版本信息
     public static final String HISTORY_LINE = BASE_PATH + "oa/api/trajectory/userTrajectoryByTime/";//查询轨迹

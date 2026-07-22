@@ -39,11 +39,20 @@ public class VideoStreamActivity extends BaseLiveActivity<ActivityVideoStreamBin
     private String url;
     private boolean isFullScreenMode;
     private boolean isPlayerPaused;
+    private boolean hasStartedPlayer;
+    private boolean needRestartOnResume;
     private final Handler controllerHandler = new Handler();
+    private final Handler loadingHandler = new Handler();
     private final Runnable hideControllerRunnable = new Runnable() {
         @Override
         public void run() {
             binding.videoController.setVisibility(View.GONE);
+        }
+    };
+    private final Runnable hideLoadingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            obtainViewModel().loading.postValue(new LoadingEvent(false));
         }
     };
 
@@ -66,46 +75,46 @@ public class VideoStreamActivity extends BaseLiveActivity<ActivityVideoStreamBin
         binding.videoController.setPlaying(true);
         binding.videoController.setFullScreenMode(isFullScreenMode);
         updateVideoLayout();
-        obtainViewModel().loading.postValue(new LoadingEvent(true, "加载中"));
-        //parseProgress(event.getIndex());
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                obtainViewModel().loading.postValue(new LoadingEvent(false));
-                //binding.sfBack.setVisibility(View.GONE);
-            }
-        }, 10000);
-
-        binding.sfBack.setVisibility(View.VISIBLE);
-        binding.videoContainer.post(() -> startPlayer(url));
+        binding.sfBack.setVisibility(View.GONE);
+        startPlayerWithLoading();
     }
 
     private void bind_() {
         binding.videoPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                binding.videoPlay.setVisibility(View.GONE);
-                startPlayer(url);
-                obtainViewModel().loading.postValue(new LoadingEvent(true, "加载中"));
-                //parseProgress(event.getIndex());
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        obtainViewModel().loading.postValue(new LoadingEvent(false));
-                        //binding.sfBack.setVisibility(View.GONE);
-                    }
-                }, 10000);
+                startPlayerWithLoading();
             }
         });
         binding.videoController.setOnPlayClickListener(v -> togglePlay());
         binding.videoController.setOnFullScreenClickListener(v -> toggleFullScreen());
+        binding.videoContainer.setOnClickListener(v -> toggleController());
         binding.sfVideo.setOnClickListener(v -> toggleController());
         binding.sfBack.setOnClickListener(v -> toggleController());
     }
 
+    private void startPlayerWithLoading() {
+        binding.videoPlay.setVisibility(View.GONE);
+        binding.sfBack.setVisibility(View.GONE);
+        obtainViewModel().loading.postValue(new LoadingEvent(true, "加载中"));
+        loadingHandler.removeCallbacks(hideLoadingRunnable);
+        loadingHandler.postDelayed(hideLoadingRunnable, 10000);
+        binding.videoContainer.post(() -> startPlayer(url));
+    }
+
     void startPlayer(String playUrl) {
+        if (playUrl == null || playUrl.isEmpty()) {
+            binding.videoPlay.setVisibility(View.VISIBLE);
+            binding.videoController.setPlaying(false);
+            obtainViewModel().loading.postValue(new LoadingEvent(false));
+            return;
+        }
         final ArrayList<String> options = new ArrayList<>();
+        hasStartedPlayer = true;
+        needRestartOnResume = false;
         isPlayerPaused = false;
+        binding.sfBack.setVisibility(View.GONE);
+        binding.videoPlay.setVisibility(View.GONE);
         binding.videoController.setPlaying(true);
         int width = binding.videoContainer.getWidth();
         int height = binding.videoContainer.getHeight();
@@ -154,18 +163,22 @@ public class VideoStreamActivity extends BaseLiveActivity<ActivityVideoStreamBin
                     case MediaPlayer.Event.EndReached:
                         // 处理播放结束事件
                         HhLog.e("EndReached");
+                        binding.sfBack.setVisibility(View.GONE);
                         binding.videoPlay.setVisibility(View.VISIBLE);
                         isPlayerPaused = true;
                         binding.videoController.setPlaying(false);
                         obtainViewModel().loading.postValue(new LoadingEvent(false));
+                        loadingHandler.removeCallbacks(hideLoadingRunnable);
                         break;
                     case MediaPlayer.Event.EncounteredError:
                         // 处理播放错误事件
                         HhLog.e("EncounteredError");
+                        binding.sfBack.setVisibility(View.GONE);
                         binding.videoPlay.setVisibility(View.VISIBLE);
                         isPlayerPaused = true;
                         binding.videoController.setPlaying(false);
                         obtainViewModel().loading.postValue(new LoadingEvent(false));
+                        loadingHandler.removeCallbacks(hideLoadingRunnable);
                         break;
                     case MediaPlayer.Event.TimeChanged:
                         // 处理播放进度变化事件
@@ -181,11 +194,13 @@ public class VideoStreamActivity extends BaseLiveActivity<ActivityVideoStreamBin
                         isPlayerPaused = false;
                         binding.videoController.setPlaying(true);
                         obtainViewModel().loading.postValue(new LoadingEvent(false));
+                        loadingHandler.removeCallbacks(hideLoadingRunnable);
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 try {
                                     binding.sfBack.setVisibility(View.GONE);
+                                    binding.videoPlay.setVisibility(View.GONE);
                                     showControllerTemporarily();
                                 } catch (Exception e) {
 
@@ -241,12 +256,30 @@ public class VideoStreamActivity extends BaseLiveActivity<ActivityVideoStreamBin
 
     private void updateVideoLayout() {
         ViewGroup.LayoutParams layoutParams = binding.sfVideo.getLayoutParams();
-        if (isFullScreenMode) {
-            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        } else {
-            layoutParams.height = (int) (300 * getResources().getDisplayMetrics().density);
-        }
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         binding.sfVideo.setLayoutParams(layoutParams);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateVideoLayout();
+        if (needRestartOnResume && !isFinishing()) {
+            startPlayerWithLoading();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hideController();
+        loadingHandler.removeCallbacks(hideLoadingRunnable);
+        obtainViewModel().loading.postValue(new LoadingEvent(false));
+        if (hasStartedPlayer && mediaPlayer != null) {
+            needRestartOnResume = true;
+        }
+        releasePlayer();
     }
 
     private void toggleController() {
@@ -270,14 +303,26 @@ public class VideoStreamActivity extends BaseLiveActivity<ActivityVideoStreamBin
     }
 
     void releasePlayer() {
-        if (libVLC == null || mediaPlayer == null ||
-                ivlcVout == null || media == null) {
-            return;
+        try {
+            if (mediaPlayer != null) {
+                ivlcVout = mediaPlayer.getVLCVout();
+            }
+            if (ivlcVout != null) {
+                ivlcVout.detachViews();
+            }
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+            }
+            if (media != null) {
+                media.release();
+            }
+            if (libVLC != null) {
+                libVLC.release();
+            }
+        } catch (Exception e) {
+            HhLog.e("releasePlayer " + e.getMessage());
         }
-        mediaPlayer.stop();
-        ivlcVout = mediaPlayer.getVLCVout();
-        ivlcVout.detachViews();
-        libVLC.release();
 
         libVLC = null;
         mediaPlayer = null;
@@ -289,11 +334,8 @@ public class VideoStreamActivity extends BaseLiveActivity<ActivityVideoStreamBin
     protected void onDestroy() {
         super.onDestroy();
         controllerHandler.removeCallbacks(hideControllerRunnable);
-
-        if (mediaPlayer != null && libVLC != null) {
-            mediaPlayer.release();
-            libVLC.release();
-        }
+        loadingHandler.removeCallbacks(hideLoadingRunnable);
+        releasePlayer();
     }
 
     @Override

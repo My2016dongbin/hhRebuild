@@ -104,6 +104,7 @@ public class FgMainViewModel extends BaseViewModel {
     public void initData(){
         getTestData();
         getName();
+        signInfo();
     }
 
 
@@ -215,7 +216,19 @@ public class FgMainViewModel extends BaseViewModel {
                     JSONArray data = jsonObject.getJSONArray("data");
                     if(data!=null && data.length()!=0){
                         //有记录
-                        CommonData.hasSign = true;
+                        //1上班 2下班 //1.正常上班考勤 2.迟到上班考勤 3.出勤节点签到时间未在规定节点中 6.正常下班考勤 7.早退下班考勤
+                        for (int i = 0; i < data.length(); i++) {
+                            JSONObject obj = (JSONObject) data.get(i);
+                            if(Objects.equals(obj.getString("signInState"), "1")||Objects.equals(obj.getString("signInState"), "2")||Objects.equals(obj.getString("signInState"), "3")){
+                                CommonData.hasSign = true;
+                                Log.e("签到状态","开始上传");
+                            }
+                            if(Objects.equals(obj.getString("signInState"), "6") || Objects.equals(obj.getString("signInState"), "7")){
+                                CommonData.hasSign = false;
+                                Log.e("签到状态","停止上传");
+                                break;
+                            }
+                        }
                     }else{
                         //未签到
                         CommonData.hasSign = false;

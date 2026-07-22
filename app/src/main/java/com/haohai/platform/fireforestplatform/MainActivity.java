@@ -625,7 +625,7 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
         },3000);
 
         //自启动权限
-        if(isIgnoringBatteryOptimizations()){
+        if(!isIgnoringBatteryOptimizations()){
             requestIgnoreBatteryOptimizations();
         }
     }

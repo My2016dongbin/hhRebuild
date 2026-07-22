@@ -1,12 +1,17 @@
 package com.haohai.platform.fireforestplatform.ui.fragment;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,9 +23,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.amap.api.maps.AMap;
@@ -66,6 +73,7 @@ import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.GetJsonDataUtil;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.LatLngChangeNew;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -119,10 +127,97 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         init_();
         bind_();
         obtainViewModel().getData();
-        //开启轨迹服务
-        requireActivity().startService(new Intent(requireActivity(), TrackService.class));
+        ensureTrackServiceRunning();
 
         return binding.getRoot();
+    }
+
+    private void ensureTrackServiceRunning() {
+        if (!hasForegroundLocationPermission()) {
+            requestForegroundLocationPermission();
+            return;
+        }
+        if (!hasBackgroundLocationPermission()) {
+            requestBackgroundLocationPermission();
+            return;
+        }
+        requestIgnoreBatteryOptimizationsIfNeed();
+        startTrackServiceCompat();
+    }
+
+    private boolean hasForegroundLocationPermission() {
+        Context context = getContext();
+        return context != null
+                && ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private boolean hasBackgroundLocationPermission() {
+        Context context = getContext();
+        if (context == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return true;
+        }
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestForegroundLocationPermission() {
+        RxPermissions rxPermissions = new RxPermissions(requireActivity());
+        rxPermissions.request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .subscribe(granted -> {
+                    if (granted) {
+                        ensureTrackServiceRunning();
+                    } else {
+                        Toast.makeText(requireActivity(), "请开启定位权限后再使用巡护定位功能", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void requestBackgroundLocationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            startTrackServiceCompat();
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Toast.makeText(requireActivity(), "请在系统设置中开启“始终允许”定位权限，保证锁屏和后台持续巡护", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + requireActivity().getPackageName()));
+            startActivity(intent);
+            return;
+        }
+        RxPermissions rxPermissions = new RxPermissions(requireActivity());
+        rxPermissions.request(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                .subscribe(granted -> {
+                    if (granted) {
+                        ensureTrackServiceRunning();
+                    } else {
+                        Toast.makeText(requireActivity(), "后台定位权限未开启，锁屏和后台定位可能会被系统限制", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void requestIgnoreBatteryOptimizationsIfNeed() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return;
+        }
+        PowerManager powerManager = (PowerManager) requireActivity().getSystemService(Context.POWER_SERVICE);
+        if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(requireActivity().getPackageName())) {
+            try {
+                Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:" + requireActivity().getPackageName()));
+                startActivity(intent);
+            } catch (Exception e) {
+                HhLog.e(e.getMessage());
+            }
+        }
+    }
+
+    private void startTrackServiceCompat() {
+        Intent intent = new Intent(requireActivity(), TrackService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ContextCompat.startForegroundService(requireActivity(), intent);
+        } else {
+            requireActivity().startService(intent);
+        }
     }
 
     private void bind_() {

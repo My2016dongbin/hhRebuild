@@ -1,6 +1,7 @@
 package com.haohai.platform.fireforestplatform.old;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -24,13 +25,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
@@ -72,6 +76,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -80,6 +85,10 @@ import okhttp3.Call;
 public class TrackService extends Service implements SensorEventListener {
 
     private static final String TAG = TrackService.class.getSimpleName();
+    private static final double MAX_VALID_DISTANCE_KM = 0.2d;
+    public static final String ACTION_RESTART_TRACK_SERVICE = "com.haohai.platform.fireforestplatform.action.RESTART_TRACK_SERVICE";
+    private static final long TRACK_INTERVAL_MS = 10_000L;
+    private static final int TRACK_NOTIFICATION_ID = 110;
 
     public LocationClient mLocationClient = null;
     private MyLocationListener myListener = new MyLocationListener();
@@ -99,15 +108,30 @@ public class TrackService extends Service implements SensorEventListener {
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
+    private final Handler trackHandler = new Handler(Looper.getMainLooper());
+    private PowerManager.WakeLock wakeLock;
+    private boolean hasLocationStarted = false;
+    private boolean isManualStop = false;
+    private MediaPlayer mediaPlayer;
+    private final Runnable trackRunnable = new Runnable() {
+        @Override
+        public void run() {
+            search();
+            requestTrackLocation();
+            parseDistance();
+            uploadLocation();
+            trackHandler.postDelayed(this, TRACK_INTERVAL_MS);
+        }
+    };
 
     @Override
     public void onCreate() {
         super.onCreate();
         EventBus.getDefault().register(this);
+        initWakeLock();
         //addVirtualLine();
 
         initBaiduLoc();
-        getBaiduLocation();
         uploadQueue();
 
         //检测传感器
@@ -177,57 +201,46 @@ public class TrackService extends Service implements SensorEventListener {
     }
 
     private void uploadQueue() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                search();
-                getBaiduLocation();
-                //getLocation();
-                parseDistance();
-                uploadLocation();
-                uploadQueue();
-            }
-        }, 10000);
+        trackHandler.removeCallbacks(trackRunnable);
+        trackHandler.post(trackRunnable);
     }
 
-    private boolean disState = false;
     private void parseDistance() {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm");
-        String format = simpleDateFormat.format(new Date());
-        Log.e(TAG, "changeUserPosition: date = " + format);
-        if (format.contains("00:00")) {//跨天清零
-            CommonData.walkDistance = 0;
-            //通知UI刷新巡护距离
-            EventBus.getDefault().post(new WalkEvent());
+        syncWalkDistanceDay();
+        Log.e(TAG, "changeUserPosition: date = " + getWalkDayKey());
+        if (CommonData.lat == 0 || CommonData.lng == 0) {
+            CommonData.dis_int = 0;
+            return;
+        }
+        if (CommonData.lat_old == 0 || CommonData.lng_old == 0) {
+            updateLastLocation();
+            CommonData.dis_int = 0;
+            return;
+        }
+        double distance = CommonUtil.distance(CommonData.lng_old, CommonData.lat_old, CommonData.lng, CommonData.lat);
+        HhLog.e("距离 distance " + distance + "千米，new: " + CommonData.lng + "，" + CommonData.lat + " old: " + CommonData.lng_old + "," + CommonData.lat_old);
+        if (distance <= 0) {
+            CommonData.dis_int = 0;
+            updateLastLocation();
+            return;
+        }
+        if (distance > MAX_VALID_DISTANCE_KM) {
+            CommonData.dis_int = 0;
+            Log.e(TAG, "changeUserPosition: " + distance + " out testInfo");
+            updateLastLocation();
+            return;
+        }
+        CommonData.dis_int = parseDistanceMeter(distance);
+        if (CommonData.hasSign && CommonData.dis_int > 0) {
+            CommonData.walkDistance += CommonData.dis_int;
             SPUtils.put(this, SPValue.walk, CommonData.walkDistance);
+            HhLog.e("当前巡护距离 " + CommonData.walkDistance + " 米，较上次 " + CommonData.dis_int + "米");
+            EventBus.getDefault().post(new WalkEvent());
+            Log.e(TAG, "changeUserPosition: " + distance + " in testInfo");
         }
-        if (CommonData.lat_old != 0 && CommonData.lng_old != 0) {
-            double distance = CommonUtil.distance(CommonData.lng_old, CommonData.lat_old, CommonData.lng, CommonData.lat);
-            HhLog.e("距离 distance " + distance + "米，new: " + CommonData.lng + "，" + CommonData.lat + " old: " + CommonData.lng_old + "," + CommonData.lat_old);
-            if (distance <= 0.2 && distance > 0) {
-                disState = true;
-                /*if (!CommonData.hasSensor *//*|| CommonData.hasMove*//*) {//没有传感器或者传感器检测到了移动*/
-                double dis_double = distance * 1000;
-                String dis_str = dis_double + "";
-                CommonData.dis_int = Integer.parseInt(dis_str.substring(0, dis_str.indexOf("."))) + 1;
-                CommonData.walkDistance += CommonData.dis_int;
-                //Toast.makeText(this, "当前巡护距离 " + CommonData.walkDistance + " 米，较上次 " + CommonData.dis_int + "米", Toast.LENGTH_SHORT).show();
-                HhLog.e("当前巡护距离 " + CommonData.walkDistance + " 米，较上次 " + CommonData.dis_int + "米");
-                //通知UI刷新巡护距离
-                EventBus.getDefault().post(new WalkEvent());
-                //Toast.makeText(this, distance+" in testInfo", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "changeUserPosition: " + distance + " in testInfo");
-                /*} else {
-                    CommonData.dis_int = 0;
-                }*/
-            } else {
-                CommonData.dis_int = 0;
-                Log.e(TAG, "changeUserPosition: " + distance + " out testInfo");
-            }
-            Log.e(TAG, "changeUserPosition: distance = " + distance);
-            Log.e(TAG, "changeUserPosition: LatLng = " + CommonData.lng_old + "," + CommonData.lat_old + " | " + CommonData.lng + "," + CommonData.lat);
-
-        }
+        Log.e(TAG, "changeUserPosition: distance = " + distance);
+        Log.e(TAG, "changeUserPosition: LatLng = " + CommonData.lng_old + "," + CommonData.lat_old + " | " + CommonData.lng + "," + CommonData.lat);
+        updateLastLocation();
     }
 
     private void uploadLocation() {
@@ -259,12 +272,6 @@ public class TrackService extends Service implements SensorEventListener {
                     @Override
                     public void onSuccess(String response, int id) {
                         HhLog.e("position " + response);
-                        //TODO 判断移动距离有效后再替换旧坐标
-                        if(disState || CommonData.lng_old==0){
-                            CommonData.lng_old = CommonData.lng;
-                            CommonData.lat_old = CommonData.lat;
-                            disState = false;
-                        }
                     }
 
                     @Override
@@ -295,7 +302,7 @@ public class TrackService extends Service implements SensorEventListener {
         //BD09：百度墨卡托坐标；
         //海外地区定位，无需设置坐标类型，统一返回WGS84类型坐标
 
-        option.setScanSpan(1000);
+        option.setScanSpan(5000);
         //可选，设置发起定位请求的间隔，int类型，单位ms
         //如果设置为0，则代表单次定位，即仅定位一次，默认为0
         //如果设置非0，需设置1000ms以上才有效
@@ -307,7 +314,7 @@ public class TrackService extends Service implements SensorEventListener {
         option.setLocationNotify(true);
         //可选，设置是否当GPS有效时按照1S/1次频率输出GPS结果，默认false
 
-        option.setIgnoreKillProcess(false);
+        option.setIgnoreKillProcess(true);
         //可选，定位SDK内部是一个service，并放到了独立进程。
         //设置是否在stop的时候杀死这个进程，默认（建议）不杀死，即setIgnoreKillProcess(true)
 
@@ -337,40 +344,23 @@ public class TrackService extends Service implements SensorEventListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.alive);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
+        isManualStop = false;
+        ensureForeground();
+        ensureWakeLock();
+        ensureAlivePlayer();
+        requestTrackLocation();
+        uploadQueue();
 
-        Notification notification;
-        Intent intent_ = new Intent(this, MainActivity.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            @SuppressLint("WrongConstant") NotificationChannel channel = new NotificationChannel("location", "location", NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.createNotificationChannel(channel);
-            Notification.Builder builder = new Notification.Builder(this, "location");
-            builder.setContentIntent(PendingIntent.getActivity(this, 0, intent_, 0))
-                    .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_icon))
-                    .setContentTitle(getString(R.string.app_name))
-                    .setSmallIcon(R.drawable.ic_icon)
-                    .setContentText("为您持续巡护中...")
-                    .setWhen(System.currentTimeMillis());
-            notification = builder.build();
-        } else {
-            notification = new Notification.Builder(this)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setSmallIcon(R.drawable.ic_icon)
-                    .setContentText("为您持续巡护中...")
-                    .setContentIntent(PendingIntent.getActivity(this, 0, intent_, 0))
-                    .build();
-        }
-        startForeground(110, notification);
-
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     /*退出登录回调*/
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetMessage(Ext ext) {
+        isManualStop = true;
+        trackHandler.removeCallbacksAndMessages(null);
+        releaseWakeLock();
+        releaseAlivePlayer();
         mLocationClient.stop();
         myListener = null;
         stopSelf();
@@ -378,7 +368,169 @@ public class TrackService extends Service implements SensorEventListener {
 
     private void getBaiduLocation() {
         mLocationClient.start();
+        hasLocationStarted = true;
         HhLog.e("getBaiduLocation");
+    }
+
+    private void requestTrackLocation() {
+        try {
+            if (!hasLocationStarted) {
+                getBaiduLocation();
+            } else {
+                requestLocation();
+            }
+        } catch (Exception e) {
+            HhLog.e("requestTrackLocation " + e.getMessage());
+            try {
+                reLocation();
+                hasLocationStarted = true;
+            } catch (Exception ex) {
+                HhLog.e("reLocation " + ex.getMessage());
+            }
+        }
+    }
+
+    private void syncWalkDistanceDay() {
+        String today = getWalkDayKey();
+        String walkDay = String.valueOf(SPUtils.get(this, SPValue.walkDay, ""));
+        if ("".equals(walkDay) || "null".equals(walkDay)) {
+            SPUtils.put(this, SPValue.walkDay, today);
+            return;
+        }
+        if (!today.equals(walkDay)) {
+            CommonData.walkDistance = 0;
+            CommonData.dis_int = 0;
+            SPUtils.put(this, SPValue.walk, CommonData.walkDistance);
+            SPUtils.put(this, SPValue.walkDay, today);
+            EventBus.getDefault().post(new WalkEvent());
+        }
+    }
+
+    private String getWalkDayKey() {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault());
+        return simpleDateFormat.format(new Date());
+    }
+
+    private int parseDistanceMeter(double distanceKm) {
+        int distanceMeter = (int) Math.round(distanceKm * 1000d);
+        if (distanceMeter <= 0 && distanceKm > 0) {
+            return 1;
+        }
+        return distanceMeter;
+    }
+
+    private void updateLastLocation() {
+        CommonData.lng_old = CommonData.lng;
+        CommonData.lat_old = CommonData.lat;
+    }
+
+    private void initWakeLock() {
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        if (powerManager == null) {
+            return;
+        }
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getPackageName() + ":track_wake_lock");
+        wakeLock.setReferenceCounted(false);
+    }
+
+    private void ensureWakeLock() {
+        try {
+            if (wakeLock != null && !wakeLock.isHeld()) {
+                wakeLock.acquire();
+            }
+        } catch (Exception e) {
+            HhLog.e("ensureWakeLock " + e.getMessage());
+        }
+    }
+
+    private void releaseWakeLock() {
+        try {
+            if (wakeLock != null && wakeLock.isHeld()) {
+                wakeLock.release();
+            }
+        } catch (Exception e) {
+            HhLog.e("releaseWakeLock " + e.getMessage());
+        }
+    }
+
+    private void ensureAlivePlayer() {
+        try {
+            if (mediaPlayer == null) {
+                mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.alive);
+            }
+            if (mediaPlayer != null) {
+                mediaPlayer.setLooping(true);
+                if (!mediaPlayer.isPlaying()) {
+                    mediaPlayer.start();
+                }
+            }
+        } catch (Exception e) {
+            HhLog.e("ensureAlivePlayer " + e.getMessage());
+        }
+    }
+
+    private void releaseAlivePlayer() {
+        try {
+            if (mediaPlayer != null) {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+        } catch (Exception e) {
+            HhLog.e("releaseAlivePlayer " + e.getMessage());
+        }
+    }
+
+    private void ensureForeground() {
+        Notification notification;
+        Intent intent = new Intent(this, MainActivity.class);
+        int pendingIntentFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, pendingIntentFlag);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("location", "location", NotificationManager.IMPORTANCE_LOW);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
+            Notification.Builder builder = new Notification.Builder(this, "location");
+            builder.setContentIntent(pendingIntent)
+                    .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_icon))
+                    .setContentTitle(getString(R.string.app_name))
+                    .setSmallIcon(R.drawable.ic_icon)
+                    .setContentText("为您持续巡护中...")
+                    .setWhen(System.currentTimeMillis())
+                    .setOngoing(true)
+                    .setOnlyAlertOnce(true);
+            notification = builder.build();
+        } else {
+            notification = new Notification.Builder(this)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setSmallIcon(R.drawable.ic_icon)
+                    .setContentText("为您持续巡护中...")
+                    .setContentIntent(pendingIntent)
+                    .setOngoing(true)
+                    .build();
+        }
+        startForeground(TRACK_NOTIFICATION_ID, notification);
+    }
+
+    private void scheduleRestart() {
+        Intent intent = new Intent(this, TrackKeepAliveReceiver.class);
+        intent.setAction(ACTION_RESTART_TRACK_SERVICE);
+        int pendingIntentFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, pendingIntentFlag);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        if (alarmManager == null) {
+            return;
+        }
+        long triggerAtMillis = System.currentTimeMillis() + 5000;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent);
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent);
+        }
     }
 
     private void requestLocation() {
@@ -566,7 +718,25 @@ public class TrackService extends Service implements SensorEventListener {
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        trackHandler.removeCallbacksAndMessages(null);
         mSensorManager.unregisterListener(this);
+        if (mLocationClient != null) {
+            mLocationClient.stop();
+        }
+        hasLocationStarted = false;
+        releaseWakeLock();
+        releaseAlivePlayer();
+        if (!isManualStop) {
+            scheduleRestart();
+        }
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        if (!isManualStop) {
+            scheduleRestart();
+        }
     }
 
     private boolean hasNotice = false;

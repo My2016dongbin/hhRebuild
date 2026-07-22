@@ -197,8 +197,8 @@ public class HistoryLineActivity extends BaseActivity implements DatePicker.OnDa
     private final List<String> timeList = new ArrayList<>();
     private final List<LatLng> allList = new ArrayList<>();
     private void postData(){
-        RequestParams params = new RequestParams(URLConstant.HISTORY_LINE + SPUtils.get(HhApplication.getInstance(), SPValue.id, ""));
-        params.addParameter("id",SPUtils.get(HhApplication.getInstance(), SPValue.id, ""));
+        RequestParams params = new RequestParams(URLConstant.HISTORY_LINE + chooseUserId);
+        params.addParameter("id",chooseUserId);
         params.addParameter("time",tv_date.getText().toString());
         Log.e(TAG,"postData " + params);
         DialogHelper.getInstance().show(this, "正在查询轨迹..");

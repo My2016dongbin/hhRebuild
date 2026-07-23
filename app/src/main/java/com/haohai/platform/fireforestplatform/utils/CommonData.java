@@ -18,6 +18,9 @@ public class CommonData {
     public static double lng = 0;
     public static double lat_old = 0;
     public static double lng_old = 0;
+    public static float locationRadius = 0;
+    public static int locationType = 0;
+    public static long locationTime = 0;
     public static boolean hasSensor = false;
     public static boolean hasSign = false;
     public static boolean hasGet = false;
@@ -53,6 +56,11 @@ public class CommonData {
         token = "";
         lat = 0;
         lng = 0;
+        lat_old = 0;
+        lng_old = 0;
+        locationRadius = 0;
+        locationType = 0;
+        locationTime = 0;
         hasSensor = false;
     }
 }

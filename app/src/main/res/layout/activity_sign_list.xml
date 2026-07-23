@@ -320,6 +320,7 @@
 
     <LinearLayout
         android:id="@+id/bottom"
+        android:visibility="gone"
         android:layout_gravity="bottom"
         android:layout_marginBottom="20dp"
         android:orientation="vertical"

@@ -415,6 +415,7 @@ public class SignMonthActivity extends BaseActivity implements
                         signStatus = 0;
                     }
                     updateSignStatus();
+                    bottom.setVisibility(View.VISIBLE);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -593,14 +594,14 @@ public class SignMonthActivity extends BaseActivity implements
         mTextLunar.setText("今日");
         mTextCurrentDay.setText(String.valueOf(mCalendarView.getCurDay()));
 
-        //下属
+        /*//下属
         if(id==null){
             bottom.setVisibility(View.VISIBLE);
             right.setVisibility(View.VISIBLE);
         }else{
             bottom.setVisibility(View.GONE);
             right.setVisibility(View.GONE);
-        }
+        }*/
     }
 
     protected void initData() {

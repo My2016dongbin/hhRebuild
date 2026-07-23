@@ -46,7 +46,10 @@ public class MyLocationListener extends BDAbstractLocationListener {
                 CommonData.lat_old = CommonData.lat;*/
                 CommonData.lat = latitude;
                 CommonData.lng = longitude;
-                Log.e(TAG, "onReceiveLocation:经纬度是 in" +  latitude +"," +longitude);
+                CommonData.locationRadius = radius;
+                CommonData.locationType = errorCode;
+                CommonData.locationTime = date.getTime();
+                Log.e(TAG, "onReceiveLocation:经纬度是 in" +  latitude +"," +longitude +"," +radius);
                 SPUtils.put(HhApplication.getInstance(), SPValue.latitude,latitude);
                 SPUtils.put(HhApplication.getInstance(), SPValue.longitude,longitude);
             }else{
@@ -54,7 +57,7 @@ public class MyLocationListener extends BDAbstractLocationListener {
             }
         }
 
-        Log.e(TAG, "onReceiveLocation:经纬度是 " +  latitude +"," +longitude);
+        Log.e(TAG, "onReceiveLocation:经纬度是 " +  latitude +"," +longitude +"," +radius);
         //Toast.makeText(HhApplication.getInstance(), "百度地图 onReceiveLocation: " +  latitude +"," +longitude, Toast.LENGTH_LONG).show();
     }
 }

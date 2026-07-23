@@ -86,6 +86,10 @@ public class TrackService extends Service implements SensorEventListener {
 
     private static final String TAG = TrackService.class.getSimpleName();
     private static final double MAX_VALID_DISTANCE_KM = 0.2d;
+    private static final double MIN_VALID_DISTANCE_KM = 0.002d;
+    private static final float MAX_VALID_LOCATION_RADIUS_M = 50f;
+    private static final float MOTION_ACCELERATION_THRESHOLD = 0.25f;
+    private static final long RECENT_MOTION_WINDOW_MS = 15_000L;
     public static final String ACTION_RESTART_TRACK_SERVICE = "com.haohai.platform.fireforestplatform.action.RESTART_TRACK_SERVICE";
     private static final long TRACK_INTERVAL_MS = 10_000L;
     private static final int TRACK_NOTIFICATION_ID = 110;
@@ -112,6 +116,8 @@ public class TrackService extends Service implements SensorEventListener {
     private PowerManager.WakeLock wakeLock;
     private boolean hasLocationStarted = false;
     private boolean isManualStop = false;
+    private float lastAccelerationMagnitude = -1f;
+    private long lastMotionTime = 0L;
     private MediaPlayer mediaPlayer;
     private final Runnable trackRunnable = new Runnable() {
         @Override
@@ -140,8 +146,12 @@ public class TrackService extends Service implements SensorEventListener {
             CommonData.hasSensor = true;
         }
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        if (mSensorManager != null) {
+            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            if (mAccelerometer != null) {
+                mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            }
+        }
 
 
         //创建新的地理编码检索实例；
@@ -212,6 +222,11 @@ public class TrackService extends Service implements SensorEventListener {
             CommonData.dis_int = 0;
             return;
         }
+        if (isPoorLocation()) {
+            CommonData.dis_int = 0;
+            HhLog.e("距离过滤 定位精度差 radius: " + CommonData.locationRadius + " type: " + CommonData.locationType);
+            return;
+        }
         if (CommonData.lat_old == 0 || CommonData.lng_old == 0) {
             updateLastLocation();
             CommonData.dis_int = 0;
@@ -224,9 +239,20 @@ public class TrackService extends Service implements SensorEventListener {
             updateLastLocation();
             return;
         }
+        if (distance < MIN_VALID_DISTANCE_KM) {
+            CommonData.dis_int = 0;
+            HhLog.e("距离过滤 静止漂移 " + distance + "千米，new: " + CommonData.lng + "，" + CommonData.lat + " old: " + CommonData.lng_old + "," + CommonData.lat_old);
+            return;
+        }
         if (distance > MAX_VALID_DISTANCE_KM) {
             CommonData.dis_int = 0;
             Log.e(TAG, "changeUserPosition: " + distance + " out testInfo");
+            updateLastLocation();
+            return;
+        }
+        if (!hasRecentMotion()) {
+            CommonData.dis_int = 0;
+            HhLog.e("距离过滤 传感器判断静止 " + distance + "千米，new: " + CommonData.lng + "，" + CommonData.lat + " old: " + CommonData.lng_old + "," + CommonData.lat_old);
             updateLastLocation();
             return;
         }
@@ -412,11 +438,18 @@ public class TrackService extends Service implements SensorEventListener {
     }
 
     private int parseDistanceMeter(double distanceKm) {
-        int distanceMeter = (int) Math.round(distanceKm * 1000d);
-        if (distanceMeter <= 0 && distanceKm > 0) {
-            return 1;
+        return (int) Math.round(distanceKm * 1000d);
+    }
+
+    private boolean isPoorLocation() {
+        return CommonData.locationRadius > MAX_VALID_LOCATION_RADIUS_M;
+    }
+
+    private boolean hasRecentMotion() {
+        if (mAccelerometer == null || lastAccelerationMagnitude < 0) {
+            return true;
         }
-        return distanceMeter;
+        return System.currentTimeMillis() - lastMotionTime <= RECENT_MOTION_WINDOW_MS;
     }
 
     private void updateLastLocation() {
@@ -719,7 +752,9 @@ public class TrackService extends Service implements SensorEventListener {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         trackHandler.removeCallbacksAndMessages(null);
-        mSensorManager.unregisterListener(this);
+        if (mSensorManager != null) {
+            mSensorManager.unregisterListener(this);
+        }
         if (mLocationClient != null) {
             mLocationClient.stop();
         }
@@ -743,10 +778,19 @@ public class TrackService extends Service implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        double value = event.values[0];
-        if (value != 0) {
-            hasNotice = true;
+        if (event == null || event.sensor == null || event.sensor.getType() != Sensor.TYPE_ACCELEROMETER) {
+            return;
         }
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+        float accelerationMagnitude = (float) Math.sqrt(x * x + y * y + z * z);
+        if (lastAccelerationMagnitude >= 0
+                && Math.abs(accelerationMagnitude - lastAccelerationMagnitude) > MOTION_ACCELERATION_THRESHOLD) {
+            hasNotice = true;
+            lastMotionTime = System.currentTimeMillis();
+        }
+        lastAccelerationMagnitude = accelerationMagnitude;
     }
 
     @Override

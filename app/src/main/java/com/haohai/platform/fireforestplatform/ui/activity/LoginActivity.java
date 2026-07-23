@@ -5,6 +5,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
@@ -12,10 +13,13 @@ import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.base.BaseLiveActivity;
 import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
 import com.haohai.platform.fireforestplatform.databinding.ActivityLoginBinding;
+import com.haohai.platform.fireforestplatform.event.MainTabChange;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.LoginViewModel;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
 import com.haohai.platform.fireforestplatform.utils.StringData;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class LoginActivity extends BaseLiveActivity<ActivityLoginBinding, LoginViewModel> {
 
@@ -30,6 +34,24 @@ public class LoginActivity extends BaseLiveActivity<ActivityLoginBinding, LoginV
     private void init_() {
         binding.usernameEdit.setText((String)SPUtils.get(this, SPValue.userName,""));
         binding.passwordEdit.setText((String)SPUtils.get(this, SPValue.password,""));
+    }
+
+    private boolean isExit = false;
+    @Override
+    public void onBackPressed() {
+        if (!isExit) {
+            isExit = true;
+            Toast.makeText(getApplicationContext(), "再按一次回到主页", Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    isExit = false;
+                }
+            },2000);
+        } else {
+            finishAffinity();
+            System.exit(0);
+        }
     }
 
     private void bind_() {

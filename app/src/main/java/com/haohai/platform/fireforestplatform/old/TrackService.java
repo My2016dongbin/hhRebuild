@@ -264,7 +264,7 @@ public class TrackService extends Service implements SensorEventListener {
             e.printStackTrace();
         }
         HhLog.e("position params " + jsonObject.toString());
-        HhHttp.postString()
+        HhHttp.postStringTrackUpload()
                 .url(URLConstant.POST_POSITION)
                 .content(jsonObject.toString())
                 .build()

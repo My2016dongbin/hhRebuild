@@ -38,6 +38,7 @@ import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.constant.URLConstant;
 import com.haohai.platform.fireforestplatform.databinding.ActivityMainBinding;
 import com.haohai.platform.fireforestplatform.event.DoUpdate;
+import com.haohai.platform.fireforestplatform.event.Ext;
 import com.haohai.platform.fireforestplatform.event.MainTabChange;
 import com.haohai.platform.fireforestplatform.event.MessageChange;
 import com.haohai.platform.fireforestplatform.event.Update;
@@ -351,6 +352,12 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
     public void onGetMessage(DoUpdate event) {
         //checkVersion();
         checkVersionCommon();
+    }
+
+    ///退出登录
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetMessage(Ext event) {
+        finish();
     }
 
 
@@ -738,7 +745,8 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
                 }
             },2000);
         } else {
-            finish();
+            finishAffinity();
+            System.exit(0);
         }
     }
 }

@@ -442,7 +442,8 @@ public class TrackService extends Service implements SensorEventListener {
     }
 
     private boolean isPoorLocation() {
-        return CommonData.locationRadius > MAX_VALID_LOCATION_RADIUS_M;
+//        return CommonData.locationRadius > MAX_VALID_LOCATION_RADIUS_M;
+        return false;
     }
 
     private boolean hasRecentMotion() {

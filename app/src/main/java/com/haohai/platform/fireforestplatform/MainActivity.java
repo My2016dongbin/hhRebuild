@@ -119,8 +119,8 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
     protected void onResume() {
         super.onResume();
         CommonData.isUpdate = false;
-        //checkVersion();
-        if(show)checkVersionCommon();
+        if(show)checkVersion();
+//        if(show)checkVersionCommon();
         if(currentTabIndex == (int)SPUtils.get(this,SPValue.videoIndex,1)){
             EventBus.getDefault().post(new MainTabChange((int)SPUtils.get(this,SPValue.videoIndex,1)));
         }
@@ -196,6 +196,7 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
     private void checkVersion() {
         try {
             versionCode = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionCode + "";
+            CommonData.versionCode = Integer.parseInt(versionCode);
             HhLog.e("getVersion: versionCode " + versionCode);
         } catch (PackageManager.NameNotFoundException e) {
             HhLog.e("getVersion: e " + e);
@@ -212,8 +213,9 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
                     if (code.equals("200")) {
                         JSONObject object = jsonObject.getJSONArray("data").getJSONObject(0);
                         versionService = object.getString("version");
+                        CommonData.versionCodeService = Integer.parseInt(versionService);
                         versionNameService = object.getString("versionName");
-                        String versionDescription = object.getString("versionDescription");
+                        String versionDescription = CommonUtil.parseContent(object.getString("versionDescription"));
                         String apkUrl = object.getString("apkUrl");
                         String isForce = object.getString("isForce");
                         HhLog.e("version " + versionService + versionNameService);
@@ -350,8 +352,8 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
     ///推送透传更新
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetMessage(DoUpdate event) {
-        //checkVersion();
-        checkVersionCommon();
+        checkVersion();
+//        checkVersionCommon();
     }
 
     ///退出登录

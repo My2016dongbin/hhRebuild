@@ -39,6 +39,8 @@ import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
 import com.haohai.platform.fireforestplatform.utils.SPValue;
+import com.kongzue.dialogx.dialogs.MessageDialog;
+import com.kongzue.dialogx.util.TextInfo;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -466,7 +468,13 @@ public class SignMonthActivity extends BaseActivity implements
         un_sign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signOut(null);
+                MessageDialog.show("温馨提示", "确定要签退吗？","签退","取消")
+                        .setButtonOrientation(LinearLayout.HORIZONTAL)
+                        .setOkButtonClickListener((dialog, v1) -> {
+                            signOut(null);
+                            return false;
+                        })
+                        .setCancelable(true);
             }
         });
 

@@ -142,8 +142,8 @@ public class MineFragment extends BaseFragment<FgMine, FgMineViewModel> {
             binding.viewBottom.setVisibility(View.GONE);
         }
         //初始化设置参数状态
-        obtainViewModel().locationUpload = (boolean) SPUtils.get(requireActivity(), SPValue.upload, false);
-        obtainViewModel().voice = (boolean) SPUtils.get(requireActivity(), SPValue.voice, false);
+        obtainViewModel().locationUpload = (boolean) SPUtils.get(requireActivity(), SPValue.upload, true);
+        obtainViewModel().voice = (boolean) SPUtils.get(requireActivity(), SPValue.voice, true);
         obtainViewModel().mineMenuList.get(0).setContent("V" + getVersionName());
         obtainViewModel().mineMenuList.get(0).setShowLeft(false);
         obtainViewModel().mineMenuList.get(3).setContent(obtainViewModel().locationUpload?"开":"关");

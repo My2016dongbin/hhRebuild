@@ -270,6 +270,10 @@ public class TrackService extends Service implements SensorEventListener {
     }
 
     private void uploadLocation() {
+        boolean upload = (boolean) SPUtils.get(HhApplication.getInstance(), SPValue.upload, true);
+        if(!upload){
+            return;
+        }
         if (CommonData.lng == 0 || String.valueOf(CommonData.lng).contains("E")) {
             return;
         }

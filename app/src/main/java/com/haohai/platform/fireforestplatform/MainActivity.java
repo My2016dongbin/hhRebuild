@@ -1,6 +1,7 @@
 package com.haohai.platform.fireforestplatform;
 
 
+import android.Manifest;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +43,7 @@ import com.haohai.platform.fireforestplatform.event.Ext;
 import com.haohai.platform.fireforestplatform.event.MainTabChange;
 import com.haohai.platform.fireforestplatform.event.MessageChange;
 import com.haohai.platform.fireforestplatform.event.Update;
+import com.haohai.platform.fireforestplatform.old.TrackService;
 import com.haohai.platform.fireforestplatform.ui.bean.VersionBean;
 import com.haohai.platform.fireforestplatform.ui.fragment.MainFragment;
 import com.haohai.platform.fireforestplatform.ui.fragment.MapFragment;
@@ -123,6 +125,23 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
 //        if(show)checkVersionCommon();
         if(currentTabIndex == (int)SPUtils.get(this,SPValue.videoIndex,1)){
             EventBus.getDefault().post(new MainTabChange((int)SPUtils.get(this,SPValue.videoIndex,1)));
+        }
+        ensureTrackServiceAfterPermissionGranted();
+    }
+
+    private void ensureTrackServiceAfterPermissionGranted() {
+        if (!(boolean) SPUtils.get(this, SPValue.login, false) || !CommonData.hasMainMap) {
+            return;
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Intent intent = new Intent(this, TrackService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ContextCompat.startForegroundService(this, intent);
+        } else {
+            startService(intent);
         }
     }
 

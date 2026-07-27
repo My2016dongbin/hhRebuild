@@ -403,6 +403,11 @@ public class TrackService extends Service implements SensorEventListener {
     }
 
     private void requestTrackLocation() {
+        if (!hasLocationPermission()) {
+            hasLocationStarted = false;
+            HhLog.e("requestTrackLocation no location permission");
+            return;
+        }
         try {
             if (!hasLocationStarted) {
                 getBaiduLocation();
@@ -415,9 +420,15 @@ public class TrackService extends Service implements SensorEventListener {
                 reLocation();
                 hasLocationStarted = true;
             } catch (Exception ex) {
+                hasLocationStarted = false;
                 HhLog.e("reLocation " + ex.getMessage());
             }
         }
+    }
+
+    private boolean hasLocationPermission() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void syncWalkDistanceDay() {

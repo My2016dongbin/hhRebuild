@@ -103,6 +103,9 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private SheQuListDialog sheQuListDialog;
     private ResourceDetailDialog resourceDetailDialog;
     private AMap aMap;
+    private boolean hasRequestedBackgroundLocationSettings = false;
+    private boolean waitingForBackgroundLocationSettings = false;
+    private boolean hasRequestedBatteryOptimizationSettings = false;
 
     public static MapFragment newInstance(String param1) {
         Bundle args = new Bundle();
@@ -137,12 +140,12 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             requestForegroundLocationPermission();
             return;
         }
+        startTrackServiceCompat();
         if (!hasBackgroundLocationPermission()) {
             requestBackgroundLocationPermission();
             return;
         }
         requestIgnoreBatteryOptimizationsIfNeed();
-        startTrackServiceCompat();
     }
 
     private boolean hasForegroundLocationPermission() {
@@ -178,6 +181,11 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (hasRequestedBackgroundLocationSettings) {
+                return;
+            }
+            hasRequestedBackgroundLocationSettings = true;
+            waitingForBackgroundLocationSettings = true;
             Toast.makeText(requireActivity(), "请在系统设置中开启“始终允许”定位权限，保证锁屏和后台持续巡护", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             intent.setData(Uri.parse("package:" + requireActivity().getPackageName()));
@@ -201,6 +209,10 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
         PowerManager powerManager = (PowerManager) requireActivity().getSystemService(Context.POWER_SERVICE);
         if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(requireActivity().getPackageName())) {
+            if (hasRequestedBatteryOptimizationSettings) {
+                return;
+            }
+            hasRequestedBatteryOptimizationSettings = true;
             try {
                 Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                 intent.setData(Uri.parse("package:" + requireActivity().getPackageName()));
@@ -273,7 +285,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             startActivity(new Intent(requireActivity(), TaskActivity.class));
         });
         binding.viewLocation.setOnClickListener(v -> {
-            flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
+            double[] doubles = LatLngChangeNew.calBD09toGCJ02(CommonData.lat,CommonData.lng);
+            flyBaiduMapZoom(doubles[0],doubles[1], 14);
             userLocationMarker();
         });
         binding.viewGridShequ.setOnClickListener(v -> {
@@ -492,6 +505,13 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         super.onResume();
         //在activity执行onResume时必须调用mMapView. onResume ()
         binding.aMapView.onResume();
+        if (waitingForBackgroundLocationSettings) {
+            waitingForBackgroundLocationSettings = false;
+            if (!hasBackgroundLocationPermission()) {
+                Toast.makeText(requireActivity(), "后台定位权限未开启，锁屏和后台定位可能会被系统限制", Toast.LENGTH_LONG).show();
+            }
+        }
+        ensureTrackServiceRunning();
     }
 
     @Override
@@ -1005,7 +1025,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
     private void userLocationMarker(){
         BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.user);
-        LatLng point = new LatLng(CommonData.lat, CommonData.lng);
+        double[] doubles = LatLngChangeNew.calBD09toGCJ02(CommonData.lat,CommonData.lng);
+        LatLng point = new LatLng(doubles[0], doubles[1]);
         MarkerOptions option = new MarkerOptions()
                 .position(point)
                 .icon(btm);

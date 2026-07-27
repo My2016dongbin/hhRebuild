@@ -103,6 +103,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private SheQuListDialog sheQuListDialog;
     private ResourceDetailDialog resourceDetailDialog;
     private AMap aMap;
+    private Marker userLocationMarkerOnMap;
     private boolean hasRequestedBackgroundLocationSettings = false;
     private boolean waitingForBackgroundLocationSettings = false;
     private boolean hasRequestedBatteryOptimizationSettings = false;
@@ -553,7 +554,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void oneBodyFireChanged(List<OneBodyFire> oneBodyFires) {
-        aMap.clear();
+        clearMapMarkers();
         //更新Dialog列表数据
         oneBodyListDialog.setOneBodyFireList(oneBodyFires,obtainViewModel().currentPage);
         //更新所有Marker
@@ -568,7 +569,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
     }
     private void landFireChanged(List<LandFire> oneBodyFires) {
-        aMap.clear();
+        clearMapMarkers();
         //更新Dialog列表数据
         landListDialog.setOneBodyFireList(oneBodyFires,obtainViewModel().currentPageLand);
         //更新所有Marker
@@ -627,6 +628,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             oneBodyMarker(list);
         }
         //绘制地表火火点Marker
+        HhLog.e("updateMarkers: " + obtainViewModel().landList.getValue());
         if(obtainViewModel().landList.getValue()!=null){
             List<LandFire> value = obtainViewModel().landList.getValue();
             List<LandFire> list = new ArrayList<>();
@@ -683,7 +685,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void satelliteFireChanged(List<SatelliteFire> satelliteFires) {
-        aMap.clear();
+        clearMapMarkers();
         //更新Dialog列表数据
         satelliteListDialog.setSatelliteFireList(satelliteFires);
         //更新所有Marker
@@ -698,7 +700,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
     }
     private void resourceChanged(List<Resource> resources) {
-        aMap.clear();
+        clearMapMarkers();
         //更新所有Marker
         updateMarkers();
         //跳转第一火点
@@ -728,7 +730,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
     private void sheQuCurrentChanged(List<ArrayList<Double>> points) {
         //更新地图图层数据
-        aMap.clear();
+        clearMapMarkers();
         updateMarkers();
     }
     private void resourceTypeChanged(List<ResourceType> resourceTypes) {
@@ -781,11 +783,9 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
     private void landMarker(List<LandFire> landFires) {
         ArrayList<MarkerOptions> options = new ArrayList<>();
+        List<LandFire> markerLandFires = new ArrayList<>();
         BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_yellow_fire);//默认森林防火
         for (int i = 0; i < landFires.size(); i++) {
-            if(landFires.get(i).getType() == null){
-                continue;
-            }
             /*switch (landFires.get(i).getType()){
                 case "2":
                     btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_red_fire);//森林防火
@@ -803,9 +803,10 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 MarkerOptions option = new MarkerOptions()
                         .position(point)
                         .icon(btm);
-                options.add(i, option);
+                options.add(option);
+                markerLandFires.add(landFires.get(i));
             }catch (Exception e){
-                Log.e(TAG, "oneBodyMarker: " + e.getMessage() );
+                Log.e(TAG, "landMarker: " + e.getMessage() );
                 continue;
             }
         }
@@ -814,7 +815,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         try{
             for (int i = 0; i < markers.size(); i++) {
                 Bundle bundle = new Bundle();
-                bundle.putString("id", landFires.get(i).getId());
+                bundle.putString("id", markerLandFires.get(i).getId());
                 bundle.putInt("type", obtainViewModel().LAND);
                 markers.get(i).setObject(bundle);
             }
@@ -1024,17 +1025,26 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     }
 
     private void userLocationMarker(){
-        BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.user);
         double[] doubles = LatLngChangeNew.calBD09toGCJ02(CommonData.lat,CommonData.lng);
         LatLng point = new LatLng(doubles[0], doubles[1]);
+        if (userLocationMarkerOnMap != null) {
+            userLocationMarkerOnMap.setPosition(point);
+            return;
+        }
+        BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.user);
         MarkerOptions option = new MarkerOptions()
                 .position(point)
                 .icon(btm);
-        Marker marker = aMap.addMarker(option);
+        userLocationMarkerOnMap = aMap.addMarker(option);
         Bundle bundle = new Bundle();
         bundle.putString("id", "userLocation");
         bundle.putInt("type", obtainViewModel().USER_LOCATION);
-        marker.setObject(bundle);
+        userLocationMarkerOnMap.setObject(bundle);
+    }
+
+    private void clearMapMarkers() {
+        aMap.clear();
+        userLocationMarkerOnMap = null;
     }
 
 
@@ -1254,7 +1264,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         obtainViewModel().oneBodyFilterState = state;
 
 
-        aMap.clear();
+        clearMapMarkers();
         //更新所有Marker
         updateMarkers();
     }
@@ -1363,7 +1373,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         obtainViewModel().landFilterState = state;
 
 
-        aMap.clear();
+        clearMapMarkers();
         //更新所有Marker
         updateMarkers();
     }

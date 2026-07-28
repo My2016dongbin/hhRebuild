@@ -88,7 +88,7 @@ public class TrackService extends Service implements SensorEventListener {
     private static final double MAX_VALID_DISTANCE_KM = 0.2d;
     private static final double MIN_VALID_DISTANCE_KM = 0.002d;
     private static final float MAX_VALID_LOCATION_RADIUS_M = 50f;
-    private static final float MOTION_ACCELERATION_THRESHOLD = 0.25f;
+    private static final float MOTION_ACCELERATION_THRESHOLD = 0.10f;
     private static final long RECENT_MOTION_WINDOW_MS = 15_000L;
     public static final String ACTION_RESTART_TRACK_SERVICE = "com.haohai.platform.fireforestplatform.action.RESTART_TRACK_SERVICE";
     private static final long TRACK_INTERVAL_MS = 10_000L;

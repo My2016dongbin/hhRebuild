@@ -52,6 +52,8 @@ import java.util.Objects;
 import okhttp3.Call;
 
 public class FgMapViewModel extends BaseViewModel {
+    private static final String SURFACE_FIRE_DEVICE_CODE = "surfaceFireDevice";
+    private static final String SURFACE_FIRE_DEVICE_API_URL = "/api/surfaceFireDevice";
     public Context context;
     public int currentPage = 1;
     public int currentPageLand = 1;
@@ -428,6 +430,7 @@ public class FgMapViewModel extends BaseViewModel {
                                     new TypeToken<List<ResourceType>>() {
                                     }.getType());
                             c.addAll(value);
+                            addSurfaceFireDeviceType(c);
                             resourceTypeList.postValue(c);
 
 
@@ -464,6 +467,7 @@ public class FgMapViewModel extends BaseViewModel {
                                                         new TypeToken<List<ResourceType>>() {
                                                         }.getType());
                                                 value.addAll(c);
+                                                addSurfaceFireDeviceType(value);
                                                 resourceTypeList.postValue(value);
 
                                             } catch (JSONException e) {
@@ -543,7 +547,9 @@ public class FgMapViewModel extends BaseViewModel {
             //移除选中类型数据
             removeResourceByApiUrl(resourceType);
             //获取选中类型数据
-            if(isNew){
+            if(isSurfaceFireDeviceType(resourceType)){
+                postSurfaceFireDeviceData(resourceType);
+            }else if(isNew){
                 postResourceByApiUrlNew(resourceType);
             }else{
                 postResourceByApiUrl(resourceType);
@@ -561,6 +567,44 @@ public class FgMapViewModel extends BaseViewModel {
                 return;
             }
         }
+    }
+
+    private boolean isSurfaceFireDeviceType(ResourceType resourceType) {
+        return resourceType != null && Objects.equals(resourceType.getCode(), SURFACE_FIRE_DEVICE_CODE);
+    }
+
+    private void addSurfaceFireDeviceType(List<ResourceType> resourceTypes) {
+        if(resourceTypes == null){
+            return;
+        }
+        boolean checked = false;
+        List<ResourceType> value = resourceTypeList.getValue();
+        if(value != null){
+            for (int i = 0; i < value.size(); i++) {
+                ResourceType type = value.get(i);
+                if(isSurfaceFireDeviceType(type)){
+                    checked = type.isChecked();
+                    break;
+                }
+            }
+        }
+        List<ResourceType> removeList = new ArrayList<>();
+        for (int i = 0; i < resourceTypes.size(); i++) {
+            ResourceType type = resourceTypes.get(i);
+            if(isSurfaceFireDeviceType(type)){
+                checked = type.isChecked();
+                removeList.add(type);
+            }
+        }
+        resourceTypes.removeAll(removeList);
+        ResourceType resourceType = new ResourceType();
+        resourceType.setId(SURFACE_FIRE_DEVICE_CODE);
+        resourceType.setName("地表火设备");
+        resourceType.setCode(SURFACE_FIRE_DEVICE_CODE);
+        resourceType.setApiUrl(SURFACE_FIRE_DEVICE_API_URL);
+        resourceType.setIsDisplay("1");
+        resourceType.setChecked(checked);
+        resourceTypes.add(resourceType);
     }
 
     public void clickModelShequ(SheQu sheQu,boolean state) {
@@ -894,6 +938,77 @@ public class FgMapViewModel extends BaseViewModel {
 
                         } catch (JSONException e) {
                             e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Exception e, int id) {
+                        HhLog.e("onFailure: " + e.toString());
+                        msg.setValue(e.getMessage());
+                        loading.setValue(new LoadingEvent(false, ""));
+                    }
+                });
+    }
+    public void postSurfaceFireDeviceData(ResourceType resourceType) {
+        loading.setValue(new LoadingEvent(true, "正在获取资源信息.."));
+        final JSONObject jsonObject = new JSONObject();
+        JSONObject dto = new JSONObject();
+        try {
+            dto.put("deviceName", "");
+            dto.put("deviceSn", "");
+            dto.put("isOnline", "");
+            dto.put("gridNos", new JSONArray());
+            jsonObject.put("page", 1);
+            jsonObject.put("limit", 2000);
+            jsonObject.put("dto", dto);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        HhHttp.postString()
+                .url(URLConstant.POST_SURFACE_FIRE_DEVICE)
+                .content(jsonObject.toString())
+                .build()
+                .connTimeOut(10000)
+                .execute(new LoggedInStringCallback(this, context) {
+                    @Override
+                    public void onSuccess(String response, int id) {
+                        HhLog.e("postSurfaceFireDeviceData " + response);
+                        try {
+                            loading.postValue(new LoadingEvent(false, ""));
+                            JSONObject jsonObject = new JSONObject(response);
+                            JSONArray data = jsonObject.optJSONArray("data");
+                            List<Resource> list = new ArrayList<>();
+                            if(data != null && data.length()>0){
+                                JSONObject obj = (JSONObject) data.get(0);
+                                JSONArray dataList = obj.optJSONArray("dataList");
+                                if(dataList != null){
+                                    for (int i = 0; i < dataList.length(); i++) {
+                                        JSONObject deviceObj = (JSONObject) dataList.get(i);
+                                        Resource resource = new Gson().fromJson(deviceObj.toString(), Resource.class);
+                                        resource.setObj(deviceObj);
+                                        resource.setApiUrl(resourceType.getApiUrl());
+                                        resource.setTypes(resourceType.getCode());
+                                        resource.setResourceType(resourceType.getCode());
+                                        resource.setName(deviceObj.optString("deviceName"));
+                                        resource.setResourceName(deviceObj.optString("deviceName"));
+                                        resource.setAddress(deviceObj.optString("address"));
+                                        resource.setPosition(new Resource.PositionDTO(deviceObj.optString("longitude"), deviceObj.optString("latitude")));
+                                        list.add(resource);
+                                    }
+                                }
+                            }
+                            if(!list.isEmpty()){
+                                List<Resource> value = resourceList.getValue();
+                                if(value == null){
+                                    value = new ArrayList<>();
+                                }
+                                value.addAll(list);
+                                resourceList.postValue(value);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            loading.postValue(new LoadingEvent(false, ""));
                         }
                     }
 

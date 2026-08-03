@@ -399,6 +399,14 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
         if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_ALARM_LIST)){
             binding.viewWarnList.setVisibility(View.GONE);
+        }
+        if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_ALARM_LIST_LAND)){
+            binding.viewWarnListLand.setVisibility(View.GONE);
+        }
+        if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_ALARM_LIST_DRONE)){
+            binding.viewWarnListDrone.setVisibility(View.GONE);
+        }
+        if((!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_ALARM_LIST)) && (!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_ALARM_LIST_LAND)) && (!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_ALARM_LIST_DRONE))){
             binding.viewAlarm.setVisibility(View.GONE);
         }
         if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_SATELLITE_SETTING)){
@@ -990,6 +998,9 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             }
             if(Objects.equals(resources.get(i).getApiUrl(), "/api/monitor/jiankong")){//监控点
                 btm = BitmapDescriptorFactory.fromResource(R.drawable.onbody);
+            }
+            if(Objects.equals(resources.get(i).getApiUrl(), "/api/surfaceFireDevice")){//地表火设备
+                btm = BitmapDescriptorFactory.fromResource(R.drawable.land_device);
             }
             if(Objects.equals(resources.get(i).getApiUrl(), "/api/fireCommand")){//指挥部
                 btm = BitmapDescriptorFactory.fromResource(R.drawable.zhihui);

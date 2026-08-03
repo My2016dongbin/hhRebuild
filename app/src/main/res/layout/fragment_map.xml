@@ -90,17 +90,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
-            <View
-                android:background="@color/back_color_line"
-                android:layout_margin="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"/>
             <LinearLayout
                 android:id="@+id/view_warn_list"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <View
+                    android:background="@color/back_color_line"
+                    android:layout_margin="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"/>
                 <ImageView
                     android:src="@drawable/ic_menu"
                     android:layout_width="22dp"
@@ -113,17 +113,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
-            <View
-                android:background="@color/back_color_line"
-                android:layout_margin="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"/>
             <LinearLayout
                 android:id="@+id/view_warn_list_land"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <View
+                    android:background="@color/back_color_line"
+                    android:layout_margin="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"/>
                 <ImageView
                     android:src="@drawable/ic_menu"
                     android:layout_width="22dp"
@@ -136,17 +136,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
-            <View
-                android:background="@color/back_color_line"
-                android:layout_margin="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"/>
             <LinearLayout
                 android:id="@+id/view_warn_list_drone"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <View
+                    android:background="@color/back_color_line"
+                    android:layout_margin="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"/>
                 <ImageView
                     android:src="@drawable/ic_menu"
                     android:layout_width="22dp"

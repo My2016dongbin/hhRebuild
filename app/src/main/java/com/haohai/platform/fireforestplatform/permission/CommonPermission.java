@@ -21,6 +21,8 @@ public class CommonPermission {
     public static final String APP_BANNER = "app-application-btn-banner";//首页-轮播图
     public static final String APP_ALARM = "app-application-btn-fireAlarm";//首页-报警管理
     public static final String APP_SATELLITE = "app-application-btn-satelliteFireAlarm";//首页-卫星遥感
+    public static final String APP_ALARM_LAND = "app-application-btn-fireAlarmLand";//首页-地表火报警
+    public static final String APP_ALARM_DRONE = "app-application-btn-fireAlarmDrone";//首页-无人机报警
     public static final String APP_DANGER = "app-application-btn-danger";//首页-隐患排查
     public static final String APP_UPLOAD = "app-application-btn-fire";//首页-火情上报
     public static final String APP_VIDEO = "app-application-btn-video";//首页-视频监控
@@ -36,7 +38,9 @@ public class CommonPermission {
 
     public static final String MESSAGE_CLEAR = "app-message-btn-clear";//消息-清除未读
 
-    public static final String MAP_ALARM_LIST = "app-map-btn-alarmList";//地图-报警列表
+    public static final String MAP_ALARM_LIST = "app-map-btn-alarmList";//地图-一体机报警列表
+    public static final String MAP_ALARM_LIST_LAND = "app-map-btn-alarmListLand";//地图-地表火报警列表
+    public static final String MAP_ALARM_LIST_DRONE = "app-map-btn-alarmListDrone";//地图-无人机报警列表
     public static final String MAP_RESOURCE_LIST = "app-map-btn-resourceList";//地图-资源列表
     public static final String MAP_RESOURCE_ADD = "app-map-btn-resourceAdd";//地图-资源添加
     public static final String MAP_RESOURCE_SEARCH = "app-map-btn-resourceSearch";//地图-资源搜索

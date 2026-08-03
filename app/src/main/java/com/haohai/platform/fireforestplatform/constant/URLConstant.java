@@ -41,6 +41,7 @@ public class URLConstant {
     public static final String POST_MAP_RESOURCE_TYPE = BASE_PATH + "resource/api/resourceList/list";//资源类型列表
     public static final String POST_MAP_RESOURCE_TYPE_NEW = BASE_PATH + "resource/api/resourceType/list";//资源类型列表-新增
     public static final String POST_MAP_RESOURCE_LIST_NEW = BASE_PATH + "resource/api/commonResource/list";//按类型查询资源列表-新增
+    public static final String POST_SURFACE_FIRE_DEVICE = "http://112.19.184.167:8012/resource/api/surfaceFireDevice/page";//地表火设备列表
     public static final String POST_MAP_RESOURCE_LIST_START = BASE_PATH + "resource";//按类型查询资源列表-前缀 （前缀+ApiUrl+后缀）
     public static final String POST_MAP_RESOURCE_LIST_END = "/list";//类型查询资源列表-后缀 （前缀+ApiUrl+后缀）
     public static final String GET_MAP_RESOURCE_DETAIL_MONITOR = BASE_PATH + "resource/api/monitor";//资源详情查询-摄像机

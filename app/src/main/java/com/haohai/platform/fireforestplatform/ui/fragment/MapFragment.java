@@ -52,9 +52,12 @@ import com.haohai.platform.fireforestplatform.permission.CommonPermission;
 import com.haohai.platform.fireforestplatform.ui.activity.SatelliteSettingActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.TaskActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.Resource;
+import com.haohai.platform.fireforestplatform.ui.cell.DroneDetailDialog;
+import com.haohai.platform.fireforestplatform.ui.cell.DroneListDialog;
 import com.haohai.platform.fireforestplatform.ui.cell.LandDetailDialog;
 import com.haohai.platform.fireforestplatform.ui.cell.LandListDialog;
 import com.haohai.platform.fireforestplatform.ui.cell.SheQuListDialog;
+import com.haohai.platform.fireforestplatform.ui.multitype.DroneFire;
 import com.haohai.platform.fireforestplatform.ui.multitype.LandFire;
 import com.haohai.platform.fireforestplatform.ui.multitype.SheQu;
 import com.haohai.platform.fireforestplatform.ui.cell.SatelliteSearchAdvancedDialog;
@@ -88,14 +91,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements OneBodyListDialog.OneBodyDialogListener, SatelliteListDialog.SatelliteDialogListener, OneBodyDetailDialog.OneBodyDetailDialogListener, SatelliteDetailDialog.SatelliteDetailDialogListener, ResourceDetailDialog.ResourceDetailDialogListener, ResourceListDialog.ResourceDialogListener, SatelliteSearchDialog.SatelliteSearchDialogListener, SatelliteSearchAdvancedDialog.SatelliteSearchAdvancedDialogListener, SheQuListDialog.SheQuDialogListener, LandListDialog.LandDialogListener, LandDetailDialog.LandDetailDialogListener {
+public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements OneBodyListDialog.OneBodyDialogListener, SatelliteListDialog.SatelliteDialogListener, OneBodyDetailDialog.OneBodyDetailDialogListener, SatelliteDetailDialog.SatelliteDetailDialogListener, ResourceDetailDialog.ResourceDetailDialogListener, ResourceListDialog.ResourceDialogListener, SatelliteSearchDialog.SatelliteSearchDialogListener, SatelliteSearchAdvancedDialog.SatelliteSearchAdvancedDialogListener, SheQuListDialog.SheQuDialogListener, LandListDialog.LandDialogListener, DroneListDialog.DroneDialogListener, LandDetailDialog.LandDetailDialogListener {
 
     private final String TAG = MapFragment.class.getSimpleName();
     private OneBodyListDialog oneBodyListDialog;
     private LandListDialog landListDialog;
+    private DroneListDialog droneListDialog;
     private SatelliteListDialog satelliteListDialog;
     private OneBodyDetailDialog oneBodyDetailDialog;
     private LandDetailDialog landDetailDialog;
+    private DroneDetailDialog droneDetailDialog;
     private SatelliteDetailDialog satelliteDetailDialog;
     private SatelliteSearchAdvancedDialog satelliteSearchAdvancedDialog;
     private SatelliteSearchDialog satelliteSearchDialog;
@@ -282,6 +287,9 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         binding.viewWarnListLand.setOnClickListener(v -> {
             delayDialog(landListDialog);
         });
+        binding.viewWarnListDrone.setOnClickListener(v -> {
+            delayDialog(droneListDialog);
+        });
         binding.viewTask.setOnClickListener(v -> {
             startActivity(new Intent(requireActivity(), TaskActivity.class));
         });
@@ -319,6 +327,9 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }else if(index == 3 && Objects.equals(type, "landFire")){
             obtainViewModel().getLandData();
             landListDialog.show();
+        }else if(index == 3 && Objects.equals(type, "droneFire")){
+            obtainViewModel().getDroneData();
+            droneListDialog.show();
         }
     }
 
@@ -444,6 +455,17 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 }
                 landDetailDialog.setOneBodyFire(landFire);
                 delayDialog(landDetailDialog);
+            }else if(markerType == obtainViewModel().DRONE){
+                DroneFire droneFire = new DroneFire();
+                List<DroneFire> droneListValue = obtainViewModel().droneList.getValue();
+                assert droneListValue != null;
+                for (DroneFire values:droneListValue) {
+                    if(Objects.equals(values.getId(), markerId)){
+                        droneFire = values;
+                    }
+                }
+                droneDetailDialog.setDroneFire(droneFire);
+                delayDialog(droneDetailDialog);
             }else if(markerType == obtainViewModel().SATELLITE){
                 for (SatelliteFire res: Objects.requireNonNull(obtainViewModel().satelliteList.getValue())) {
                     if(Objects.equals(res.getId(), markerId)){
@@ -469,6 +491,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         initOneBodyListDialog();
         //地表火报警列表Dialog
         initLandListDialog();
+        //无人机报警列表Dialog
+        initDroneListDialog();
         //卫星报警列表Dialog
         initSatelliteListDialog();
         //卫星报警查询Dialog
@@ -479,6 +503,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         initOneBodyDetailDialog();
         //地表火报警Marker详情Dialog
         initLandDetailDialog();
+        //无人机报警Marker详情Dialog
+        initDroneDetailDialog();
         //卫星报警Marker详情Dialog
         initSatelliteDetailDialog();
         //资源点列表Dialog
@@ -541,6 +567,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         obtainViewModel().oneBodyList.observe(requireActivity(), this::oneBodyFireChanged);
         //地表火火警数据
         obtainViewModel().landList.observe(requireActivity(), this::landFireChanged);
+        //无人机火警数据
+        obtainViewModel().droneList.observe(requireActivity(), this::droneFireChanged);
         //卫星火警数据
         obtainViewModel().satelliteList.observe(requireActivity(), this::satelliteFireChanged);
         //社区网格图层数据
@@ -581,6 +609,21 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             flyBaiduMapZoom(doubles[0],doubles[1], 14);
         }catch (Exception e){
             Log.e(TAG, "oneBodyFireChanged: " + e.getMessage() );
+        }
+    }
+    private void droneFireChanged(List<DroneFire> droneFires) {
+        clearMapMarkers();
+        //更新Dialog列表数据
+        droneListDialog.setDroneFireList(droneFires,obtainViewModel().currentPageDrone);
+        //更新所有Marker
+        updateMarkers();
+        //跳转第一火点
+        try{
+            DroneFire droneFire = droneFires.get(0);
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(droneFire.getLatitude()), Double.parseDouble(droneFire.getLongitude()));
+            flyBaiduMapZoom(doubles[0],doubles[1], 14);
+        }catch (Exception e){
+            Log.e(TAG, "droneFireChanged: " + e.getMessage() );
         }
     }
 
@@ -669,6 +712,10 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 }
             }
             landMarker(list);
+        }
+        //绘制无人机火点Marker
+        if(obtainViewModel().droneList.getValue()!=null){
+            droneMarker(Objects.requireNonNull(obtainViewModel().droneList.getValue()));
         }
         //绘制卫星火点Marker
         if(obtainViewModel().satelliteList.getValue()!=null){
@@ -817,6 +864,37 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
                 Bundle bundle = new Bundle();
                 bundle.putString("id", markerLandFires.get(i).getId());
                 bundle.putInt("type", obtainViewModel().LAND);
+                markers.get(i).setObject(bundle);
+            }
+        }catch (Exception e){
+            //
+        }
+    }
+    private void droneMarker(List<DroneFire> droneFires) {
+        ArrayList<MarkerOptions> options = new ArrayList<>();
+        List<DroneFire> markerDroneFires = new ArrayList<>();
+        BitmapDescriptor btm = BitmapDescriptorFactory.fromResource(R.drawable.ic_red_fire);//默认森林防火
+        for (int i = 0; i < droneFires.size(); i++) {
+            try {
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(droneFires.get(i).getLatitude()), Double.parseDouble(droneFires.get(i).getLongitude()));
+                LatLng point = new LatLng(doubles[0], doubles[1]);
+                MarkerOptions option = new MarkerOptions()
+                        .position(point)
+                        .icon(btm);
+                options.add(option);
+                markerDroneFires.add(droneFires.get(i));
+            }catch (Exception e){
+                Log.e(TAG, "droneMarker: " + e.getMessage() );
+                continue;
+            }
+        }
+        List<Marker> markers = aMap.addMarkers(options, false);
+
+        try{
+            for (int i = 0; i < markers.size(); i++) {
+                Bundle bundle = new Bundle();
+                bundle.putString("id", markerDroneFires.get(i).getId());
+                bundle.putInt("type", obtainViewModel().DRONE);
                 markers.get(i).setObject(bundle);
             }
         }catch (Exception e){
@@ -1084,6 +1162,24 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             landListDialog.create();
         }
     }
+    private void initDroneListDialog() {
+        droneListDialog = new DroneListDialog(requireActivity(), R.style.ActionSheetDialogStyle);
+        Window dialogWindow = droneListDialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        droneListDialog.setDialogListener(this);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        WindowManager wm = (WindowManager) requireActivity()
+                .getSystemService(Context.WINDOW_SERVICE);
+        int height = wm.getDefaultDisplay().getHeight();
+        int width = wm.getDefaultDisplay().getWidth();
+        lp.width = width;
+        lp.height = (int) (height * 0.7);
+        dialogWindow.setAttributes(lp);
+        droneListDialog.setCanceledOnTouchOutside(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            droneListDialog.create();
+        }
+    }
     private void initOneBodyDetailDialog() {
         oneBodyDetailDialog = new OneBodyDetailDialog(requireActivity(), R.style.ActionSheetDialogStyle);
         Window dialogWindow = oneBodyDetailDialog.getWindow();
@@ -1118,6 +1214,21 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         landDetailDialog.setCanceledOnTouchOutside(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             landDetailDialog.create();
+        }
+    }
+    private void initDroneDetailDialog() {
+        droneDetailDialog = new DroneDetailDialog(requireActivity(), R.style.ActionSheetDialogStyle);
+        Window dialogWindow = droneDetailDialog.getWindow();
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        WindowManager wm = (WindowManager) requireActivity()
+                .getSystemService(Context.WINDOW_SERVICE);
+        int width = wm.getDefaultDisplay().getWidth();
+        lp.width = width;
+        dialogWindow.setAttributes(lp);
+        droneDetailDialog.setCanceledOnTouchOutside(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            droneDetailDialog.create();
         }
     }
     private void initSatelliteListDialog() {
@@ -1385,6 +1496,40 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         landDetailDialog.show();
         double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(landFire.getLatitude()),Double.parseDouble(landFire.getLongitude()));
         flyBaiduMapZoom(doubles[0],doubles[1], 14);
+    }
+
+    @Override
+    public void onDroneDialogRefresh() {
+        obtainViewModel().currentPageDrone = 1;
+        obtainViewModel().getDroneData();
+    }
+
+    @Override
+    public void onDroneDialogLoadMore() {
+        obtainViewModel().currentPageDrone++;
+        obtainViewModel().getDroneData();
+    }
+
+    @Override
+    public void onDroneDialogFilterState(int state) {
+        //0全部  1未处理  2真实火点  3疑似火点
+        obtainViewModel().droneFilterState = state;
+        obtainViewModel().currentPageDrone = 1;
+        obtainViewModel().droneList.setValue(new ArrayList<>());
+        obtainViewModel().getDroneData();
+    }
+
+    @Override
+    public void onDroneDialogItemClick(DroneFire droneFire) {
+        droneListDialog.hide();
+        droneDetailDialog.setDroneFire(droneFire);
+        droneDetailDialog.show();
+        try{
+            double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(droneFire.getLatitude()),Double.parseDouble(droneFire.getLongitude()));
+            flyBaiduMapZoom(doubles[0],doubles[1], 14);
+        }catch (Exception e){
+            Log.e(TAG, "onDroneDialogItemClick: " + e.getMessage() );
+        }
     }
 
     @Override

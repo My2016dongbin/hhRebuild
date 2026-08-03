@@ -18,6 +18,7 @@ import com.haohai.platform.fireforestplatform.event.Search;
 import com.haohai.platform.fireforestplatform.old.bean.Grid;
 import com.haohai.platform.fireforestplatform.ui.bean.Resource;
 import com.haohai.platform.fireforestplatform.ui.bean.SatelliteParams;
+import com.haohai.platform.fireforestplatform.ui.multitype.DroneFire;
 import com.haohai.platform.fireforestplatform.ui.multitype.LandFire;
 import com.haohai.platform.fireforestplatform.ui.multitype.SheQu;
 import com.haohai.platform.fireforestplatform.ui.multitype.OneBodyFire;
@@ -54,10 +55,12 @@ public class FgMapViewModel extends BaseViewModel {
     public Context context;
     public int currentPage = 1;
     public int currentPageLand = 1;
+    public int currentPageDrone = 1;
     public int isReal = 2;
     public final int USER_LOCATION = 100;
     public final int ONE_BODY = 101;
     public final int LAND = 106;
+    public final int DRONE = 107;
     public final int SATELLITE = 102;
     public final int RESOURCE = 103;
     public final int defaultFindTime = 500;//默认查询距离当前时间前N小时数据
@@ -66,11 +69,13 @@ public class FgMapViewModel extends BaseViewModel {
     public String search = "";
     public int oneBodyFilterState = 1;//0全部  1未处理  2真实火点  3疑似火点
     public int landFilterState = 1;//0全部  1未处理  2真实火点  3疑似火点
+    public int droneFilterState = 1;//0全部  1未处理  2真实火点  3疑似火点
     public List<Grid> gridList = new ArrayList<>();
     public final MutableLiveData<List<SheQu>> sheQuGridList = new MutableLiveData<>();
     public final MutableLiveData<List<ArrayList<Double>>> sheQuCurrentList = new MutableLiveData<>();
     public final MutableLiveData<List<OneBodyFire>> oneBodyList = new MutableLiveData<>();
     public final MutableLiveData<List<LandFire>> landList = new MutableLiveData<>();
+    public final MutableLiveData<List<DroneFire>> droneList = new MutableLiveData<>();
     public final MutableLiveData<List<ResourceType>> resourceTypeList = new MutableLiveData<>();
     public final MutableLiveData<List<Resource>> resourceList = new MutableLiveData<>();
     public final MutableLiveData<List<SatelliteFire>> satelliteList = new MutableLiveData<>();
@@ -86,6 +91,7 @@ public class FgMapViewModel extends BaseViewModel {
         startTime = format.format(c.getTime()).replace(" ", "T");
         getOneBodyData();
         getLandData();
+        getDroneData();
         getResourceTypeData();
         getSatelliteData(startTime,endTime);
         initGridIntoDb();
@@ -293,6 +299,84 @@ public class FgMapViewModel extends BaseViewModel {
                 } catch (Exception e) {
                     e.printStackTrace();
                     HhLog.e("onError: catch " + e.toString());
+                }
+            }
+
+            @Override
+            public void onError(Throwable e, boolean isOnCallback) {
+                HhLog.e("onError: " + e.toString());
+                msg.setValue(e.getMessage());
+                loading.setValue(new LoadingEvent(false, ""));
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+    }
+    public void getDroneData() {
+        loading.setValue(new LoadingEvent(true, "正在获取报警信息.."));
+        final JSONObject jsonObject = new JSONObject();
+        JSONObject dto;
+        try {
+            dto = new JSONObject();
+            jsonObject.put("dto", dto);
+            jsonObject.put("limit", 15);
+            jsonObject.put("page", currentPageDrone);
+            dto.put("startTime", "");
+            dto.put("endTime", "");
+            dto.put("deviceName", "");
+            if(droneFilterState == 0){
+                dto.put("isHandle", "");
+                dto.put("isReal", "");
+            }
+            if(droneFilterState == 1){
+                dto.put("isHandle", "0");
+                dto.put("isReal", "");
+            }
+            if(droneFilterState == 2){
+                dto.put("isHandle", "1");
+                dto.put("isReal", "1");
+            }
+            if(droneFilterState == 3){
+                dto.put("isHandle", "1");
+                dto.put("isReal", "0");
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        HhLog.e("drone params " + jsonObject.toString());
+        RequestParams params = new RequestParams(URLConstant.POST_MAP_DRONE);
+        params.setBodyContent(jsonObject.toString());
+        HhHttp.postX(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    HhLog.e("POST_MAP_DRONE" + currentPageDrone + " , " + result);
+                    loading.postValue(new LoadingEvent(false, ""));
+                    JSONObject jsonObject = new JSONObject(result);
+                    JSONArray data = jsonObject.optJSONArray("data");
+                    List<DroneFire> list = new ArrayList<>();
+                    if(data != null && data.length()>0){
+                        JSONObject obj = (JSONObject) data.get(0);
+                        JSONArray dataList = obj.optJSONArray("dataList");
+                        if(dataList != null){
+                            list = new Gson().fromJson(String.valueOf(dataList),new TypeToken<List<DroneFire>>(){}.getType());
+                        }
+                    }
+                    droneList.postValue(list);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    HhLog.e("onError: catch " + e.toString());
+                    loading.postValue(new LoadingEvent(false, ""));
                 }
             }
 

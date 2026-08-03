@@ -33,6 +33,7 @@ public class URLConstant {
     //地图相关
     public static final String POST_MAP_ONE_BODY = BASE_PATH + "fire/api/monitorFirealarm/page?type=appInternet";//一体机报警数据
     public static final String POST_MAP_ONE_LAND = BASE_PATH + "resource/api/surfaceFireAlarm/page";//地表火报警数据
+    public static final String POST_MAP_DRONE = BASE_PATH + "fire/api/droneFireAlarm/page";//无人机报警数据
 //    public static final String POST_MAP_ONE_BODY = BASE_PATH + "fire/api/monitorFirealarm/getFirePage?fireIds=";//一体机报警数据
     public static final String GET_MAP_FIRE_VIDEO_URL = BASE_PATH + "fire/api/monitorFirealarm/getMonitorAlarmById?type=appInternet";//一体机报警详情
 //    public static final String POST_MAP_SATELLITE = BASE_PATH + "fire/api/satelliteFirealarm/list";//卫星报警数据

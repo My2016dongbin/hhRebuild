@@ -46,6 +46,9 @@ public class StringData {
         return str;
     }
     public static List<String> parseList(String strList) {
+        if(strList == null){
+            return new ArrayList<>();
+        }
         String[] split = strList.split(",");
         return new ArrayList<>(Arrays.asList(split));
     }

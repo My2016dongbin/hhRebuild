@@ -64,6 +64,7 @@ import com.haohai.platform.fireforestplatform.utils.SPValue;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.DbManager;
@@ -72,15 +73,23 @@ import org.xutils.ex.DbException;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import okhttp3.Call;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class TrackService extends Service implements SensorEventListener {
 
@@ -92,6 +101,9 @@ public class TrackService extends Service implements SensorEventListener {
     private static final long RECENT_MOTION_WINDOW_MS = 15_000L;
     public static final String ACTION_RESTART_TRACK_SERVICE = "com.haohai.platform.fireforestplatform.action.RESTART_TRACK_SERVICE";
     private static final long TRACK_INTERVAL_MS = 10_000L;
+    private static final long GEO_UPLOAD_INTERVAL_MS = 120_000L;
+    private static final int GEO_UPLOAD_BATCH_SIZE = 20;
+    private static final int GEO_RETRY_TIMES = 60;
     private static final int TRACK_NOTIFICATION_ID = 110;
 
     public LocationClient mLocationClient = null;
@@ -119,6 +131,11 @@ public class TrackService extends Service implements SensorEventListener {
     private float lastAccelerationMagnitude = -1f;
     private long lastMotionTime = 0L;
     private MediaPlayer mediaPlayer;
+    private boolean geoParamsGetting = false;
+    private boolean geoLocationUploading = false;
+    private long lastGeoUploadTime = 0L;
+    private Runnable geoRetryRunnable;
+    private final OkHttpClient geoHttpClient = new OkHttpClient();
     private final Runnable trackRunnable = new Runnable() {
         @Override
         public void run() {
@@ -126,6 +143,7 @@ public class TrackService extends Service implements SensorEventListener {
             requestTrackLocation();
             parseDistance();
             uploadLocation();
+            handleGeoTrack();
             trackHandler.postDelayed(this, TRACK_INTERVAL_MS);
         }
     };
@@ -198,6 +216,7 @@ public class TrackService extends Service implements SensorEventListener {
         //设置地理编码检索监听者；
         mSearch.setOnGetGeoCodeResultListener(listener);
         search();
+        lastGeoUploadTime = System.currentTimeMillis();
 
     }
 
@@ -309,6 +328,244 @@ public class TrackService extends Service implements SensorEventListener {
                         HhLog.e("onFailure: " + e.toString() + URLConstant.POST_POSITION);
                     }
                 });
+    }
+
+    private void handleGeoTrack() {
+        if (!CommonData.hasSign || !isLocationUploadOpen()) {
+            return;
+        }
+        saveGeoTrackPoint();
+        long now = System.currentTimeMillis();
+        if (now - lastGeoUploadTime >= GEO_UPLOAD_INTERVAL_MS) {
+            sendGeoLocation();
+        }
+    }
+
+    private boolean isLocationUploadOpen() {
+        return (boolean) SPUtils.get(HhApplication.getInstance(), SPValue.upload, true);
+    }
+
+    private void getGeoParams(final Runnable successRunnable) {
+        if (geoParamsGetting) {
+            return;
+        }
+        geoParamsGetting = true;
+        HhHttp.get()
+                .url(URLConstant.GET_AMAP_TRACK_PARAMS)
+                .build()
+                .execute(new LoggedInStringCallback(null, this) {
+                    @Override
+                    public void onSuccess(String response, int id) {
+                        HhLog.e("getGeoParams " + response);
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            JSONObject data = jsonObject.optJSONObject("data");
+                            if (data == null) {
+                                data = jsonObject;
+                            }
+                            CommonData.geoServiceId = data.optString("serviceId", "");
+                            CommonData.geoTerminalId = data.optString("terminalId", "");
+                            CommonData.geoTraceId = data.optString("traceId", "");
+                            if (successRunnable != null && hasGeoParams()) {
+                                successRunnable.run();
+                            }
+                        } catch (JSONException e) {
+                            HhLog.e("getGeoParams error " + e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Exception e, int id) {
+                        HhLog.e("getGeoParams onFailure: " + e.toString());
+                    }
+
+                    @Override
+                    public void onAfter(int id) {
+                        super.onAfter(id);
+                        geoParamsGetting = false;
+                    }
+                });
+    }
+
+    private boolean hasGeoParams() {
+        return CommonData.geoServiceId != null && CommonData.geoServiceId.length() > 0
+                && CommonData.geoTerminalId != null && CommonData.geoTerminalId.length() > 0
+                && CommonData.geoTraceId != null && CommonData.geoTraceId.length() > 0;
+    }
+
+    private void saveGeoTrackPoint() {
+        if (CommonData.lng == 0 || CommonData.lat == 0 || String.valueOf(CommonData.lng).contains("E")) {
+            return;
+        }
+        try {
+            double[] doubles = LatLngChangeNew.calBD09toGCJ02(CommonData.lat, CommonData.lng);
+            JSONArray points = readGeoTrackPoints();
+            JSONObject point = new JSONObject();
+            point.put("location", doubles[1] + "," + doubles[0]);
+            point.put("locatetime", System.currentTimeMillis());
+            points.put(point);
+            saveGeoTrackPoints(points);
+        } catch (Exception e) {
+            HhLog.e("saveGeoTrackPoint error " + e.getMessage());
+        }
+    }
+
+    private void sendGeoLocation() {
+        if (!CommonData.hasSign || !isLocationUploadOpen() || geoLocationUploading || geoRetryRunnable != null) {
+            return;
+        }
+        JSONArray allPoints = readGeoTrackPoints();
+        if (allPoints.length() == 0) {
+            lastGeoUploadTime = System.currentTimeMillis();
+            return;
+        }
+        if (!hasGeoParams()) {
+            getGeoParams(new Runnable() {
+                @Override
+                public void run() {
+                    sendGeoLocation();
+                }
+            });
+            return;
+        }
+        JSONArray uploadPoints = takeGeoTrackPoints(allPoints);
+        uploadGeoTrackPoints(uploadPoints);
+    }
+
+    private JSONArray takeGeoTrackPoints(JSONArray points) {
+        JSONArray uploadPoints = new JSONArray();
+        int uploadSize = Math.min(points.length(), GEO_UPLOAD_BATCH_SIZE);
+        for (int i = 0; i < uploadSize; i++) {
+            try {
+                uploadPoints.put(points.get(i));
+            } catch (JSONException e) {
+                HhLog.e("takeGeoTrackPoints error " + e.getMessage());
+            }
+        }
+        return uploadPoints;
+    }
+
+    private void uploadGeoTrackPoints(final JSONArray points) {
+        if (points.length() == 0) {
+            return;
+        }
+        geoLocationUploading = true;
+        HhLog.e("sendGeoLocation " + URLConstant.POST_AMAP_TRACK);
+        HhLog.e("sendGeoLocation points length " + points.length());
+        HhLog.e("sendGeoLocation points " + points.toString());
+        RequestBody requestBody = new FormBody.Builder()
+                .add("key", CommonData.geoWebKey)
+                .add("sid", CommonData.geoServiceId)
+                .add("tid", CommonData.geoTerminalId)
+                .add("trid", CommonData.geoTraceId)
+                .add("points", points.toString())
+                .build();
+        Request request = new Request.Builder()
+                .url(URLConstant.POST_AMAP_TRACK)
+                .post(requestBody)
+                .build();
+        geoHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                trackHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HhLog.e("sendGeoLocation onFailure: " + e.toString());
+                        geoLocationUploading = false;
+                        retrySendGeoLocation();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseText = response.body() == null ? "" : response.body().string();
+                trackHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        handleGeoUploadResult(responseText, points);
+                    }
+                });
+            }
+        });
+    }
+
+    private void handleGeoUploadResult(String response, JSONArray points) {
+        HhLog.e("sendGeoLocation " + response);
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            if (Objects.equals(jsonObject.optString("errcode"), "10000")) {
+                clearUploadedGeoTrackPoints(points);
+                lastGeoUploadTime = System.currentTimeMillis();
+                geoLocationUploading = false;
+                if (readGeoTrackPoints().length() > 0) {
+                    sendGeoLocation();
+                }
+            } else {
+                geoLocationUploading = false;
+                retrySendGeoLocation();
+            }
+        } catch (JSONException e) {
+            HhLog.e("sendGeoLocation error " + e.getMessage());
+            geoLocationUploading = false;
+            retrySendGeoLocation();
+        }
+    }
+
+    private JSONArray readGeoTrackPoints() {
+        String pointsText = (String) SPUtils.get(HhApplication.getInstance(), SPValue.geoTrackPoints, "[]");
+        try {
+            return new JSONArray(pointsText);
+        } catch (JSONException e) {
+            HhLog.e("readGeoTrackPoints error " + e.getMessage());
+        }
+        return new JSONArray();
+    }
+
+    private void saveGeoTrackPoints(JSONArray points) {
+        SPUtils.put(HhApplication.getInstance(), SPValue.geoTrackPoints, points.toString());
+    }
+
+    private void clearUploadedGeoTrackPoints(JSONArray uploadPoints) {
+        long maxLocateTime = 0L;
+        for (int i = 0; i < uploadPoints.length(); i++) {
+            try {
+                long locateTime = uploadPoints.getJSONObject(i).optLong("locatetime", 0L);
+                if (locateTime > maxLocateTime) {
+                    maxLocateTime = locateTime;
+                }
+            } catch (JSONException e) {
+                HhLog.e("clearUploadedGeoTrackPoints error " + e.getMessage());
+            }
+        }
+        JSONArray points = readGeoTrackPoints();
+        JSONArray savePoints = new JSONArray();
+        for (int i = 0; i < points.length(); i++) {
+            try {
+                JSONObject point = points.getJSONObject(i);
+                if (point.optLong("locatetime", 0L) > maxLocateTime) {
+                    savePoints.put(point);
+                }
+            } catch (JSONException e) {
+                HhLog.e("clearUploadedGeoTrackPoints save error " + e.getMessage());
+            }
+        }
+        saveGeoTrackPoints(savePoints);
+    }
+
+    private void retrySendGeoLocation() {
+        if (!CommonData.hasSign || !isLocationUploadOpen() || geoRetryRunnable != null) {
+            return;
+        }
+        int seconds = new Random().nextInt(GEO_RETRY_TIMES) + 1;
+        geoRetryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                geoRetryRunnable = null;
+                sendGeoLocation();
+            }
+        };
+        trackHandler.postDelayed(geoRetryRunnable, seconds * 1000L);
     }
 
     void initBaiduLoc() {

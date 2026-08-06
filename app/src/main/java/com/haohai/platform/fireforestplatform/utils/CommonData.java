@@ -26,6 +26,10 @@ public class CommonData {
     public static boolean hasGet = false;
     public static int walkDistance = 0;
     public static int dis_int = 0;
+    public static String geoWebKey = "ed0b631b12878335d9a9abd987ceac75";
+    public static String geoServiceId = "";
+    public static String geoTerminalId = "";
+    public static String geoTraceId = "";
     public static String warnType = "";
     public static boolean isUpdate = false;
 
@@ -62,5 +66,8 @@ public class CommonData {
         locationType = 0;
         locationTime = 0;
         hasSensor = false;
+        geoServiceId = "";
+        geoTerminalId = "";
+        geoTraceId = "";
     }
 }

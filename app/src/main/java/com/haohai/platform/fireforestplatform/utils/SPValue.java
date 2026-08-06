@@ -46,6 +46,7 @@ public class SPValue {
     public static final String otherSet = "otherSet";
     public static final String walk = "walk";
     public static final String walkDay = "walkDay";
+    public static final String geoTrackPoints = "geoTrackPoints";
 
     public static final String permission = "permission";
     public static final String hasMainApp = "hasMainApp";

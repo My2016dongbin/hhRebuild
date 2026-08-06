@@ -54,6 +54,8 @@ public class URLConstant {
     public static final String GET_MAIN_DEVICE_LIST = BASE_PATH + "resource/api/camera/getDevicesByOnlineStatus";//主页查询在线离线设备列表
     public static final String GET_MAIN_DEVICE_LIST2 = BASE_PATH + "resource/api/surfaceFireDevice/list";//主页查询在线离线设备列表-新
     public static final String GET_MAIN_SIGN_INFO = BASE_PATH + "oa/api/attendance/myAttRecordByTime";//主页查询签到详情
+    public static final String GET_AMAP_TRACK_PARAMS = BASE_PATH + "oa/api/amapTrack/getSidTidTrid";//高德猎鹰参数查询
+    public static final String POST_AMAP_TRACK = "https://tsapi.amap.com/v1/track/point/upload";//高德猎鹰定位上传
 
 
     public static final String GET_FIRE_COUNT_ROLE = BASE_PATH + "auth/api/auth/auth/user/auth";//查询账号权限

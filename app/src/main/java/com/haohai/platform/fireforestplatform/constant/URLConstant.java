@@ -7,7 +7,7 @@ public class URLConstant {
 //    public static final String BASE_PATH = "http://192.168.1.40:8011/";//Release web
 
     public static final String SATELLITE_IMAGE = "http://web.ehaohai.com:2018";//卫星图片前缀
-    public static final String COMMON_VERSION = "http://112.19.184.167:8011/auth/api/androidUpgrade/page";
+    public static final String COMMON_VERSION = BASE_PATH + "auth/api/androidUpgrade/page";
 
 
     public static final String PERMISSION_MAIN = BASE_PATH + "auth/api/auth/auth/user/auth";

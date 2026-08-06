@@ -118,8 +118,8 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
     protected void onResume() {
         super.onResume();
         CommonData.isUpdate = false;
-        //checkVersion();
-        if(show)checkVersionCommon();
+        if(show)checkVersion();
+//        if(show)checkVersionCommon();
         if(currentTabIndex == (int)SPUtils.get(this,SPValue.videoIndex,1)){
             EventBus.getDefault().post(new MainTabChange((int)SPUtils.get(this,SPValue.videoIndex,1)));
         }
@@ -350,8 +350,8 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
     ///推送透传更新
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetMessage(DoUpdate event) {
-        //checkVersion();
-        checkVersionCommon();
+        checkVersion();
+//        checkVersionCommon();
     }
 
 

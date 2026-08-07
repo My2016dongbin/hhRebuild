@@ -67,6 +67,7 @@ public class URLConstant {
     public static final String POST_PICTURE = /*"http://117.132.5.139:8011/"*/ BASE_PATH +"oa/api/workReport/fileUploadAnByNotToken";//上传图片
     public static final String POST_HIDDEN_DANGER = BASE_PATH +"fire/api/dangerCheck";//隐患排查提交
     public static final String POST_FIRE_UPLOAD = BASE_PATH +"fire/api/reportFirealarm";//火情上报提交
+    public static final String POST_FIRE_EVENT_LIST = BASE_PATH +"fire/api/reportFirealarm/getFirePage?fireIds=";//火情上报列表
 
     public static final String PUT_CHANGE_PASSWORD = BASE_PATH +"auth/api/auth/user/modfiy/passwd";//修改密码
 

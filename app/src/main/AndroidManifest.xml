@@ -90,6 +90,7 @@
         <activity android:name=".nusdk.AddressBookActivity" />
         <activity android:name=".nusdk.SettingActivity" />
         <activity android:name=".ui.activity.FireUploadActivity" />
+        <activity android:name=".ui.activity.FireEventListActivity" />
         <activity android:name=".ui.activity.HiddenDangerActivity" />
         <activity android:name=".ui.activity.TaskActivity" />
         <activity android:name=".ui.activity.TaskListInfoActivity" />

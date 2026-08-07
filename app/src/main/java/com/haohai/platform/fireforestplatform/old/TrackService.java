@@ -36,16 +36,10 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
-import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.PoiInfo;
-import com.baidu.mapapi.search.core.SearchResult;
-import com.baidu.mapapi.search.geocode.GeoCodeResult;
-import com.baidu.mapapi.search.geocode.GeoCoder;
-import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.haohai.platform.fireforestplatform.HhApplication;
 import com.haohai.platform.fireforestplatform.MainActivity;
 import com.haohai.platform.fireforestplatform.R;
@@ -106,11 +100,8 @@ public class TrackService extends Service implements SensorEventListener {
     private static final int GEO_RETRY_TIMES = 60;
     private static final int TRACK_NOTIFICATION_ID = 110;
 
-    public LocationClient mLocationClient = null;
-    private MyLocationListener myListener = new MyLocationListener();
-
-    //地理编码
-    private GeoCoder mSearch;
+    public AMapLocationClient mLocationClient = null;
+    private AMapLocationClientOption mLocationOption;
     private String address = "";
 
 
@@ -136,10 +127,15 @@ public class TrackService extends Service implements SensorEventListener {
     private long lastGeoUploadTime = 0L;
     private Runnable geoRetryRunnable;
     private final OkHttpClient geoHttpClient = new OkHttpClient();
+    private final AMapLocationListener amapLocationListener = new AMapLocationListener() {
+        @Override
+        public void onLocationChanged(AMapLocation aMapLocation) {
+            handleAmapLocation(aMapLocation);
+        }
+    };
     private final Runnable trackRunnable = new Runnable() {
         @Override
         public void run() {
-            search();
             requestTrackLocation();
             parseDistance();
             uploadLocation();
@@ -155,7 +151,7 @@ public class TrackService extends Service implements SensorEventListener {
         initWakeLock();
         //addVirtualLine();
 
-        initBaiduLoc();
+        initAmapLoc();
         uploadQueue();
 
         //检测传感器
@@ -171,62 +167,11 @@ public class TrackService extends Service implements SensorEventListener {
             }
         }
 
-
-        //创建新的地理编码检索实例；
-        mSearch = GeoCoder.newInstance();
-
-
-        //创建地理编码检索监听者；
-        OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
-            @Override
-            public void onGetGeoCodeResult(GeoCodeResult result) {
-                if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-                    //没有检索到结果
-                }
-
-                //获取地理编码结果
-            }
-
-            @Override
-            public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
-                if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-                    //没有找到检索结果
-                }
-
-                //获取反向地理编码结果
-                //      Log.e(TAG, "onGetReverseGeoCodeResult: getAddress ==" + result.getAddress());
-                //    Log.e(TAG, "onGetReverseGeoCodeResult: getBusinessCircle ==" + result.getBusinessCircle());
-                //     Log.e(TAG, "onGetReverseGeoCodeResult: getSematicDescription ==" + result.getSematicDescription());
-                //在result中获取点击最近地址
-                List<PoiInfo> poiList = result.getPoiList();
-                if(poiList==null){
-                    return;
-                }
-                Log.e(TAG, "onGetReverseGeoCodeResult: size " + poiList.size() );
-                if (poiList.size() == 0) {
-                    address = "";
-                } else {
-                    PoiInfo poiInfo = poiList.get(0);
-                    Log.e(TAG, "onGetReverseGeoCodeResult: ----" + poiInfo.toString() );
-                    address = poiInfo.city + poiInfo.address;
-                }
-
-            }
-        };
-        //设置地理编码检索监听者；
-        mSearch.setOnGetGeoCodeResultListener(listener);
-        search();
         lastGeoUploadTime = System.currentTimeMillis();
 
     }
 
     public void search(){
-        try{
-            //发起地理编码检索；
-            mSearch.reverseGeoCode(new ReverseGeoCodeOption().location(new LatLng(CommonData.lat,CommonData.lng)));
-        }catch (Exception e){
-            Log.e(TAG, "search: " + e.getMessage());
-        }
     }
 
     private void uploadQueue() {
@@ -451,6 +396,12 @@ public class TrackService extends Service implements SensorEventListener {
         }
         geoLocationUploading = true;
         HhLog.e("sendGeoLocation " + URLConstant.POST_AMAP_TRACK);
+        HhLog.e("sendGeoLocation points length " +
+                " key , " + CommonData.geoWebKey +
+                " sid , " + CommonData.geoServiceId +
+                " tid , " + CommonData.geoTerminalId +
+                " trid , " + CommonData.geoTraceId
+                );
         HhLog.e("sendGeoLocation points length " + points.length());
         HhLog.e("sendGeoLocation points " + points.toString());
         RequestBody requestBody = new FormBody.Builder()
@@ -568,60 +519,73 @@ public class TrackService extends Service implements SensorEventListener {
         trackHandler.postDelayed(geoRetryRunnable, seconds * 1000L);
     }
 
-    void initBaiduLoc() {
-        mLocationClient = new LocationClient(HhApplication.getInstance());
-        //声明LocationClient类
-        mLocationClient.registerLocationListener(myListener);
-        //注册监听函数
-        LocationClientOption option = new LocationClientOption();
+    void initAmapLoc() {
+        try {
+            AMapLocationClient.updatePrivacyShow(getApplicationContext(), true, true);
+            AMapLocationClient.updatePrivacyAgree(getApplicationContext(), true);
+            mLocationClient = new AMapLocationClient(getApplicationContext());
+            mLocationClient.setLocationListener(amapLocationListener);
 
-        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
-        //可选，设置定位模式，默认高精度
-        //LocationMode.Hight_Accuracy：高精度；
-        //LocationMode. Battery_Saving：低功耗；
-        //LocationMode. Device_Sensors：仅使用设备；
-        //LocationMode.Fuzzy_Locating, 模糊定位模式；v9.2.8版本开始支持，可以降低API的调用频率，但同时也会降低定位精度；
+            mLocationOption = new AMapLocationClientOption();
+            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+            mLocationOption.setOnceLocation(false);
+            mLocationOption.setOnceLocationLatest(false);
+            mLocationOption.setNeedAddress(true);
+            mLocationOption.setInterval(TRACK_INTERVAL_MS);
+            mLocationOption.setHttpTimeOut(20000);
+            mLocationOption.setMockEnable(false);
+            mLocationOption.setLocationCacheEnable(false);
+            mLocationClient.setLocationOption(mLocationOption);
+        } catch (Exception e) {
+            HhLog.e("initAmapLoc " + e.getMessage());
+        }
+    }
 
-        option.setCoorType("bd09ll");
-        //可选，设置返回经纬度坐标类型，默认GCJ02
-        //GCJ02：国测局坐标；
-        //BD09ll：百度经纬度坐标；
-        //BD09：百度墨卡托坐标；
-        //海外地区定位，无需设置坐标类型，统一返回WGS84类型坐标
+    private void handleAmapLocation(AMapLocation location) {
+        if (location == null) {
+            HhLog.e("handleAmapLocation location is null");
+            return;
+        }
+        int errorCode = location.getErrorCode();
+        if (errorCode != 0) {
+            HhLog.e("handleAmapLocation error " + errorCode + " " + location.getErrorInfo());
+            return;
+        }
+        double amapLatitude = location.getLatitude();
+        double amapLongitude = location.getLongitude();
+        if (!isValidLocation(amapLatitude, amapLongitude)) {
+            HhLog.e("handleAmapLocation invalid " + amapLatitude + "," + amapLongitude + "," + location.getAccuracy());
+            return;
+        }
+        double[] bdLocation = LatLngChangeNew.calGCJ02toBD09(amapLatitude, amapLongitude);
+        CommonData.dis_int = 0;
+        CommonData.lat = bdLocation[0];
+        CommonData.lng = bdLocation[1];
+        CommonData.locationRadius = location.getAccuracy();
+        CommonData.locationType = location.getLocationType();
+        CommonData.locationTime = System.currentTimeMillis();
+        if (location.getAddress() != null && location.getAddress().length() > 0) {
+            address = location.getAddress();
+        }
+        HhLog.e("handleAmapLocation amap " + amapLatitude + "," + amapLongitude + " bd " + CommonData.lat + "," + CommonData.lng + "," + location.getAccuracy() + " type=" + location.getLocationType());
+        SPUtils.put(HhApplication.getInstance(), SPValue.latitude,CommonData.lat);
+        SPUtils.put(HhApplication.getInstance(), SPValue.longitude,CommonData.lng);
+    }
 
-        option.setScanSpan(5000);
-        //可选，设置发起定位请求的间隔，int类型，单位ms
-        //如果设置为0，则代表单次定位，即仅定位一次，默认为0
-        //如果设置非0，需设置1000ms以上才有效
-
-        option.setOpenGps(true);
-        //可选，设置是否使用gps，默认false
-        //使用高精度和仅用设备两种定位模式的，参数必须设置为true
-
-        option.setLocationNotify(true);
-        //可选，设置是否当GPS有效时按照1S/1次频率输出GPS结果，默认false
-
-        option.setIgnoreKillProcess(true);
-        //可选，定位SDK内部是一个service，并放到了独立进程。
-        //设置是否在stop的时候杀死这个进程，默认（建议）不杀死，即setIgnoreKillProcess(true)
-
-        option.SetIgnoreCacheException(false);
-        //可选，设置是否收集Crash信息，默认收集，即参数为false
-
-        option.setWifiCacheTimeOut(5 * 60 * 1000);
-        //可选，V7.2版本新增能力
-        //如果设置了该接口，首次启动定位时，会先判断当前Wi-Fi是否超出有效期，若超出有效期，会先重新扫描Wi-Fi，然后定位
-
-        option.setEnableSimulateGps(false);
-        //可选，设置是否需要过滤GPS仿真结果，默认需要，即参数为false
-
-        option.setNeedNewVersionRgc(true);
-        //可选，设置是否需要最新版本的地址信息。默认需要，即参数为true
-
-        mLocationClient.setLocOption(option);
-        //mLocationClient为第二步初始化过的LocationClient对象
-        //需将配置好的LocationClientOption对象，通过setLocOption方法传递给LocationClient对象使用
-        //更多LocationClientOption的配置，请参照类参考中LocationClientOption类的详细说明
+    private boolean isValidLocation(double latitude, double longitude) {
+        if (Double.isNaN(latitude) || Double.isNaN(longitude)) {
+            return false;
+        }
+        if (Double.isInfinite(latitude) || Double.isInfinite(longitude)) {
+            return false;
+        }
+        if (latitude == 0 || longitude == 0) {
+            return false;
+        }
+        if (String.valueOf(latitude).contains("E") || String.valueOf(longitude).contains("E")) {
+            return false;
+        }
+        return latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180;
     }
 
     @Override
@@ -648,15 +612,20 @@ public class TrackService extends Service implements SensorEventListener {
         trackHandler.removeCallbacksAndMessages(null);
         releaseWakeLock();
         releaseAlivePlayer();
-        mLocationClient.stop();
-        myListener = null;
+        stopAmapLocation();
         stopSelf();
     }
 
-    private void getBaiduLocation() {
-        mLocationClient.start();
+    private void getAmapLocation() {
+        if (mLocationClient == null) {
+            initAmapLoc();
+        }
+        if (mLocationClient == null) {
+            return;
+        }
+        mLocationClient.startLocation();
         hasLocationStarted = true;
-        HhLog.e("getBaiduLocation");
+        HhLog.e("getAmapLocation");
     }
 
     private void requestTrackLocation() {
@@ -667,7 +636,7 @@ public class TrackService extends Service implements SensorEventListener {
         }
         try {
             if (!hasLocationStarted) {
-                getBaiduLocation();
+                getAmapLocation();
             } else {
                 requestLocation();
             }
@@ -840,14 +809,34 @@ public class TrackService extends Service implements SensorEventListener {
     }
 
     private void requestLocation() {
-        mLocationClient.requestLocation();
+        if (mLocationClient != null && !mLocationClient.isStarted()) {
+            mLocationClient.startLocation();
+        }
         HhLog.e("requestLocation");
     }
 
     private void reLocation() {
-        mLocationClient.stop();
-        mLocationClient.restart();
+        if (mLocationClient == null) {
+            initAmapLoc();
+        }
+        if (mLocationClient != null) {
+            mLocationClient.stopLocation();
+            mLocationClient.startLocation();
+        }
         HhLog.e("reLocation");
+    }
+
+    private void stopAmapLocation() {
+        try {
+            if (mLocationClient != null) {
+                mLocationClient.stopLocation();
+                mLocationClient.onDestroy();
+                mLocationClient = null;
+            }
+        } catch (Exception e) {
+            HhLog.e("stopAmapLocation " + e.getMessage());
+        }
+        hasLocationStarted = false;
     }
 
 
@@ -1028,10 +1017,7 @@ public class TrackService extends Service implements SensorEventListener {
         if (mSensorManager != null) {
             mSensorManager.unregisterListener(this);
         }
-        if (mLocationClient != null) {
-            mLocationClient.stop();
-        }
-        hasLocationStarted = false;
+        stopAmapLocation();
         releaseWakeLock();
         releaseAlivePlayer();
         if (!isManualStop) {

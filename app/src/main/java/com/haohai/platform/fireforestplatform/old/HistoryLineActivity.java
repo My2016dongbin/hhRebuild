@@ -197,10 +197,27 @@ public class HistoryLineActivity extends BaseActivity implements DatePicker.OnDa
     private final List<String> timeList = new ArrayList<>();
     private final List<LatLng> allList = new ArrayList<>();
     private void postData(){
-        RequestParams params = new RequestParams(URLConstant.HISTORY_LINE + chooseUserId);
-        params.addParameter("id",chooseUserId);
-        params.addParameter("time",tv_date.getText().toString());
-        Log.e(TAG,"postData " + params);
+        RequestParams params = new RequestParams(URLConstant.HISTORY_LINE);
+        JSONObject paramsObj = new JSONObject();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            long startTime = simpleDateFormat.parse(tv_date.getText().toString() + " 00:00:00").getTime();
+            long endTime = simpleDateFormat.parse(tv_date.getText().toString() + " 23:59:59").getTime();
+            if (endTime <= startTime) {
+                Toast.makeText(HistoryLineActivity.this, "结束时间需大于开始时间", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            paramsObj.put("userId",chooseUserId);
+            paramsObj.put("starttime",startTime);
+            paramsObj.put("endtime",endTime);
+        } catch (ParseException | JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(HistoryLineActivity.this, "时间格式错误，请重新选择", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        params.setAsJsonContent(true);
+        params.setBodyContent(paramsObj.toString());
+        Log.e(TAG,"postData " + paramsObj.toString());
         DialogHelper.getInstance().show(this, "正在查询轨迹..");
         HhHttp.postX(params,new Callback.CommonCallback<String>() {
             @Override
@@ -208,18 +225,40 @@ public class HistoryLineActivity extends BaseActivity implements DatePicker.OnDa
                 Log.e(TAG,"postData " + result);
                 try {
                     JSONObject jsonObject = new JSONObject(result);
-                    JSONArray data = jsonObject.getJSONArray("data");
+                    JSONObject resultData = jsonObject.getJSONObject("data");
+                    JSONObject data;
+                    JSONArray tracks = new JSONArray();
+                    try{
+                        data = resultData.getJSONObject("data");
+                        tracks = data.getJSONArray("tracks");
+                    }catch (Exception e){
+                        //
+                    }
 
                     List<com.amap.api.maps.model.LatLng> list = new ArrayList<>();
-                    for (int i = 0; i < data.length(); i++) {
-                        JSONObject obj = (JSONObject) data.get(i);
-                        JSONObject position = obj.getJSONObject("position");
-
-                        double[] doubles = LatLngChangeNew.calWGS84toGCJ02(position.getDouble("lat"), position.getDouble("lng"));
-                        LatLng latLng = new LatLng(doubles[0],doubles[1]);
-                        list.add(latLng);
-                        allList.add(latLng);
-                        timeList.add(obj.getString("offlineUploadTime"));
+                    allList.clear();
+                    timeList.clear();
+                    for (int i = 0; i < tracks.length(); i++) {
+                        JSONObject track = (JSONObject) tracks.get(i);
+                        JSONArray points = track.getJSONArray("points");
+                        for (int j = 0; j < points.length(); j++) {
+                            JSONObject obj = (JSONObject) points.get(j);
+                            String location = obj.getString("location");
+                            String[] locations = location.split(",");
+                            if (locations.length != 2) {
+                                continue;
+                            }
+                            LatLng latLng;
+                            try {
+                                latLng = new LatLng(Double.parseDouble(locations[1]),Double.parseDouble(locations[0]));
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                                continue;
+                            }
+                            list.add(latLng);
+                            allList.add(latLng);
+                            timeList.add(obj.optString("locatetime"));
+                        }
                     }
                     //result_km.setText("1024" + "m");
 

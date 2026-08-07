@@ -23,6 +23,10 @@ public class MyLocationListener extends BDAbstractLocationListener {
 
     @Override
     public void onReceiveLocation(BDLocation location){
+        if (location == null) {
+            Log.e(TAG, "onReceiveLocation: location is null");
+            return;
+        }
         date = new Date();
         //此处的BDLocation为定位结果信息类，通过它的各种get方法可获取定位相关的全部结果
         //以下只列举部分获取经纬度相关（常用）的结果信息
@@ -38,6 +42,10 @@ public class MyLocationListener extends BDAbstractLocationListener {
         int errorCode = location.getLocType();
         //获取定位类型、定位错误返回码，具体信息可参照类参考中BDLocation类中的说明
 
+        if (!isValidLocation(latitude, longitude)) {
+            Log.e(TAG, "onReceiveLocation: invalid location " + latitude + "," + longitude + "," + radius + " locType=" + errorCode);
+            return;
+        }
         if(latitude != 0 && longitude != 0){
             CommonData.dis_int = 0;
             Log.e(TAG, "onReceiveLocation: getTime() " + date.getTime() );
@@ -59,5 +67,21 @@ public class MyLocationListener extends BDAbstractLocationListener {
 
         Log.e(TAG, "onReceiveLocation:经纬度是 " +  latitude +"," +longitude +"," +radius);
         //Toast.makeText(HhApplication.getInstance(), "百度地图 onReceiveLocation: " +  latitude +"," +longitude, Toast.LENGTH_LONG).show();
+    }
+
+    private boolean isValidLocation(double latitude, double longitude) {
+        if (Double.isNaN(latitude) || Double.isNaN(longitude)) {
+            return false;
+        }
+        if (Double.isInfinite(latitude) || Double.isInfinite(longitude)) {
+            return false;
+        }
+        if (latitude == 0 || longitude == 0) {
+            return false;
+        }
+        if (String.valueOf(latitude).contains("E") || String.valueOf(longitude).contains("E")) {
+            return false;
+        }
+        return latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180;
     }
 }

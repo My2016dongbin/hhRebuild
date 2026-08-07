@@ -121,6 +121,7 @@ public class URLConstant {
     public static final String POST_LIVE_UPLOAD = BASE_PATH +"oa/api/taskDetail";//现场上报
     public static final String GET_ONE_BODY_IS_REAL = BASE_PATH +"fire/api/monitorFirealarm/realOrError";//处理一体机火警 真实并下发
     public static final String PUT_ONE_BODY_IS_REAL = BASE_PATH +"fire/api/monitorFirealarm/updateMonitorFireStates";//处理一体机火警 误报
+    public static final String GET_FIRE_TIME_WIRE = BASE_PATH +"fire/api/monitorFirealarm/monitorFireTimeWire?fireId=";//报警处理时间线
 
     public static final String POST_PUSH_FEEDBACK = BASE_PATH +"resource/api/dispatchCommand/receiveFeedback";//推送反馈
 

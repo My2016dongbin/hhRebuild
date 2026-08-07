@@ -23,9 +23,14 @@ import me.drakeet.multitype.ItemViewProvider;
  */
 public class FireEventViewBinder extends ItemViewProvider<FireEvent, FireEventViewBinder.ViewHolder> {
     public Context context;
+    public OnItemClickListener listener;
 
     public FireEventViewBinder(Context context) {
         this.context = context;
+    }
+
+    public void setListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -44,9 +49,30 @@ public class FireEventViewBinder extends ItemViewProvider<FireEvent, FireEventVi
 
         binding.title.setText(fireEvent.getFireName());
         binding.time.setText(parse19(getEventTime(fireEvent)));
-        Glide.with(context).load(fireEvent.getPicPath1())
+        binding.click.setOnClickListener(v -> onItemClick(fireEvent));
+        Glide.with(context).load(getCoverUrl(fireEvent))
                 .error(R.drawable.ic_no_pic)
                 .into(binding.icon);
+    }
+
+    private String getCoverUrl(FireEvent fireEvent) {
+        if(isValidUrl(fireEvent.getPicPath1())){
+            return fireEvent.getPicPath1();
+        }
+        if(isValidUrl(fireEvent.getPicPath2())){
+            return fireEvent.getPicPath2();
+        }
+        if(isValidUrl(fireEvent.getVideoPath1())){
+            return fireEvent.getVideoPath1();
+        }
+        if(isValidUrl(fireEvent.getVideoPath2())){
+            return fireEvent.getVideoPath2();
+        }
+        return "";
+    }
+
+    private boolean isValidUrl(String url) {
+        return url != null && url.length() > 0 && !"null".equals(url) && !"undefined".equals(url);
     }
 
     private String getEventTime(FireEvent fireEvent) {
@@ -79,5 +105,13 @@ public class FireEventViewBinder extends ItemViewProvider<FireEvent, FireEventVi
         public B getBinding() {
             return mBinding;
         }
+    }
+
+    public void onItemClick(FireEvent fireEvent){
+        listener.onItemClick(fireEvent);
+    }
+
+    public interface OnItemClickListener{
+        void onItemClick(FireEvent fireEvent);
     }
 }

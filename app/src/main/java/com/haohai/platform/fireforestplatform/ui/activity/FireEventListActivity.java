@@ -24,7 +24,7 @@ import com.scwang.smartrefresh.layout.listener.SimpleMultiPurposeListener;
 
 import me.drakeet.multitype.MultiTypeAdapter;
 
-public class FireEventListActivity extends BaseLiveActivity<ActivityFireEventListBinding, FireEventListViewModel> {
+public class FireEventListActivity extends BaseLiveActivity<ActivityFireEventListBinding, FireEventListViewModel> implements FireEventViewBinder.OnItemClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,9 @@ public class FireEventListActivity extends BaseLiveActivity<ActivityFireEventLis
             }
         });
 
-        obtainViewModel().adapter.register(FireEvent.class, new FireEventViewBinder(this));
+        FireEventViewBinder fireEventViewBinder = new FireEventViewBinder(this);
+        fireEventViewBinder.setListener(this);
+        obtainViewModel().adapter.register(FireEvent.class, fireEventViewBinder);
         obtainViewModel().adapter.register(Empty.class, new EmptyViewBinder(this));
         binding.recycle.setAdapter(obtainViewModel().adapter);
         assertHasTheSameAdapter(binding.recycle, obtainViewModel().adapter);
@@ -99,5 +101,10 @@ public class FireEventListActivity extends BaseLiveActivity<ActivityFireEventLis
                 binding.fireEventSmart.setEnableLoadMore(true);
             }
         });
+    }
+
+    @Override
+    public void onItemClick(FireEvent fireEvent) {
+        obtainViewModel().onItemClick(fireEvent);
     }
 }

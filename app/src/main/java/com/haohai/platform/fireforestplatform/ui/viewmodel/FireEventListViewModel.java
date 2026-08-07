@@ -3,17 +3,18 @@ package com.haohai.platform.fireforestplatform.ui.viewmodel;
 import static me.drakeet.multitype.MultiTypeAsserts.assertAllRegistered;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.haohai.platform.fireforestplatform.base.BaseViewModel;
 import com.haohai.platform.fireforestplatform.base.LoggedInStringCallback;
 import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.constant.URLConstant;
 import com.haohai.platform.fireforestplatform.event.LoadingEvent;
+import com.haohai.platform.fireforestplatform.ui.activity.FireEventInfoActivity;
 import com.haohai.platform.fireforestplatform.ui.activity.FireEventListActivity;
 import com.haohai.platform.fireforestplatform.ui.bean.FireEventParams;
 import com.haohai.platform.fireforestplatform.ui.multitype.Empty;
@@ -69,12 +70,7 @@ public class FireEventListViewModel extends BaseViewModel {
                                 JSONObject obj = (JSONObject) data.get(0);
                                 int totalSize = obj.optInt("totalSize");
                                 JSONArray dataList = obj.optJSONArray("dataList");
-                                if(dataList != null){
-                                    fireEventList = new Gson().fromJson(String.valueOf(dataList), new TypeToken<List<FireEvent>>() {
-                                    }.getType());
-                                }else{
-                                    fireEventList = new ArrayList<>();
-                                }
+                                fireEventList = parseDataList(dataList);
                                 updateData();
                                 if(items.size() >= totalSize || fireEventList.size() < limit){
                                     loadMore.postValue(0);
@@ -98,6 +94,28 @@ public class FireEventListViewModel extends BaseViewModel {
                         loading.setValue(new LoadingEvent(false));
                     }
                 });
+    }
+
+    private List<FireEvent> parseDataList(JSONArray dataList) {
+        List<FireEvent> list = new ArrayList<>();
+        if(dataList == null){
+            return list;
+        }
+        for (int i = 0; i < dataList.length(); i++) {
+            JSONObject obj = dataList.optJSONObject(i);
+            if(obj != null){
+                FireEvent fireEvent = new Gson().fromJson(String.valueOf(obj), FireEvent.class);
+                fireEvent.setContent(String.valueOf(obj));
+                list.add(fireEvent);
+            }
+        }
+        return list;
+    }
+
+    public void onItemClick(FireEvent fireEvent){
+        Intent intent = new Intent(context, FireEventInfoActivity.class);
+        intent.putExtra("content", fireEvent.getContent());
+        context.startActivity(intent);
     }
 
     public void updateData() {

@@ -12,6 +12,10 @@ public class FireEvent {
     private String reportTime;
     private String createTime;
     private String picPath1;
+    private String picPath2;
+    private String videoPath1;
+    private String videoPath2;
+    private String content;
 
     public String getId() {
         return id;
@@ -59,5 +63,37 @@ public class FireEvent {
 
     public void setPicPath1(String picPath1) {
         this.picPath1 = picPath1;
+    }
+
+    public String getPicPath2() {
+        return picPath2;
+    }
+
+    public void setPicPath2(String picPath2) {
+        this.picPath2 = picPath2;
+    }
+
+    public String getVideoPath1() {
+        return videoPath1;
+    }
+
+    public void setVideoPath1(String videoPath1) {
+        this.videoPath1 = videoPath1;
+    }
+
+    public String getVideoPath2() {
+        return videoPath2;
+    }
+
+    public void setVideoPath2(String videoPath2) {
+        this.videoPath2 = videoPath2;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

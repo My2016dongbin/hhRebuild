@@ -25,6 +25,7 @@ import com.haohai.platform.fireforestplatform.ui.multitype.TaskListViewBinder;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.FireUploadViewModel;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.TaskViewModel;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.scwang.smartrefresh.layout.listener.SimpleMultiPurposeListener;
 
@@ -62,17 +63,22 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
         binding.recycle.setHasFixedSize(true);
         binding.recycle.setNestedScrollingEnabled(false);//设置样式后面的背景颜色
         binding.monitorFireSmart.setRefreshHeader(new ClassicsHeader(this));
+        binding.monitorFireSmart.setRefreshFooter(new ClassicsFooter(this));
+        binding.monitorFireSmart.setEnableLoadMore(true);
 
         //设置监听器，包括顶部下拉刷新、底部上滑刷新
         binding.monitorFireSmart.setOnMultiPurposeListener(new SimpleMultiPurposeListener(){
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                obtainViewModel().page = 1;
                 obtainViewModel().postData();
                 refreshLayout.finishRefresh(1000);
             }
 
             @Override
             public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+                obtainViewModel().page++;
+                obtainViewModel().postData();
                 refreshLayout.finishLoadMore(1000);
             }
         });
@@ -88,6 +94,7 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
     ///推送任务刷新
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetMessage(MessageRefresh event) {
+        obtainViewModel().page = 1;
         obtainViewModel().postData();
     }
 
@@ -116,7 +123,13 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
     @Override
     protected void subscribeObserver() {
         super.subscribeObserver();
-
+        obtainViewModel().loadMore.observe(this, integer -> {
+            if(integer == 0){
+                binding.monitorFireSmart.setEnableLoadMore(false);
+            }else if(integer == 1){
+                binding.monitorFireSmart.setEnableLoadMore(true);
+            }
+        });
     }
 
     @Override

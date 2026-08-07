@@ -25,6 +25,7 @@ import com.haohai.platform.fireforestplatform.ui.multitype.TaskListViewBinder;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.FireUploadViewModel;
 import com.haohai.platform.fireforestplatform.ui.viewmodel.TaskViewModel;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.scwang.smartrefresh.layout.listener.SimpleMultiPurposeListener;
 
@@ -62,6 +63,7 @@ public class TaskActivity extends BaseLiveActivity<ActivityTaskBinding, TaskView
         binding.recycle.setHasFixedSize(true);
         binding.recycle.setNestedScrollingEnabled(false);//设置样式后面的背景颜色
         binding.monitorFireSmart.setRefreshHeader(new ClassicsHeader(this));
+        binding.monitorFireSmart.setRefreshFooter(new ClassicsFooter(this));
 
         //设置监听器，包括顶部下拉刷新、底部上滑刷新
         binding.monitorFireSmart.setOnMultiPurposeListener(new SimpleMultiPurposeListener(){

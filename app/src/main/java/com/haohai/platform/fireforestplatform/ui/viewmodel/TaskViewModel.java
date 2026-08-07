@@ -56,7 +56,20 @@ public class TaskViewModel extends BaseViewModel {
 
     public void postData(){
         loading.setValue(new LoadingEvent(true,"加载中.."));
-        String content = new Gson().toJson(new CommonParams(id,"", (String) SPUtils.get(context, SPValue.groupId, ""),"appInternet",new ArrayList<>()));
+        JSONObject jsonObject = new JSONObject();
+        JSONObject dto = new JSONObject();
+        try {
+            dto.put("groupId", (String) SPUtils.get(context, SPValue.groupId, ""));
+            dto.put("startTime", "");
+            dto.put("endTime", "");
+            dto.put("status", "");
+            dto.put("taskContent", "");
+            jsonObject.put("limit", 20);
+            jsonObject.put("dto", dto);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String content = jsonObject.toString();
         HhHttp.postString()
                 .url(URLConstant.POST_TASK_LIST)
                 .content(content)
@@ -70,8 +83,9 @@ public class TaskViewModel extends BaseViewModel {
                         loading.setValue(new LoadingEvent(false));
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            JSONArray data = jsonObject.getJSONArray("data");
-                            taskLists = new Gson().fromJson(String.valueOf(data), new TypeToken<List<TaskList>>() {
+                            JSONObject data = jsonObject.getJSONObject("data");
+                            JSONArray dataList = data.getJSONArray("dataList");
+                            taskLists = new Gson().fromJson(String.valueOf(dataList), new TypeToken<List<TaskList>>() {
                             }.getType());
                             updateData();
 

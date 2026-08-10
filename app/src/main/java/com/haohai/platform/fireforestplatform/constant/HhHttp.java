@@ -155,6 +155,7 @@ public class HhHttp {
             public void onFailure(Call call, IOException e) {
                 if (isTokenFailure(e)) {
                     sendTokenFailureBroadcast();
+                    return;
                 }
                 if (callback != null) {
                     callback.onFailure(call, e);
@@ -167,9 +168,6 @@ public class HhHttp {
                     sendTokenFailureBroadcast();
                     if (response.body() != null) {
                         response.body().close();
-                    }
-                    if (callback != null) {
-                        callback.onFailure(call, new IOException("request failed , reponse's code is : " + response.code()));
                     }
                     return;
                 }
@@ -193,6 +191,7 @@ public class HhHttp {
             public void onError(Throwable ex, boolean isOnCallback) {
                 if (isTokenFailure(ex)) {
                     sendTokenFailureBroadcast();
+                    return;
                 }
                 if (callback != null) {
                     callback.onError(ex, isOnCallback);

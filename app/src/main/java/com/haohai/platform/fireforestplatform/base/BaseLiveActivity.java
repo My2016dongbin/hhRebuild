@@ -80,6 +80,15 @@ public abstract class BaseLiveActivity<T extends ViewDataBinding, V extends Base
        // unregisterReceiver(mBroadcast);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mBroadcast != null) {
+            unregisterReceiver(mBroadcast);
+            mBroadcast = null;
+        }
+    }
+
     /**
      * 绑定视图
      *
@@ -131,6 +140,7 @@ public abstract class BaseLiveActivity<T extends ViewDataBinding, V extends Base
         @Override
         public void onReceive(Context context, Intent intent) {
             HhLog.e("hh","登录失效");
+            DialogHelper.getInstance().close();
             SPUtils.put(getApplicationContext(), SPValue.login, false);
             SPUtils.put(getApplicationContext(), SPValue.token, "");
             CommonData.clear();
@@ -142,7 +152,7 @@ public abstract class BaseLiveActivity<T extends ViewDataBinding, V extends Base
             long nowTime = System.currentTimeMillis();
             if (nowTime - tokenFailureTime > TOKEN_FAILURE_INTERVAL) {
                 tokenFailureTime = nowTime;
-                Toast.makeText(BaseLiveActivity.this, "登录失效，请重新登录", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BaseLiveActivity.this, "登录信息失效，请重新登录", Toast.LENGTH_SHORT).show();
                 Intent loginIntent = new Intent(BaseLiveActivity.this, LoginActivity.class);
                 loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(loginIntent);

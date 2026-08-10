@@ -31,6 +31,7 @@ public abstract class LoggedInStringCallback extends Callback<String> {
         HhLog.e("onError:" + e.toString());
         if (HhHttp.isTokenFailure(e)) {
             HhHttp.sendTokenFailureBroadcast();
+            return;
         }
         onFailure(call, e, id);
     }

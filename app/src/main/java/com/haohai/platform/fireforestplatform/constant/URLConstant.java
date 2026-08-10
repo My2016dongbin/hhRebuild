@@ -25,7 +25,8 @@ public class URLConstant {
     //登录相关
     public static final String GET_NAME = BASE_PATH + "auth/api/platformConfig/getDefaultConfigNotLogin";//获取项目名称
     public static final String GET_NAME_BY_TOKEN = BASE_PATH + "auth/api/platformConfig/getDefaultConfig";//获取项目名称
-    public static final String GET_LOGIN = BASE_PATH + "auth/oauth/token";//登录
+//    public static final String GET_LOGIN = BASE_PATH + "auth/oauth/token";//登录
+    public static final String GET_LOGIN = BASE_PATH + "auth/api/auth/user/appLogin";//登录
     public static final String GET_USER_INFO = BASE_PATH + "auth/api/auth/user/get/userinfo";//个人信息
     public static final String GET_USER_AREA_NEW = BASE_PATH + "auth/api/auth/user/get/userAreaNew";//用户地图边界线
     

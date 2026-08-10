@@ -1,11 +1,10 @@
 package com.haohai.platform.fireforestplatform.base;
 
 import android.content.Context;
-import android.content.Intent;
 
 import com.alibaba.fastjson.JSON;
+import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
-import com.haohai.platform.fireforestplatform.utils.SPValue;
 import com.zhy.http.okhttp.callback.Callback;
 
 import java.io.IOException;
@@ -30,6 +29,9 @@ public abstract class LoggedInStringCallback extends Callback<String> {
     @Override
     public void onError(Call call, Exception e, int id) {
         HhLog.e("onError:" + e.toString());
+        if (HhHttp.isTokenFailure(e)) {
+            HhHttp.sendTokenFailureBroadcast();
+        }
         onFailure(call, e, id);
     }
 

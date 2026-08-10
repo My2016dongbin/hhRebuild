@@ -15,6 +15,7 @@ import com.cretin.www.cretinautoupdatelibrary.utils.AppUpdateUtils;
 import com.cretin.www.cretinautoupdatelibrary.utils.SSLUtils;
 import com.github.piasy.biv.BigImageViewer;
 import com.github.piasy.biv.loader.glide.GlideImageLoader;
+import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.utils.OkHttp3Connection;
 import com.kongzue.dialogx.DialogX;
 import com.kongzue.dialogx.style.IOSStyle;
@@ -29,12 +30,16 @@ import com.tencent.smtt.export.external.TbsCoreSettings;
 import com.tencent.smtt.sdk.QbSdk;
 import com.zhy.http.okhttp.OkHttpUtils;
 
+import org.xutils.http.request.UriRequestFactory;
 import org.xutils.x;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Response;
 
 public class HhApplication extends Application {
     private boolean isLoadTBS = false; // 是否成功加载
@@ -68,10 +73,21 @@ public class HhApplication extends Application {
 
         //初始化xUtils
         x.Ext.init(this);
+        UriRequestFactory.registerDefaultTrackerClass(HhHttp.TokenFailureRequestTracker.class);
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(30000L, TimeUnit.MILLISECONDS)
                 .readTimeout(30000L, TimeUnit.MILLISECONDS)
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Response response = chain.proceed(chain.request());
+                        if (HhHttp.isTokenFailure(response)) {
+                            HhHttp.sendTokenFailureBroadcast();
+                        }
+                        return response;
+                    }
+                })
                 //其他配置
                 .build();
 

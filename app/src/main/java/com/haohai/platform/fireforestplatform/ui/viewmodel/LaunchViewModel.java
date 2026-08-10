@@ -49,17 +49,21 @@ public class LaunchViewModel extends BaseViewModel {
                         HhLog.e("onSuccess: GET_LOGIN = " + response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            CommonData.token = jsonObject.getString("access_token");
-                            SPUtils.put(HhApplication.getInstance(), SPValue.token, CommonData.token);
-                            SPUtils.put(HhApplication.getInstance(), SPValue.userName, userName);
-                            SPUtils.put(HhApplication.getInstance(), SPValue.password, password);
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    context.startActivity(new Intent(context, MainActivity.class));
-                                    ((LaunchActivity)context).finish();
-                                }
-                            },2000);
+                            JSONArray data = jsonObject.getJSONArray("data");
+                            if(data.length()>0) {
+                                JSONObject obj = (JSONObject) data.get(0);
+                                CommonData.token = obj.getString("access_token");
+                                SPUtils.put(HhApplication.getInstance(), SPValue.token, CommonData.token);
+                                SPUtils.put(HhApplication.getInstance(), SPValue.userName, userName);
+                                SPUtils.put(HhApplication.getInstance(), SPValue.password, password);
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        context.startActivity(new Intent(context, MainActivity.class));
+                                        ((LaunchActivity)context).finish();
+                                    }
+                                },2000);
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

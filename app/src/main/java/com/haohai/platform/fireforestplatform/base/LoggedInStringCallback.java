@@ -30,7 +30,7 @@ public abstract class LoggedInStringCallback extends Callback<String> {
     public void onError(Call call, Exception e, int id) {
         HhLog.e("onError:" + e.toString());
         if (HhHttp.isTokenFailure(e)) {
-            HhHttp.sendTokenFailureBroadcast();
+            HhHttp.sendTokenFailureBroadcast(HhHttp.getTokenFailureMessage(e));
             return;
         }
         onFailure(call, e, id);

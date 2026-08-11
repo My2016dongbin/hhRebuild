@@ -16,6 +16,7 @@ import org.xutils.http.app.RequestTracker;
 import org.xutils.http.request.UriRequest;
 import org.xutils.x;
 import org.xutils.ex.HttpException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +37,9 @@ import okhttp3.Response;
  */
 public class HhHttp {
     public static final int TOKEN_FAILURE_CODE = 417;
+    public static final String TOKEN_FAILURE_MESSAGE = "token_failure_message";
     private static final long TOKEN_FAILURE_INTERVAL = 1500L;
+    private static final long TOKEN_FAILURE_BODY_MAX_LENGTH = 1024 * 1024L;
     private static final String TOKEN_FAILURE_MSG = "reponse's code is : " + TOKEN_FAILURE_CODE;
     private static long tokenFailureBroadcastTime = 0L;
 
@@ -139,6 +142,10 @@ public class HhHttp {
     }
 
     public static void sendTokenFailureBroadcast() {
+        sendTokenFailureBroadcast(null);
+    }
+
+    public static void sendTokenFailureBroadcast(String msg) {
         long nowTime = System.currentTimeMillis();
         synchronized (HhHttp.class) {
             if (nowTime - tokenFailureBroadcastTime < TOKEN_FAILURE_INTERVAL) {
@@ -146,7 +153,39 @@ public class HhHttp {
             }
             tokenFailureBroadcastTime = nowTime;
         }
-        HhApplication.getInstance().sendBroadcast(new android.content.Intent().setAction(SPValue.TOKEN_FAILURE));
+        android.content.Intent intent = new android.content.Intent().setAction(SPValue.TOKEN_FAILURE);
+        if (msg != null && !msg.isEmpty()) {
+            intent.putExtra(TOKEN_FAILURE_MESSAGE, msg);
+        }
+        HhApplication.getInstance().sendBroadcast(intent);
+    }
+
+    public static String getTokenFailureMessage(Throwable e) {
+        if (e instanceof HttpException) {
+            return getTokenFailureMessage(((HttpException) e).getResult());
+        }
+        return "";
+    }
+
+    public static String getTokenFailureMessage(Response response) {
+        try {
+            if (response != null && response.body() != null) {
+                return getTokenFailureMessage(response.peekBody(TOKEN_FAILURE_BODY_MAX_LENGTH).string());
+            }
+        } catch (Exception ignored) {
+        }
+        return "";
+    }
+
+    private static String getTokenFailureMessage(String result) {
+        try {
+            if (result != null && !result.isEmpty()) {
+                JSONObject jsonObject = new JSONObject(result);
+                return jsonObject.optString("message", "");
+            }
+        } catch (Exception ignored) {
+        }
+        return "";
     }
 
     private static Callback getCallback(final Callback callback) {
@@ -154,7 +193,7 @@ public class HhHttp {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (isTokenFailure(e)) {
-                    sendTokenFailureBroadcast();
+                    sendTokenFailureBroadcast(getTokenFailureMessage(e));
                     return;
                 }
                 if (callback != null) {
@@ -165,7 +204,7 @@ public class HhHttp {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (isTokenFailure(response)) {
-                    sendTokenFailureBroadcast();
+                    sendTokenFailureBroadcast(getTokenFailureMessage(response));
                     if (response.body() != null) {
                         response.body().close();
                     }
@@ -190,7 +229,7 @@ public class HhHttp {
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 if (isTokenFailure(ex)) {
-                    sendTokenFailureBroadcast();
+                    sendTokenFailureBroadcast(getTokenFailureMessage(ex));
                     return;
                 }
                 if (callback != null) {
@@ -242,7 +281,7 @@ public class HhHttp {
         @Override
         public void onError(UriRequest request, Throwable ex, boolean isCallbackError) {
             if (isTokenFailure(ex)) {
-                sendTokenFailureBroadcast();
+                sendTokenFailureBroadcast(getTokenFailureMessage(ex));
             }
         }
 

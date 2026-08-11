@@ -83,7 +83,7 @@ public class HhApplication extends Application {
                     public Response intercept(Chain chain) throws IOException {
                         Response response = chain.proceed(chain.request());
                         if (HhHttp.isTokenFailure(response)) {
-                            HhHttp.sendTokenFailureBroadcast();
+                            HhHttp.sendTokenFailureBroadcast(HhHttp.getTokenFailureMessage(response));
                         }
                         return response;
                     }

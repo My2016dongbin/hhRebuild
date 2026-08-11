@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.ViewDataBinding;
 
 import com.haohai.platform.fireforestplatform.R;
+import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.helper.DialogHelper;
 import com.haohai.platform.fireforestplatform.ui.activity.LoginActivity;
 import com.haohai.platform.fireforestplatform.utils.CommonData;
@@ -152,7 +153,8 @@ public abstract class BaseLiveActivity<T extends ViewDataBinding, V extends Base
             long nowTime = System.currentTimeMillis();
             if (nowTime - tokenFailureTime > TOKEN_FAILURE_INTERVAL) {
                 tokenFailureTime = nowTime;
-                Toast.makeText(BaseLiveActivity.this, "登录信息失效，请重新登录", Toast.LENGTH_SHORT).show();
+                String msg = intent.getStringExtra(HhHttp.TOKEN_FAILURE_MESSAGE);
+                Toast.makeText(BaseLiveActivity.this, msg == null || msg.isEmpty() ? "登录信息失效，请重新登录" : msg, Toast.LENGTH_SHORT).show();
                 Intent loginIntent = new Intent(BaseLiveActivity.this, LoginActivity.class);
                 loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(loginIntent);

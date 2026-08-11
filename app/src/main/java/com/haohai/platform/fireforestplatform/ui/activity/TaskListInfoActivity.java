@@ -269,7 +269,9 @@ public class TaskListInfoActivity extends BaseLiveActivity<ActivityTaskListInfoB
         if(Objects.equals(taskType, "3")){
             type = "扑救任务";
         }
-        if(Objects.equals(taskType, "2")){
+        else if(Objects.equals(taskType, "2")){
+            type = "火情排查任务";
+        }else{
             type = "火情排查任务";
         }
         /*if(Objects.equals(taskType, "666")){

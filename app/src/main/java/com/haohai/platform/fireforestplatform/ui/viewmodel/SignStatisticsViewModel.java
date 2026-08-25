@@ -67,15 +67,18 @@ public class SignStatisticsViewModel extends BaseViewModel {
     public void postData(){
         loading.setValue(new LoadingEvent(true,"加载中.."));
         String content = new Gson().toJson(new StatisticsParams(page,limit,new StatisticsParams.Dto(date.toString(),endDate.toString(),new ArrayList<>(),attendanceStatus)));
+        HhLog.e("POST_SIGN_STATISTICS " + URLConstant.POST_SIGN_STATISTICS);
+        HhLog.e("POST_SIGN_STATISTICS " + content);
         HhHttp.postString()
                 .url(URLConstant.POST_SIGN_STATISTICS)
                 .content(content)
                 .build()
-                .connTimeOut(10000)
+                .connTimeOut(30000)
+                .readTimeOut(30000)
+                .writeTimeOut(30000)
                 .execute(new LoggedInStringCallback(this,context) {
                     @Override
                     public void onSuccess(String response, int id) {
-                        HhLog.e("POST_SIGN_STATISTICS " + content);
                         HhLog.e("POST_SIGN_STATISTICS " + response);
                         loading.setValue(new LoadingEvent(false));
                         try {

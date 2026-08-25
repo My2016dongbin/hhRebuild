@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -97,7 +98,17 @@ public class ResourceDetailDialog extends Dialog implements INaviInfoCallback {
         }catch (Exception e){
             binding.lngLat.setText("暂无数据");
         }
+        binding.person.setText(CommonUtil.parseNullString(resource.getLeaderName(),"暂无"));
         binding.address.setText(CommonUtil.parseNullString(resource.getAddress(),"暂无地址"));
+        binding.call.setOnClickListener(v -> {
+            if(resource.getLeaderPhone()!=null && (!resource.getLeaderPhone().isEmpty())){
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + resource.getLeaderPhone()));
+                context.startActivity(intent);
+            }else{
+                Toast.makeText(context, "暂无负责人电话", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private String parse10(String s) {

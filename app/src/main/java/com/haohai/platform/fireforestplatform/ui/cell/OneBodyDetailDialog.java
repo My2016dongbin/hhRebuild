@@ -186,6 +186,7 @@ public class OneBodyDetailDialog extends Dialog implements INaviInfoCallback {
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
     private void updateData() {
         binding.name.setText(oneBodyFire.getName());
+        binding.tagHand.setVisibility(Objects.equals(oneBodyFire.getIsManual(), "true")? View.VISIBLE : View.GONE);
         binding.date.setText(StringData.parse19(oneBodyFire.getAlarmDatetime()));
         binding.lngLat.setText(oneBodyFire.getAlarmLongitude() + "、" + oneBodyFire.getAlarmLatitude());
         binding.address.setText(oneBodyFire.getAddress());

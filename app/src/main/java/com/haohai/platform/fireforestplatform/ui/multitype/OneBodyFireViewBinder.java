@@ -3,6 +3,7 @@ package com.haohai.platform.fireforestplatform.ui.multitype;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -57,6 +58,7 @@ public class OneBodyFireViewBinder extends ItemViewProvider<OneBodyFire, OneBody
         binding.executePendingBindings(); //防止闪烁
 
         binding.name.setText(oneBodyFire.getName());
+        binding.tagHand.setVisibility(Objects.equals(oneBodyFire.getIsManual(), "true")? View.VISIBLE : View.GONE);
         binding.date.setText(parse19(oneBodyFire.getAlarmDatetime()));
         binding.lngLat.setText(oneBodyFire.getAlarmLongitude()+"、"+oneBodyFire.getAlarmLatitude());
         binding.address.setText(oneBodyFire.getAddress());

@@ -35,7 +35,8 @@
 
             <TextView
                 android:id="@+id/name"
-                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:maxLines="1"
@@ -43,6 +44,15 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="15dp"
                 android:textColor="@color/text_color3"/>
+            <TextView
+                android:id="@+id/tag_hand"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:text="手动报警"
+                android:layout_marginEnd="15dp"
+                android:textColor="@color/text_red"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

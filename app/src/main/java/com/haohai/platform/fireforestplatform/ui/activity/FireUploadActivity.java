@@ -106,6 +106,8 @@ public class FireUploadActivity extends BaseLiveActivity<ActivityFireUploadBindi
 
     private void init_() {
         binding.topBar.title.setText("事件上报");
+        binding.topBar.right.setText("事件列表");
+        binding.topBar.right.setOnClickListener(v -> startActivity(new Intent(this, FireEventListActivity.class)));
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         binding.photeRecycle.setLayoutManager(gridLayoutManager);

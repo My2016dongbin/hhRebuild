@@ -75,6 +75,7 @@ public class FgMapViewModel extends BaseViewModel {
     public final MutableLiveData<List<Resource>> resourceList = new MutableLiveData<>();
     public final MutableLiveData<List<SatelliteFire>> satelliteList = new MutableLiveData<>();
     public final MutableLiveData<List<TeamMate>> teamMateList = new MutableLiveData<>();
+    public final MutableLiveData<List<List<ArrayList<Double>>>> userAreaList = new MutableLiveData<>();
     public void start(Context context){
         this.context = context;
     }
@@ -90,6 +91,91 @@ public class FgMapViewModel extends BaseViewModel {
         getSatelliteData(startTime,endTime);
         initGridIntoDb();
         initSheQuGrid();
+        getUserAreaData();
+    }
+
+    public void getUserAreaData() {
+        RequestParams params = new RequestParams(URLConstant.GET_USER_AREA_NEW);
+        HhHttp.getX(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    HhLog.e("getUserAreaData " + result);
+                    JSONObject jsonObject = new JSONObject(result);
+                    JSONArray data = jsonObject.optJSONArray("data");
+                    List<List<ArrayList<Double>>> pointList = new ArrayList<>();
+                    if(data != null){
+                        for (int i = 0; i < data.length(); i++) {
+                            JSONObject obj = data.optJSONObject(i);
+                            if(obj == null){
+                                continue;
+                            }
+                            String areasPoint = obj.optString("areasPoint");
+                            if(areasPoint == null || areasPoint.isEmpty() || Objects.equals(areasPoint, "null")){
+                                continue;
+                            }
+                            JSONObject areasObj = new JSONObject(areasPoint);
+                            JSONArray features = areasObj.optJSONArray("features");
+                            if(features == null){
+                                continue;
+                            }
+                            for (int j = 0; j < features.length(); j++) {
+                                JSONObject feature = features.optJSONObject(j);
+                                if(feature == null){
+                                    continue;
+                                }
+                                JSONObject geometry = feature.optJSONObject("geometry");
+                                if(geometry == null){
+                                    continue;
+                                }
+                                JSONArray coordinates = geometry.optJSONArray("coordinates");
+                                if(coordinates != null){
+                                    List<ArrayList<Double>> areaPointList = new ArrayList<>();
+                                    parseAreaCoordinates(coordinates, areaPointList);
+                                    if(areaPointList.size() >= 2){
+                                        pointList.add(areaPointList);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    userAreaList.postValue(pointList);
+                } catch (Exception e) {
+                    HhLog.e("getUserAreaData catch " + e);
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                HhLog.e("getUserAreaData onError " + ex);
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+    }
+
+    private void parseAreaCoordinates(JSONArray coordinates, List<ArrayList<Double>> pointList) {
+        if(coordinates.length() >= 2 && coordinates.opt(0) instanceof Number && coordinates.opt(1) instanceof Number){
+            ArrayList<Double> point = new ArrayList<>();
+            point.add(coordinates.optDouble(0));
+            point.add(coordinates.optDouble(1));
+            pointList.add(point);
+            return;
+        }
+        for (int i = 0; i < coordinates.length(); i++) {
+            JSONArray item = coordinates.optJSONArray(i);
+            if(item != null){
+                parseAreaCoordinates(item, pointList);
+            }
+        }
     }
 
     public void initSheQuGrid(){

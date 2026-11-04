@@ -209,7 +209,7 @@
                                         android:id="@+id/qu_text"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:hint="请选择区"
+                                        android:text="请选择区"
                                         android:paddingBottom="5dp"
                                         android:paddingLeft="5dp"
                                         android:paddingRight="5dp"

@@ -30,6 +30,7 @@ import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Poi;
@@ -122,6 +123,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private Polyline areaPolyline;
     private Polygon areaPolygon;
     private Text areaText;
+    private boolean hasMoveToUserArea = false;
+    private final List<Polyline> userAreaPolylines = new ArrayList<>();
     private final Handler teamLocationHandler = new Handler();
     private final Runnable teamLocationRunnable = new Runnable() {
         @Override
@@ -348,10 +351,10 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_SATELLITE_SETTING) && !CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_SATELLITE_LIST) && !CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_SATELLITE_SEARCH)){
             binding.viewSatellite.setVisibility(View.GONE);
         }
-        if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_Grid_COMMUNITY)){
+        //if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_Grid_COMMUNITY)){
             binding.viewGridShequ.setVisibility(View.GONE);
             binding.viewGridAll.setVisibility(View.GONE);
-        }
+        //}
         if(!CommonPermission.hasPermission(requireActivity(),CommonPermission.MAP_TASK)){
             binding.viewTask.setVisibility(View.GONE);
         }
@@ -445,7 +448,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
 
         //跳转当前位置
         new Handler().postDelayed(() -> {
-            if(CommonData.lat!=0 && (obtainViewModel().oneBodyList.getValue()==null||obtainViewModel().oneBodyList.getValue().isEmpty())) {
+            if(CommonData.lat!=0 && !hasUserAreaPoints() && (obtainViewModel().oneBodyList.getValue()==null||obtainViewModel().oneBodyList.getValue().isEmpty())) {
                 flyBaiduMapZoom(CommonData.lat, CommonData.lng, 14);
             }
         }, 3000);
@@ -505,6 +508,13 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         obtainViewModel().resourceList.observe(requireActivity(), this::resourceChanged);
         //队友位置数据
         obtainViewModel().teamMateList.observe(requireActivity(), this::teamMateChanged);
+        //用户地图边界线
+        obtainViewModel().userAreaList.observe(requireActivity(), this::userAreaChanged);
+    }
+
+    private void userAreaChanged(List<List<ArrayList<Double>>> points) {
+        redrawUserAreaOverlays();
+        moveToUserArea(points);
     }
 
     private void oneBodyFireChanged(List<OneBodyFire> oneBodyFires) {
@@ -514,6 +524,9 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //更新所有Marker
         updateMarkers();
         //跳转第一火点
+        if(hasUserAreaPoints()){
+            return;
+        }
         try{
             OneBodyFire oneBody = oneBodyFires.get(0);
             double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(oneBody.getAlarmLatitude()), Double.parseDouble(oneBody.getAlarmLongitude()));
@@ -544,6 +557,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         if(teamLocationEnabled && obtainViewModel().teamMateList.getValue()!=null){
             teamMateMarker(Objects.requireNonNull(obtainViewModel().teamMateList.getValue()));
         }
+        redrawUserAreaOverlays();
         redrawMeasureOverlays();
     }
 
@@ -554,6 +568,9 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         //更新所有Marker
         updateMarkers();
         //跳转第一火点
+        if(hasUserAreaPoints()){
+            return;
+        }
         try{
             SatelliteFire satellite = satelliteFires.get(0);
             double[] doubles = LatLngChangeNew.calWGS84toGCJ02(Double.parseDouble(satellite.getLatitude()), Double.parseDouble(satellite.getLongitude()));
@@ -566,6 +583,9 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         obtainViewModel().aMap.clear();
         //更新所有Marker
         updateMarkers();
+        if(hasUserAreaPoints()){
+            return;
+        }
         //跳转第一火点
         long now = new Date().getTime();
         if(now - CommonData.longAdding < 5000){
@@ -674,6 +694,72 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         flyBaiduMapZoom(latLng.latitude,latLng.longitude,16);
         //隐藏Dialog
         sheQuListDialog.hide();
+    }
+
+    private void redrawUserAreaOverlays() {
+        for (Polyline polyline : userAreaPolylines) {
+            polyline.remove();
+        }
+        userAreaPolylines.clear();
+        List<List<ArrayList<Double>>> points = obtainViewModel().userAreaList.getValue();
+        if(points == null || points.isEmpty()){
+            return;
+        }
+        for (List<ArrayList<Double>> point : points) {
+            List<LatLng> latLngList = parseUserAreaLatLng(point);
+            if(latLngList.size() < 2){
+                continue;
+            }
+            userAreaPolylines.add(obtainViewModel().aMap.addPolyline(new PolylineOptions()
+                    .addAll(latLngList)
+                    .width(8)
+                    .color(Color.parseColor("#FF2D8CFF"))));
+        }
+    }
+
+    private List<LatLng> parseUserAreaLatLng(List<ArrayList<Double>> points) {
+        List<LatLng> latLngList = new ArrayList<>();
+        for (ArrayList<Double> point : points) {
+            try {
+                if(point == null || point.size() < 2){
+                    continue;
+                }
+                double[] doubles = LatLngChangeNew.calWGS84toGCJ02(point.get(1), point.get(0));
+                latLngList.add(new LatLng(doubles[0], doubles[1]));
+            } catch (Exception e) {
+                HhLog.e("parseUserAreaLatLng " + e.getMessage());
+            }
+        }
+        return latLngList;
+    }
+
+    private void moveToUserArea(List<List<ArrayList<Double>>> points) {
+        if(hasMoveToUserArea || points == null || points.isEmpty()){
+            return;
+        }
+        try {
+            LatLngBounds.Builder builder = LatLngBounds.builder();
+            int pointSize = 0;
+            for (List<ArrayList<Double>> point : points) {
+                List<LatLng> latLngList = parseUserAreaLatLng(point);
+                for (LatLng latLng : latLngList) {
+                    builder.include(latLng);
+                    pointSize++;
+                }
+            }
+            if(pointSize < 2){
+                return;
+            }
+            hasMoveToUserArea = true;
+            new Handler().postDelayed(() -> obtainViewModel().aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 80)), 300);
+        } catch (Exception e) {
+            HhLog.e("moveToUserArea " + e.getMessage());
+        }
+    }
+
+    private boolean hasUserAreaPoints() {
+        List<List<ArrayList<Double>>> points = obtainViewModel().userAreaList.getValue();
+        return points != null && !points.isEmpty();
     }
     private void satelliteMarker(List<SatelliteFire> satelliteFires) {
         ArrayList<MarkerOptions> options = new ArrayList<>();

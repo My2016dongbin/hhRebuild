@@ -25,8 +25,10 @@ public class URLConstant {
     //登录相关
     public static final String GET_NAME = BASE_PATH + "auth/api/platformConfig/getDefaultConfigNotLogin";//获取项目名称
     public static final String GET_NAME_BY_TOKEN = BASE_PATH + "auth/api/platformConfig/getDefaultConfig";//获取项目名称
-    public static final String GET_LOGIN = BASE_PATH + "auth/oauth/token";//登录
+//    public static final String GET_LOGIN = BASE_PATH + "auth/oauth/token";//登录
+    public static final String GET_LOGIN = BASE_PATH + "auth/api/auth/user/appLogin";//登录
     public static final String GET_USER_INFO = BASE_PATH + "auth/api/auth/user/get/userinfo";//个人信息
+    public static final String GET_USER_AREA_NEW = BASE_PATH + "auth/api/auth/user/get/userAreaNew";//用户地图边界线
     
     public static final String GET_VERSION = BASE_PATH + "auth/api/androidUpgrade/getCurrent";//版本信息
     public static final String HISTORY_LINE = BASE_PATH + "oa/api/trajectory/userTrajectoryByTime/";//查询轨迹
@@ -66,6 +68,7 @@ public class URLConstant {
     public static final String POST_PICTURE = /*"http://117.132.5.139:8011/"*/ BASE_PATH +"oa/api/workReport/fileUploadAnByNotToken";//上传图片
     public static final String POST_HIDDEN_DANGER = BASE_PATH +"fire/api/dangerCheck";//隐患排查提交
     public static final String POST_FIRE_UPLOAD = BASE_PATH +"fire/api/reportFirealarm";//火情上报提交
+    public static final String POST_FIRE_EVENT_LIST = BASE_PATH +"fire/api/reportFirealarm/getFirePage?fireIds=";//火情上报列表
 
     public static final String PUT_CHANGE_PASSWORD = BASE_PATH +"auth/api/auth/user/modfiy/passwd";//修改密码
 
@@ -110,7 +113,7 @@ public class URLConstant {
     public static final String GET_GRID_TREES = BASE_PATH +"resource/api/grid/listGridNewTrees";//网格(防火员)
     public static final String POST_GRID_TREES = BASE_PATH +"resource/api/grid/gridUser/list";//网格(防火员)
 
-    public static final String POST_TASK_LIST = BASE_PATH +"oa/api/taskManagement/listNew?type=appInternet";//任务列表
+    public static final String POST_TASK_LIST = BASE_PATH +"oa/api/taskManagement/page";//任务列表
     public static final String GET_TASK_INFO = BASE_PATH +"oa/api/taskManagement?type=appInternet";//获取任务详情
     public static final String PUT_TASK_STATE = BASE_PATH +"oa/api/taskManagement";//改变任务单状态
     public static final String POST_TASK_ROOM = BASE_PATH +"resource/api/meeting/room/plot/step/list";//任务查询房间id
@@ -119,6 +122,7 @@ public class URLConstant {
     public static final String POST_LIVE_UPLOAD = BASE_PATH +"oa/api/taskDetail";//现场上报
     public static final String GET_ONE_BODY_IS_REAL = BASE_PATH +"fire/api/monitorFirealarm/realOrError";//处理一体机火警 真实并下发
     public static final String PUT_ONE_BODY_IS_REAL = BASE_PATH +"fire/api/monitorFirealarm/updateMonitorFireStates";//处理一体机火警 误报
+    public static final String GET_FIRE_TIME_WIRE = BASE_PATH +"fire/api/monitorFirealarm/monitorFireTimeWire?fireId=";//报警处理时间线
 
     public static final String POST_PUSH_FEEDBACK = BASE_PATH +"resource/api/dispatchCommand/receiveFeedback";//推送反馈
 

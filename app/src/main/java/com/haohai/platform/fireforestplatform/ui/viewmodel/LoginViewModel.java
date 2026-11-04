@@ -95,11 +95,15 @@ public class LoginViewModel extends BaseViewModel {
                         Log.e("TAG", "onSuccess: login = " + response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            CommonData.token = jsonObject.getString("access_token");
-                            SPUtils.put(HhApplication.getInstance(), SPValue.token, CommonData.token);
-                            SPUtils.put(HhApplication.getInstance(), SPValue.userName, userName);
-                            SPUtils.put(HhApplication.getInstance(), SPValue.password, password);
-                            getUserInfo();
+                            JSONArray data = jsonObject.getJSONArray("data");
+                            if(data.length()>0){
+                                JSONObject obj = (JSONObject) data.get(0);
+                                CommonData.token = obj.getString("access_token");
+                                SPUtils.put(HhApplication.getInstance(), SPValue.token, CommonData.token);
+                                SPUtils.put(HhApplication.getInstance(), SPValue.userName, userName);
+                                SPUtils.put(HhApplication.getInstance(), SPValue.password, password);
+                                getUserInfo();
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

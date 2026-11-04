@@ -18,7 +18,10 @@ import androidx.annotation.Nullable;
 import androidx.databinding.ViewDataBinding;
 
 import com.haohai.platform.fireforestplatform.R;
+import com.haohai.platform.fireforestplatform.constant.HhHttp;
 import com.haohai.platform.fireforestplatform.helper.DialogHelper;
+import com.haohai.platform.fireforestplatform.ui.activity.LoginActivity;
+import com.haohai.platform.fireforestplatform.utils.CommonData;
 import com.haohai.platform.fireforestplatform.utils.HhLog;
 import com.haohai.platform.fireforestplatform.utils.HhToast;
 import com.haohai.platform.fireforestplatform.utils.SPUtils;
@@ -27,7 +30,9 @@ import com.haohai.platform.fireforestplatform.utils.SPValue;
 public abstract class BaseLiveActivity<T extends ViewDataBinding, V extends BaseViewModel> extends BaseActivity {
     protected T binding;
 
-      private TokenFailureBroadcast mBroadcast;
+    private static final long TOKEN_FAILURE_INTERVAL = 1500L;
+    private static long tokenFailureTime = 0L;
+    private TokenFailureBroadcast mBroadcast;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +79,15 @@ public abstract class BaseLiveActivity<T extends ViewDataBinding, V extends Base
         super.onStop();
         //注销广播
        // unregisterReceiver(mBroadcast);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mBroadcast != null) {
+            unregisterReceiver(mBroadcast);
+            mBroadcast = null;
+        }
     }
 
     /**
@@ -127,7 +141,25 @@ public abstract class BaseLiveActivity<T extends ViewDataBinding, V extends Base
         @Override
         public void onReceive(Context context, Intent intent) {
             HhLog.e("hh","登录失效");
-            SPUtils.clear(getApplicationContext());
+            DialogHelper.getInstance().close();
+            SPUtils.put(getApplicationContext(), SPValue.login, false);
+            SPUtils.put(getApplicationContext(), SPValue.token, "");
+            CommonData.clear();
+
+            if (BaseLiveActivity.this instanceof LoginActivity) {
+                return;
+            }
+
+            long nowTime = System.currentTimeMillis();
+            if (nowTime - tokenFailureTime > TOKEN_FAILURE_INTERVAL) {
+                tokenFailureTime = nowTime;
+                String msg = intent.getStringExtra(HhHttp.TOKEN_FAILURE_MESSAGE);
+                Toast.makeText(BaseLiveActivity.this, msg == null || msg.isEmpty() ? "登录信息失效，请重新登录" : msg, Toast.LENGTH_SHORT).show();
+                Intent loginIntent = new Intent(BaseLiveActivity.this, LoginActivity.class);
+                loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(loginIntent);
+            }
+            finish();
         }
     }
 

@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.haohai.platform.fireforestplatform.HhApplication;
+import com.haohai.platform.fireforestplatform.MainActivity;
 import com.haohai.platform.fireforestplatform.R;
 import com.haohai.platform.fireforestplatform.base.BaseLiveActivity;
 import com.haohai.platform.fireforestplatform.base.ViewModelFactory;
@@ -65,7 +66,14 @@ public class LaunchActivity extends BaseLiveActivity<ActivityLaunchBinding, Laun
                             String userName = (String) SPUtils.get(HhApplication.getInstance(), SPValue.userName, "");
                             String password = (String) SPUtils.get(HhApplication.getInstance(), SPValue.password, "");
 
-                            obtainViewModel().login(userName,password);
+                            //obtainViewModel().login(userName,password);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startActivity(new Intent(LaunchActivity.this, MainActivity.class));
+                                    finish();
+                                }
+                            },2000);
                         }else{
                             new Handler().postDelayed(() -> {
                                 startActivity(new Intent(LaunchActivity.this, LoginActivity.class));

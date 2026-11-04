@@ -106,6 +106,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private static final int MEASURE_MODE_NONE = 0;
     private static final int MEASURE_MODE_DISTANCE = 1;
     private static final int MEASURE_MODE_AREA = 2;
+    private static final int MEASURE_MODE_POINT = 3;
     private static final int MAP_OVERLAY_TYPE_MEASURE = -100;
     private static final long TEAM_LOCATION_REFRESH_TIME = 10000L;
     private int currentMeasureMode = MEASURE_MODE_NONE;
@@ -116,6 +117,8 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
     private final List<Text> distanceTexts = new ArrayList<>();
     private final List<LatLng> areaPoints = new ArrayList<>();
     private final List<Marker> areaMarkers = new ArrayList<>();
+    private final List<LatLng> pickedPoints = new ArrayList<>();
+    private final List<Marker> pickedPointMarkers = new ArrayList<>();
     private Polyline areaPolyline;
     private Polygon areaPolygon;
     private Text areaText;
@@ -221,6 +224,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         });
         binding.viewMeasureDistance.setOnClickListener(v -> toggleDistanceMeasure());
         binding.viewMeasureArea.setOnClickListener(v -> toggleAreaMeasure());
+        binding.viewMeasurePoint.setOnClickListener(v -> togglePointMeasure());
         updateMeasureButtonState();
         updateTeamButton(binding.viewTeamLocation, teamLocationEnabled);
     }
@@ -933,6 +937,7 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         } else {
             currentMeasureMode = MEASURE_MODE_DISTANCE;
             clearAreaMeasurement();
+            clearPickedPoints();
             clearDistanceMeasurement();
         }
         updateMeasureButtonState();
@@ -945,14 +950,28 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         } else {
             currentMeasureMode = MEASURE_MODE_AREA;
             clearDistanceMeasurement();
+            clearPickedPoints();
             clearAreaMeasurement();
         }
+        updateMeasureButtonState();
+    }
+
+    private void togglePointMeasure() {
+        if (currentMeasureMode == MEASURE_MODE_POINT) {
+            currentMeasureMode = MEASURE_MODE_NONE;
+        } else {
+            currentMeasureMode = MEASURE_MODE_POINT;
+            clearDistanceMeasurement();
+            clearAreaMeasurement();
+        }
+        clearPickedPoints();
         updateMeasureButtonState();
     }
 
     private void updateMeasureButtonState() {
         updateMeasureButton(binding.viewMeasureDistance, currentMeasureMode == MEASURE_MODE_DISTANCE);
         updateMeasureButton(binding.viewMeasureArea, currentMeasureMode == MEASURE_MODE_AREA);
+        updateMeasureButton(binding.viewMeasurePoint, currentMeasureMode == MEASURE_MODE_POINT);
     }
 
     private void updateMeasureButton(View button, boolean selected) {
@@ -966,6 +985,12 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             binding.area.setImageResource(selected ? R.drawable.measure_area : R.drawable.measure_area_un);
             binding.areaText.setTextColor(requireActivity().getResources().getColor(selected ? R.color.theme_color_blue : R.color.black90));
             binding.areaText.setTypeface(null, selected ? Typeface.BOLD:Typeface.NORMAL);
+            return;
+        }
+        if (button == binding.viewMeasurePoint) {
+            binding.point.setImageResource(selected ? R.drawable.measure_point : R.drawable.measure_point_un);
+            binding.pointText.setTextColor(requireActivity().getResources().getColor(selected ? R.color.theme_color_blue : R.color.black90));
+            binding.pointText.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
             return;
         }
         updateTeamButton(button, selected);
@@ -1009,7 +1034,35 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
             renderAreaMeasurement();
             return true;
         }
+        if (currentMeasureMode == MEASURE_MODE_POINT) {
+            pickedPoints.add(latLng);
+            pickedPointMarkers.add(addPickedPointMarker(latLng));
+            return true;
+        }
         return false;
+    }
+
+    private void clearPickedPoints() {
+        pickedPoints.clear();
+        for (Marker marker : pickedPointMarkers) {
+            marker.remove();
+        }
+        pickedPointMarkers.clear();
+    }
+
+    private Marker addPickedPointMarker(LatLng point) {
+        View markerView = LayoutInflater.from(requireContext()).inflate(R.layout.view_map_point_marker, null);
+        TextView coordinates = markerView.findViewById(R.id.point_coordinates);
+        coordinates.setText(String.format(Locale.US, "纬度：%.6f\n经度：%.6f", point.latitude, point.longitude));
+        Marker marker = obtainViewModel().aMap.addMarker(new MarkerOptions()
+                .position(point)
+                .anchor(0.5f, 1f)
+                .icon(BitmapDescriptorFactory.fromView(markerView)));
+        Bundle bundle = new Bundle();
+        bundle.putString("id", "picked_point");
+        bundle.putInt("type", MAP_OVERLAY_TYPE_MEASURE);
+        marker.setObject(bundle);
+        return marker;
     }
 
     private void redrawMeasureOverlays() {
@@ -1018,6 +1071,10 @@ public class MapFragment extends BaseFragment<FgMap, FgMapViewModel> implements 
         }
         if (!areaPoints.isEmpty()) {
             renderAreaMeasurement();
+        }
+        pickedPointMarkers.clear();
+        for (LatLng point : pickedPoints) {
+            pickedPointMarkers.add(addPickedPointMarker(point));
         }
         updateMeasureButtonState();
     }

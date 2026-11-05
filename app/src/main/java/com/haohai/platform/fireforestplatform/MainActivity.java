@@ -369,11 +369,12 @@ public class MainActivity extends BaseLiveActivity<ActivityMainBinding, MainView
         if(CommonData.hasMainApp)fragmentTransaction.add(R.id.main_layout, mainFragment);
         if(CommonData.hasMainVideo)fragmentTransaction.add(R.id.main_layout, videoFragment);
         if(CommonData.hasMainMessage)fragmentTransaction.add(R.id.main_layout, messageFragment);
-        if(CommonData.hasMainMap)fragmentTransaction.add(R.id.main_layout, mapFragment);
+        // 地图页面首次选中时才创建；隐藏的 Fragment 创建视图也会立即请求地图接口。
+        if(CommonData.hasMainMap && fragments[0] == mapFragment)
+            fragmentTransaction.add(R.id.main_layout, mapFragment);
         if(CommonData.hasMainMy)fragmentTransaction.add(R.id.main_layout, mineFragment);
         if(CommonData.hasMainVideo)fragmentTransaction.hide(videoFragment);
         if(CommonData.hasMainMessage)fragmentTransaction.hide(messageFragment);
-        if(CommonData.hasMainMap)fragmentTransaction.hide(mapFragment);
         if(CommonData.hasMainMy)fragmentTransaction.hide(mineFragment);
         if(CommonData.hasMainApp)fragmentTransaction.show(mainFragment);
         else if(CommonData.hasMainVideo)fragmentTransaction.show(videoFragment);

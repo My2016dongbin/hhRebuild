@@ -2,6 +2,8 @@ package com.haohai.platform.fireforestplatform.ui.viewmodel;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -47,6 +49,24 @@ import java.util.Objects;
 import okhttp3.Call;
 
 public class FgMapViewModel extends BaseViewModel {
+    private static final int MAX_HTTP_404_RETRIES = 2;
+    private final Handler retryHandler = new Handler(Looper.getMainLooper());
+
+    private boolean retryNotFound(Throwable error, int attempt, String url, Runnable retry) {
+        if (!error.toString().contains("404") || attempt >= MAX_HTTP_404_RETRIES) {
+            return false;
+        }
+        HhLog.e("地图请求返回 404，准备重试 " + (attempt + 1) + "/" + MAX_HTTP_404_RETRIES + ": " + url);
+        retryHandler.postDelayed(retry, 1000L * (attempt + 1));
+        return true;
+    }
+
+    @Override
+    protected void onCleared() {
+        retryHandler.removeCallbacksAndMessages(null);
+        super.onCleared();
+    }
+
     public Context context;
     public int currentPage = 1;
     public int isReal = 2;
@@ -129,6 +149,10 @@ public class FgMapViewModel extends BaseViewModel {
         });
     }
     private void initGridIntoDb() {
+        initGridIntoDb(0);
+    }
+
+    private void initGridIntoDb(int attempt) {
         DbManager db = new DbConfig(context).getDbManager();
         List<Grid> list = new ArrayList<>();
         try {
@@ -152,8 +176,7 @@ public class FgMapViewModel extends BaseViewModel {
         RequestParams params = new RequestParams(URLConstant.BASE_PATH + "resource/api/grid/list");
         params.setConnectTimeout(20000);
         params.setBodyContent(jsonObject.toString());
-        params.addHeader("Authorization","bearer " + CommonData.token);
-        x.http().post(params, new Callback.CommonCallback<String>() {
+        HhHttp.postX(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 try {
@@ -179,7 +202,9 @@ public class FgMapViewModel extends BaseViewModel {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                Log.e("TAG", "onError: materialRepository请求失败" + ex.toString());
+                HhLog.e("网格缓存请求失败 " + URLConstant.BASE_PATH + "resource/api/grid/list: " + ex);
+                retryNotFound(ex, attempt, URLConstant.BASE_PATH + "resource/api/grid/list",
+                        () -> initGridIntoDb(attempt + 1));
             }
 
             @Override
@@ -193,6 +218,10 @@ public class FgMapViewModel extends BaseViewModel {
         });
     }
     public void getOneBodyData() {
+        getOneBodyData(0);
+    }
+
+    private void getOneBodyData(int attempt) {
         loading.setValue(new LoadingEvent(true, "正在获取报警信息.."));
         final JSONObject jsonObject = new JSONObject();
         JSONObject dto;
@@ -246,8 +275,11 @@ public class FgMapViewModel extends BaseViewModel {
 
             @Override
             public void onError(Throwable e, boolean isOnCallback) {
-                HhLog.e("onError: " + e.toString());
-                msg.setValue(e.getMessage());
+                HhLog.e("一体机火警请求失败 " + URLConstant.POST_MAP_ONE_BODY + ": " + e);
+                if (retryNotFound(e, attempt, URLConstant.POST_MAP_ONE_BODY, () -> getOneBodyData(attempt + 1))) {
+                    return;
+                }
+                msg.setValue("一体机火警加载失败，请稍后重试");
                 loading.setValue(new LoadingEvent(false, ""));
             }
 
@@ -263,7 +295,13 @@ public class FgMapViewModel extends BaseViewModel {
         });
     }
     public void getResourceTypeData() {
-        resourceTypeList.postValue(new ArrayList<>());
+        getResourceTypeData(0);
+    }
+
+    private void getResourceTypeData(int attempt) {
+        if (attempt == 0) {
+            resourceTypeList.postValue(new ArrayList<>());
+        }
         final JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("isDisplay", "1");
@@ -306,39 +344,7 @@ public class FgMapViewModel extends BaseViewModel {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            HhLog.e("resourceTypeNew params " + obj.toString());
-                            HhHttp.postString()
-                                    .url(URLConstant.POST_MAP_RESOURCE_TYPE_NEW)
-                                    .content(obj.toString())
-                                    .build()
-                                    .connTimeOut(10000)
-                                    .execute(new LoggedInStringCallback(FgMapViewModel.this, context) {
-                                        @Override
-                                        public void onSuccess(String response, int id) {
-                                            try {
-                                                JSONObject jsonObject = new JSONObject(response);
-                                                JSONArray data = jsonObject.getJSONArray("data");
-                                                List<ResourceType> value = resourceTypeList.getValue();
-                                                if(value == null ){
-                                                    value = new ArrayList<>();
-                                                }
-                                                List<ResourceType> c = new Gson().fromJson(String.valueOf(data),
-                                                        new TypeToken<List<ResourceType>>() {
-                                                        }.getType());
-                                                value.addAll(c);
-                                                resourceTypeList.postValue(value);
-
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call call, Exception e, int id) {
-                                            HhLog.e("onFailure: " + e.toString());
-                                            msg.setValue(e.getMessage());
-                                        }
-                                    });
+                            getNewResourceTypeData(obj.toString(), 0);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -346,13 +352,56 @@ public class FgMapViewModel extends BaseViewModel {
 
                     @Override
                     public void onFailure(Call call, Exception e, int id) {
-                        HhLog.e("onFailure: " + e.toString());
-                        msg.setValue(e.getMessage());
+                        HhLog.e("资源类型请求失败 " + call.request().url() + ": " + e);
+                        if (retryNotFound(e, attempt, URLConstant.POST_MAP_RESOURCE_TYPE, () -> getResourceTypeData(attempt + 1))) {
+                            return;
+                        }
+                        msg.setValue("资源类型加载失败，请稍后重试");
                     }
                 });
 
     }
+
+    private void getNewResourceTypeData(String body, int attempt) {
+        HhHttp.postString()
+                .url(URLConstant.POST_MAP_RESOURCE_TYPE_NEW)
+                .content(body)
+                .build()
+                .connTimeOut(10000)
+                .execute(new LoggedInStringCallback(this, context) {
+                    @Override
+                    public void onSuccess(String response, int id) {
+                        try {
+                            JSONArray data = new JSONObject(response).getJSONArray("data");
+                            List<ResourceType> value = resourceTypeList.getValue();
+                            if (value == null) {
+                                value = new ArrayList<>();
+                            }
+                            List<ResourceType> additional = new Gson().fromJson(data.toString(),
+                                    new TypeToken<List<ResourceType>>() {}.getType());
+                            value.addAll(additional);
+                            resourceTypeList.postValue(value);
+                        } catch (JSONException e) {
+                            HhLog.e("新增资源类型解析失败: " + e);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Exception e, int id) {
+                        HhLog.e("新增资源类型请求失败 " + call.request().url() + ": " + e);
+                        if (retryNotFound(e, attempt, URLConstant.POST_MAP_RESOURCE_TYPE_NEW,
+                                () -> getNewResourceTypeData(body, attempt + 1))) {
+                            return;
+                        }
+                        msg.setValue("资源类型加载失败，请稍后重试");
+                    }
+                });
+    }
     public void getSatelliteData(String startTimeStr,String endTimeStr) {
+        getSatelliteData(startTimeStr, endTimeStr, 0);
+    }
+
+    private void getSatelliteData(String startTimeStr,String endTimeStr, int attempt) {
         /*final JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("startTime",startTimeStr);
@@ -393,8 +442,12 @@ public class FgMapViewModel extends BaseViewModel {
 
                     @Override
                     public void onFailure(Call call, Exception e, int id) {
-                        HhLog.e("onFailure: " + e.toString());
-                        msg.setValue(e.getMessage());
+                        HhLog.e("卫星火警请求失败 " + call.request().url() + ": " + e);
+                        if (retryNotFound(e, attempt, URLConstant.POST_MAP_SATELLITE,
+                                () -> getSatelliteData(startTimeStr, endTimeStr, attempt + 1))) {
+                            return;
+                        }
+                        msg.setValue("卫星火警加载失败，请稍后重试");
                     }
                 });
     }
